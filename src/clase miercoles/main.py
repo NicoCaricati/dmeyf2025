@@ -8,11 +8,20 @@
 # Jupyter notebook sirve para EDA, visualizaciones
 # Py files para crear variables, preprocesamiento ORDENADO, hiperparametros, modelos, predicciones
 
+# Try except para manejo de errores: se usa cuando el codigo puede fallar.
+# Especialmente cuando el codigo depende de archivos externos, o interactua con otras APIs
+
+
+
+
+
 import pandas as pd
 import numpy as np
 import os
 import optuna
 import sklearn
+
+os.makedirs("logs", exist_ok=True)
 
 def main():
     print("Inicio de Ejecucion")
