@@ -1,194 +1,68 @@
-# La idea del entorno virtual es SIMULAR lo q vamos a tener q hacer en un servidor.
-# Dejar en claro en requirements.txt las librerias que vamos a usar, y sus versiones.
-
-# No hacer scripts sueltos de cada tema. Ir integrando todo en un solo script.
-# Dejar todo en un archivo bastante limpio y ordenado.
-# Hasta ahora agregar clase ternaria, arboles, bosques, obstuza
-
-# Jupyter notebook sirve para EDA, visualizaciones
-# Py files para crear variables, preprocesamiento ORDENADO, hiperparametros, modelos, predicciones
-
-# Try except para manejo de errores: se usa cuando el codigo puede fallar.
-# Especialmente cuando el codigo depende de archivos externos, o interactua con otras APIs
-
-
-
-
-
 import pandas as pd
-import numpy as np
 import os
+import datetime
+import logging
+import numpy as np
 import optuna
-import sklearn
 
+
+from loader import cargar_datos
+from features import feature_engineering_lag
+from features import feature_engineering_delta
+from features import feature_engineering_tasa_variacion
+from features import feature_engineering_tc_total
+from features import feature_engineering_regr_slope_window
+from features import feature_engineering_ratio
+
+## config basico logging
 os.makedirs("logs", exist_ok=True)
 
+fecha = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+monbre_log = f"log_{fecha}.log"
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(name)s %(lineno)d - %(message)s',
+    handlers=[
+        logging.FileHandler(f"logs/{monbre_log}", mode="w", encoding="utf-8"),
+        logging.StreamHandler()
+    ]
+)
+
+logger = logging.getLogger(__name__)
+
+## Funcion principal
 def main():
-    print("Inicio de Ejecucion")
+    logger.info("Inicio de ejecucion.")
 
-    # Carga de datos
-    try:
-        df = pd.read_csv("data/competencia_03.csv")
-        print(df.head())
-        print(df.columns)
-        print(f"Filas: {df.shape[0]}, Columnas: {df.shape[1]}")
-        print("Dataset Cargado")
-    except FileNotFoundError:
-        print("Error: El archivo 'competencia_03.csv' no se encuentra.")
-        return
+    #00 Cargar datos
+    os.makedirs("data", exist_ok=True)
+    path = "data/competencia_03.csv"
+    df = cargar_datos(path)   
+
+    #01 Feature Engineering
+    df = feature_engineering_tc_total(df)
+    columnas_a_excluir = ["foto_mes", "cliente_antiguedad","cliente_edad","numero_de_cliente","target"]
+    atributos = [c for c in df.columns if c not in columnas_a_excluir]
+    columnas_Master = [c for c in df.columns if c.startswith("Master_")]
+    columnas_Visa = [c for c in df.columns if c.startswith("Visa_")]      
+    columnas_categoricas = [c for c in df.columns if df[c].nunique() < 5]
+    columnas_a_excluir_ratios = ["foto_mes", "cliente_antiguedad","cliente_edad","numero_de_cliente","target",columnas_Master, columnas_Visa, columnas_categoricas] 
+    # atributos_ratios = [c for c in df.columns if c not in columnas_a_excluir_ratios]
+    atributos_ratios = ['mactivos_margen' , 'matm' , 'matm_other' , 'mautoservicio' , 'mcaja_ahorro' , 'mcaja_ahorro_adicional' , 'mcaja_ahorro_dolares' , 'mcajeros_propios_descuentos' , 'mcheques_depositados' , 'mcheques_depositados_rechazados' , 'mcheques_emitidos' , 'mcheques_emitidos_rechazados' , 'mcomisiones' , 'mcomisiones_mantenimiento' , 'mcomisiones_otras' , 'mcuenta_corriente' , 'mcuenta_corriente_adicional' , 'mcuenta_debitos_automaticos' , 'mcuentas_saldo' , 'mextraccion_autoservicio' , 'mforex_buy' , 'mforex_sell' , 'minversion1_dolares' , 'minversion1_pesos' , 'minversion2' , 'mpagodeservicios' , 'mpagomiscuentas' , 'mpasivos_margen' , 'mpayroll' , 'mpayroll2' , 'mplazo_fijo_dolares' , 'mplazo_fijo_pesos' , 'mprestamos_hipotecarios' , 'mprestamos_personales' , 'mprestamos_prendarios' , 'mrentabilidad' , 'mrentabilidad_annual' , 'mtarjeta_master_consumo' , 'mtarjeta_master_descuentos' , 'mtarjeta_visa_consumo' , 'mtarjeta_visa_descuentos' , 'mtransferencias_emitidas' , 'mtransferencias_recibidas' , 'mttarjeta_master_debitos_automaticos' , 'mttarjeta_visa_debitos_automaticos']
+    df = feature_engineering_lag(df, columnas=atributos, cant_lag= 1)
+    df = feature_engineering_delta(df, columnas=atributos, cant_delta= 1)
+    df = feature_engineering_tasa_variacion(df, columnas=atributos, cant_tasa_variacion= 1)
+    df = feature_engineering_regr_slope_window(df, columnas=atributos, ventana = 3)
+    # df = feature_engineering_ratio(df, columnas=atributos_ratios)
     
-    with open("logs/logs.txt", "a") as f:
-        f.write(f"Dataset cargado con {df.shape[0]} filas y {df.shape[1]} columnas\n")
-    
-    # Semilla para reproducibilidad
-    semillas = [555557, 555871, 556219, 556459, 556691]
-
-    # Funcion de Ganancia
-    ganancia_acierto = 780000
-    costo_estimulo = 20000
-
-    def ganancia(model, X, y, prop=1, threshold=0.025):
-
-        class_index = np.where(model.classes_ == "BAJA+2")[0][0]
-        y_hat = model.predict_proba(X)
-
-        @np.vectorize
-        def ganancia_row(predicted, actual, threshold=0.025):
-            return  (predicted >= threshold) * (ganancia_acierto if actual == "BAJA+2" else -costo_estimulo)
-
-        return ganancia_row(y_hat[:,class_index], y).sum() / prop
-    
-    # Preprocesamiento?
-    print("Iniciando preprocesamiento")
-    # Bosques no soportan NAs, ver que variables tienen NAs y como imputarlas
-    # print(X.isna().sum())
-
-    # Preprocesamiento a df, luego separo df_train y df_to_predict
-
-    df_train = df[df["foto_mes"] <= 202104]
-    X = df_train.drop(columns=["target"])
-    y = df_train["target"]
-
-    with open("logs/logs.txt", "a") as f:
-        f.write(f"Preprocesamiento finalizado \n")
-
-    # Separacion de datos
-    print("Iniciando separacion de datos")
-    # Tres metodos
-
-    # # Train, test, validation
-    # from sklearn.model_selection import train_test_split
-    # X_train, X_rem, y_train, y_rem = train_test_split(X, y, train_size=0.7, random_state=semillas[0])
-    # X_val, X_test, y_val, y_test = train_test_split(X_rem, y_rem, test_size=0.5, random_state=semillas[0])
-
-    # Cross validation (todo de Copilot, chequear)
-
-    # from sklearn.model_selection import StratifiedKFold, StratifiedShuffleSplit, train_test_split
-    # skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=semillas[0])
-    # for train_index, test_index in skf.split(X, y):
-    #     print("TRAIN:", train_index, "TEST:", test_index)
-    #     X_train, X_test = X.iloc[train_index], X.iloc[test_index]
-    #     y_train, y_test = y.iloc[train_index], y.iloc[test_index]
-
-    # # # Shuffle Split
-    # print("Iniciando Shuffle Split")
-    # from sklearn.model_selection import StratifiedShuffleSplit
-    # sss = StratifiedShuffleSplit(n_splits=5,
-    #                          test_size=0.3,
-    #                          random_state=semillas[0])
-
-    # # Aplico shuffle split
-    # sss.split(X, y)
-    # print(sss.get_n_splits(X, y))
-
-    # with open("logs/logs.txt", "a") as f:
-    #     f.write(f"Particion finalizada \n")   
-
-
-    
-#     # for train_index, test_index in sss.split(X, y):
-#     #     print("TRAIN:", train_index, "TEST:", test_index)
-#     #     X_train, X_test = X.iloc[train_index], X.iloc[test_index]
-#     #     y_train, y_test = y.iloc[train_index], y.iloc[test_index]
-
-
-
-#     # Optimizacion de hiperparametros con Optuna para Random Forest
-    """     print("Iniciando Optimizacion de Hiperparametros")
-    from sklearn.tree import DecisionTreeClassifier 
-    from joblib import Parallel, delayed
-    criterion = 'gini'
-    def train_and_evaluate(train_index, test_index, X, y, params):
-        m = DecisionTreeClassifier(**params, random_state=semillas[0])
-        m.fit(X.iloc[train_index], y.iloc[train_index])
-        return ganancia(m, X.iloc[test_index], y.iloc[test_index], prop=0.3)
-
-    def objective(trial, X, y, sss):
-        params = {
-            "criterion": "gini",
-            "max_depth": trial.suggest_int("max_depth", 6, 24),
-            "min_samples_split": trial.suggest_int("min_samples_split", 100, 10000),
-            "min_samples_leaf": trial.suggest_int("min_samples_leaf", 50, 5000),
-            "max_leaf_nodes": trial.suggest_int("max_leaf_nodes", 64, 4096),
-        }
-
-        results = Parallel(n_jobs=-1)(
-            delayed(train_and_evaluate)(train_idx, test_idx, X, y, params)
-            for train_idx, test_idx in sss.split(X, y)
-        )
-        return np.mean(results)
-    
-    study = optuna.create_study(direction="maximize")
-    study.optimize(lambda trial: objective(trial, X, y, sss), n_trials
-                     =50, n_jobs=1)
-    print("Best trial:")
-    trial = study.best_trial
-    print(f"  Value: {trial.value}")
-    print("  Params: ")
-    for key, value in trial.params.items():
-        print(f"    {key}: {value}")
-    with open("logs/logs.txt", "a") as f:
-        f.write(f"Optimizacion finalizada \n")
-        f.write(f"Best trial: {trial.value} \n")
-        f.write(f"Params: {trial.params} \n")
-    print("Optimizacion finalizada")
-     """
-
-    # Prediccion con el mejor modelo
-    print("Iniciando Prediccion")
-    from sklearn.tree import DecisionTreeClassifier
-    from datetime import datetime
-    df_to_predict = df[df["foto_mes"] == 202106]
-    X_prediction = df_to_predict.drop(columns=["target"])
-    Params = {'max_depth': 16, 'min_samples_split': 4343, 'min_samples_leaf': 265, 'max_leaf_nodes': 2953} 
-    model = DecisionTreeClassifier(criterion='gini',
-                               random_state=semillas[0],
-                               **Params)
-    model.fit(X, y)
-    class_index = np.where(model.classes_ == "BAJA+2")[0][0]
-    probs = model.predict_proba(X_prediction)[:, class_index]
-    threshold = 0.025
-    y_pred = (probs >= threshold).astype(int)
-
-    # Archivo para Kaggle
-    submission = pd.DataFrame({
-    "numero_de_cliente": df_to_predict["numero_de_cliente"],
-    "Predicted": y_pred
-    })
-    hora_actual = datetime.now().strftime("%B %d %H:%M")
-    submission.to_csv("predicciones_rf_202106.csv", index=False)
-    print(f"CSV generado: predicciones_rf{hora_actual}.csv")
-    with open("logs/logs.txt", "a") as f:
-            f.write(f"Prediccion finalizada \n")
-
-    print("Fin de Ejecucion")
-
-
-
+    #02 Guardar datos
+    path = "data/competencia_fe.csv"
+    df.to_csv(path, index=False)
+  
+    logger.info(f">>> Ejecución finalizada. Revisar logs para mas detalles.{monbre_log}")
 
 if __name__ == "__main__":
     main()
     
 
 
-# Feature Engenineering
