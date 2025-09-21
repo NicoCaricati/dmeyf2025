@@ -51,15 +51,21 @@ def main():
     atributos_ratios = ['mactivos_margen' , 'matm' , 'matm_other' , 'mautoservicio' , 'mcaja_ahorro' , 'mcaja_ahorro_adicional' , 'mcaja_ahorro_dolares' , 'mcajeros_propios_descuentos' , 'mcheques_depositados' , 'mcheques_depositados_rechazados' , 'mcheques_emitidos' , 'mcheques_emitidos_rechazados' , 'mcomisiones' , 'mcomisiones_mantenimiento' , 'mcomisiones_otras' , 'mcuenta_corriente' , 'mcuenta_corriente_adicional' , 'mcuenta_debitos_automaticos' , 'mcuentas_saldo' , 'mextraccion_autoservicio' , 'mforex_buy' , 'mforex_sell' , 'minversion1_dolares' , 'minversion1_pesos' , 'minversion2' , 'mpagodeservicios' , 'mpagomiscuentas' , 'mpasivos_margen' , 'mpayroll' , 'mpayroll2' , 'mplazo_fijo_dolares' , 'mplazo_fijo_pesos' , 'mprestamos_hipotecarios' , 'mprestamos_personales' , 'mprestamos_prendarios' , 'mrentabilidad' , 'mrentabilidad_annual' , 'mtarjeta_master_consumo' , 'mtarjeta_master_descuentos' , 'mtarjeta_visa_consumo' , 'mtarjeta_visa_descuentos' , 'mtransferencias_emitidas' , 'mtransferencias_recibidas' , 'mttarjeta_master_debitos_automaticos' , 'mttarjeta_visa_debitos_automaticos']
     df = feature_engineering_lag(df, columnas=atributos, cant_lag= 1)
     df = feature_engineering_delta(df, columnas=atributos, cant_delta= 1)
-    df = feature_engineering_tasa_variacion(df, columnas=atributos, cant_tasa_variacion= 1)
+    # df = feature_engineering_tasa_variacion(df, columnas=atributos, cant_tasa_variacion= 1)
     df = feature_engineering_regr_slope_window(df, columnas=atributos, ventana = 3)
-    # df = feature_engineering_ratio(df, columnas=atributos_ratios)
+    df = feature_engineering_ratio(df, columnas=atributos_ratios)
     
     #02 Guardar datos
     path = "data/competencia_fe.csv"
     df.to_csv(path, index=False)
   
     logger.info(f">>> Ejecución finalizada. Revisar logs para mas detalles.{monbre_log}")
+
+    # 03 Dataset con solo abril para Segmentacion
+    df_abril = df[df["foto_mes"]==202104]
+    path = "data/competencia_fe_abril.csv"
+    df_abril.to_csv(path, index=False)
+    logger.info(f"Dataset de abril guardado en {path}")
 
 if __name__ == "__main__":
     main()

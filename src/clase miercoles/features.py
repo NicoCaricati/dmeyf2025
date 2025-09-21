@@ -346,7 +346,7 @@ def feature_engineering_ratio(df: pd.DataFrame, columnas: list[str]) -> pd.DataF
         else:
             logger.warning(f"Columna {numerador} o {denominador} no encontrada en el DataFrame")
 
-    logger.info(f"Feature engineering de ratios completado. DataFrame ahora tiene {df.shape[1]} columnas")
+    logger.info(f"Feature engineering de ratios completado. DataFrame ahora tiene {df.shape[1]} columnas y {df.shape[0]} filas")
     return df
 
 
