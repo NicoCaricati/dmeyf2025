@@ -349,4 +349,88 @@ def feature_engineering_ratio(df: pd.DataFrame, columnas: list[str]) -> pd.DataF
     logger.info(f"Feature engineering de ratios completado. DataFrame ahora tiene {df.shape[1]} columnas y {df.shape[0]} filas")
     return df
 
+# variables canarios como variables uniformes (0,1) q voy a usar para cortar variables de importancia menor a lo random
+def feature_engineering_variables_canarios(df: pd.DataFrame, n_canarios: int = 50) -> pd.DataFrame:
+    """
+    Agrega variables canarias al DataFrame. Las variables canarias son columnas con valores aleatorios
+    que sirven como referencia para evaluar la importancia de otras variables en modelos predictivos.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame al cual se le agregarán las variables canarias.
+    n_canarios : int, default=5
+        Cantidad de variables canarias a generar.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame con las variables canarias agregadas.
+    """
+    logger = logging.getLogger(__name__)
+    logger.info(f"Agregando {n_canarios} variables canarias al DataFrame")
+
+    for i in range(n_canarios):
+        col_name = f"canario_{i+1}"
+        df[col_name] = np.random.uniform(0, 1, size=df.shape[0])
+        logger.debug(f"Variable canaria creada: {col_name}")
+
+    logger.info(f"Variables canarias agregadas. DataFrame ahora tiene {df.shape[1]} columnas y {df.shape[0]} filas")
+    return df
+
+
+def generar_ctrx_features(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Genera ctrx_30d, ctrx_60d, ctrx_90d, ctrx_120d usando SQL en DuckDB.
+    """
+    sql = """
+    SELECT *,
+        -- ctrx_30d = suma mensual de transacciones
+        coalesce(ctarjeta_debito_transacciones,0)
+        + coalesce(ctarjeta_visa_transacciones,0)
+        + coalesce(ctarjeta_master_transacciones,0)
+        + coalesce(ccajas_transacciones,0) AS ctrx_30d,
+
+        -- rolling sums
+        sum(
+            coalesce(ctarjeta_debito_transacciones,0)
+            + coalesce(ctarjeta_visa_transacciones,0)
+            + coalesce(ctarjeta_master_transacciones,0)
+            + coalesce(ccajas_transacciones,0)
+        ) OVER (
+            PARTITION BY numero_de_cliente
+            ORDER BY foto_mes
+            ROWS BETWEEN 1 PRECEDING AND CURRENT ROW
+        ) AS ctrx_60d,
+
+        sum(
+            coalesce(ctarjeta_debito_transacciones,0)
+            + coalesce(ctarjeta_visa_transacciones,0)
+            + coalesce(ctarjeta_master_transacciones,0)
+            + coalesce(ccajas_transacciones,0)
+        ) OVER (
+            PARTITION BY numero_de_cliente
+            ORDER BY foto_mes
+            ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+        ) AS ctrx_90d,
+
+        sum(
+            coalesce(ctarjeta_debito_transacciones,0)
+            + coalesce(ctarjeta_visa_transacciones,0)
+            + coalesce(ctarjeta_master_transacciones,0)
+            + coalesce(ccajas_transacciones,0)
+        ) OVER (
+            PARTITION BY numero_de_cliente
+            ORDER BY foto_mes
+            ROWS BETWEEN 3 PRECEDING AND CURRENT ROW
+        ) AS ctrx_120d
+
+    FROM df
+    """
+
+    con = duckdb.connect(database=":memory:")
+    con.register("df", df)
+    df_out = con.execute(sql).df()
+    con.close()
+    return df_out
 

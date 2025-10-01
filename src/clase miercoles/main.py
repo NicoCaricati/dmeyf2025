@@ -1,74 +1,161 @@
-import pandas as pd
-import os
-import datetime
 import logging
+from datetime import datetime
+import os
+import pandas as pd
 import numpy as np
-import optuna
+from features import feature_engineering_lag, feature_engineering_delta, feature_engineering_regr_slope_window, feature_engineering_ratio, feature_engineering_variables_canarios, feature_engineering_tc_total, generar_ctrx_features
+from loader import cargar_datos, convertir_clase_ternaria_a_target
+from optimization import optimizar, evaluar_en_test, guardar_resultados_test
+from best_params import cargar_mejores_hiperparametros
+from final_training import preparar_datos_entrenamiento_final, generar_predicciones_finales, entrenar_modelo_final,feature_importance
+from output_manager import guardar_predicciones_finales
+from best_params import obtener_estadisticas_optuna
+from config import *
 
-
-from loader import cargar_datos
-from features import feature_engineering_lag
-from features import feature_engineering_delta
-from features import feature_engineering_tasa_variacion
-from features import feature_engineering_tc_total
-from features import feature_engineering_regr_slope_window
-from features import feature_engineering_ratio
-
-## config basico logging
+### Configuración de logging ###
 os.makedirs("logs", exist_ok=True)
+fecha = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+nombre_log = f"log_{STUDY_NAME}_{fecha}.log"
 
-fecha = datetime.datetime.now().strftime("%Y-%m-%d %H-%M-%S")
-monbre_log = f"log_{fecha}.log"
 logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(name)s %(lineno)d - %(message)s',
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(name)s %(lineno)d - %(message)s",
     handlers=[
-        logging.FileHandler(f"logs/{monbre_log}", mode="w", encoding="utf-8"),
+        logging.FileHandler("logs/" + nombre_log),
         logging.StreamHandler()
     ]
 )
 
 logger = logging.getLogger(__name__)
+logger.info("Iniciando programa de optimización con log fechado")
 
-## Funcion principal
+### Manejo de Configuración en YAML ###
+logger.info("Configuración cargada desde YAML")
+logger.info(f"STUDY_NAME: {STUDY_NAME}")
+logger.info(f"DATA_PATH: {DATA_PATH}")
+logger.info(f"SEMILLA: {SEMILLA}")
+logger.info(f"MES_TRAIN: {MES_TRAIN}")
+logger.info(f"MES_VALIDACION: {MES_VALIDACION}")
+logger.info(f"MES_TEST: {MES_TEST}")
+logger.info(f"FINAL_TRAIN: {FINAL_TRAIN}")
+logger.info(f"FINAL_PREDIC: {FINAL_PREDIC}")
+logger.info(f"GANANCIA_ACIERTO: {GANANCIA_ACIERTO}")
+logger.info(f"COSTO_ESTIMULO: {COSTO_ESTIMULO}")
+logger.info(f"UMBRAL: {UMBRAL}")
+
+
+### Main ###
 def main():
-    logger.info("Inicio de ejecucion.")
+    """Pipeline principal con optimización usando configuración YAML."""
+    logger.info("=== INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===")
+  
+    # 1. Cargar datos
+    df = cargar_datos("data/competencia_03.csv")
+    logger.info(f"Datos cargados: {df.shape}")
 
-    #00 Cargar datos
-    os.makedirs("data", exist_ok=True)
-    path = "data/competencia_03.csv"
-    df = cargar_datos(path)   
+    df_to_select_columns = pd.read_csv("data/feature_importance_sin_canarios.csv").sort_values("importance",ascending=False)
 
-    #01 Feature Engineering
-    df = feature_engineering_tc_total(df)
-    columnas_a_excluir = ["foto_mes", "cliente_antiguedad","cliente_edad","numero_de_cliente","target"]
+    # Top 20 de features de mayor importancia
+
+    columnas_20_mas_importantes = df_to_select_columns.head(20)["feature"].to_list()
+
+    # 2. Feature Engineering
+    df_fe = feature_engineering_tc_total(df)
+    df_fe = generar_ctrx_features(df_fe)
+    df_fe = feature_engineering_ratio(df_fe,columnas_20_mas_importantes)
+    columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target"]
     atributos = [c for c in df.columns if c not in columnas_a_excluir]
     columnas_Master = [c for c in df.columns if c.startswith("Master_")]
     columnas_Visa = [c for c in df.columns if c.startswith("Visa_")]      
-    columnas_categoricas = [c for c in df.colu.venv\Scripts\activatemns if df[c].nunique() < 5]
-    columnas_a_excluir_ratios = ["foto_mes", "cliente_antiguedad","cliente_edad","numero_de_cliente","target",columnas_Master, columnas_Visa, columnas_categoricas] 
-    # atributos_ratios = [c for c in df.columns if c not in columnas_a_excluir_ratios]
-    atributos_ratios = ['mactivos_margen' , 'matm' , 'matm_other' , 'mautoservicio' , 'mcaja_ahorro' , 'mcaja_ahorro_adicional' , 'mcaja_ahorro_dolares' , 'mcajeros_propios_descuentos' , 'mcheques_depositados' , 'mcheques_depositados_rechazados' , 'mcheques_emitidos' , 'mcheques_emitidos_rechazados' , 'mcomisiones' , 'mcomisiones_mantenimiento' , 'mcomisiones_otras' , 'mcuenta_corriente' , 'mcuenta_corriente_adicional' , 'mcuenta_debitos_automaticos' , 'mcuentas_saldo' , 'mextraccion_autoservicio' , 'mforex_buy' , 'mforex_sell' , 'minversion1_dolares' , 'minversion1_pesos' , 'minversion2' , 'mpagodeservicios' , 'mpagomiscuentas' , 'mpasivos_margen' , 'mpayroll' , 'mpayroll2' , 'mplazo_fijo_dolares' , 'mplazo_fijo_pesos' , 'mprestamos_hipotecarios' , 'mprestamos_personales' , 'mprestamos_prendarios' , 'mrentabilidad' , 'mrentabilidad_annual' , 'mtarjeta_master_consumo' , 'mtarjeta_master_descuentos' , 'mtarjeta_visa_consumo' , 'mtarjeta_visa_descuentos' , 'mtransferencias_emitidas' , 'mtransferencias_recibidas' , 'mttarjeta_master_debitos_automaticos' , 'mttarjeta_visa_debitos_automaticos']
-    df = feature_engineering_lag(df, columnas=atributos, cant_lag= 1)
-    df = feature_engineering_delta(df, columnas=atributos, cant_delta= 1)
-    # df = feature_engineering_tasa_variacion(df, columnas=atributos, cant_tasa_variacion= 1)
-    df = feature_engineering_regr_slope_window(df, columnas=atributos, ventana = 3)
-    df = feature_engineering_ratio(df, columnas=atributos_ratios)
-    
-    #02 Guardar datos
-    path = "data/competencia_fe.csv"
-    df.to_csv(path, index=False)
-  
-    logger.info(f">>> Ejecución finalizada. Revisar logs para mas detalles.{monbre_log}")
+    columnas_categoricas = [c for c in df.columns if df[c].nunique() < 5]
+    df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+    for i in (1,3):
+        df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
+    for i in (1,3):
+        df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
+    df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = 3)
+    # df_fe = feature_engineering_variables_canarios(df_fe)
+    logger.info(f"Feature Engineering completado: {df_fe.shape}")
 
-    # 03 Dataset con solo abril para Segmentacion
-    df_abril = df[df["foto_mes"]==202104]
-    path = "data/competencia_fe_abril.csv"
-    df_abril.to_csv(path, index=False)
-    logger.info(f"Dataset de abril guardado en {path}")
+    # 3. Convertir clase_ternaria a binario
+    df_fe = convertir_clase_ternaria_a_target(df_fe)
+
+    df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+
+    # df_fe.to_csv("data/competencia_fe_.csv", index=False)
+
+    # 3.5 Muestreo para acelerar optimización (opcional)
+    clientes_202101 = df_fe[df_fe['foto_mes'] == 202101]['numero_de_cliente'].unique()
+    clientes_muestra = np.random.choice(clientes_202101, size=int(0.45 * len(clientes_202101)), replace=False)
+    df_fe_sampled = df_fe[df_fe['numero_de_cliente'].isin(clientes_muestra)]
+    logger.info(f"Datos muestreados para optimización: {df_fe_sampled.shape}")
+    # saco los meses 5 y 6 para que no haya fugas
+    df_fe_sampled = df_fe
+    df_fe_sampled = df_fe_sampled[~df_fe_sampled['foto_mes'].isin([202105,202106])]
+    df_fe_sampled.to_csv("data/competencia_fe_sampled.csv", index=False)
+
+    # 4. Ejecutar optimización (función simple)
+    study = optimizar(df_fe_sampled, n_trials=100)
+  
+    # 5. Análisis adicional
+    logger.info("=== ANÁLISIS DE RESULTADOS ===")
+    trials_df = study.trials_dataframe()
+    if len(trials_df) > 0:
+        top_5 = trials_df.nlargest(5, 'value')
+        logger.info("Top 5 mejores trials:")
+        for idx, trial in top_5.iterrows():
+            logger.info(f"  Trial {trial['number']}: {trial['value']:,.0f}")
+  
+    logger.info("=== OPTIMIZACIÓN COMPLETADA ===")
+
+     #05 Test en mes desconocido
+    logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
+    # Cargar mejores hiperparámetros
+    # mejores_params = {'num_leaves': 44, 'learning_rate': 0.03989252793261956, 'min_data_in_leaf': 912, 'feature_fraction': 0.30176403912663036, 'bagging_fraction': 0.8741896240618541}
+    mejores_params = cargar_mejores_hiperparametros()
+
+  
+    # Evaluar en test
+    resultados_test = evaluar_en_test(df_fe, mejores_params)
+  
+    # Guardar resultados de test
+    guardar_resultados_test(resultados_test)
+  
+    # Resumen de evaluación en test
+    logger.info("=== RESUMEN DE EVALUACIÓN EN TEST ===")
+    logger.info(f"✅ Ganancia en test: {resultados_test['ganancia_test']:,.0f}")
+    logger.info(f"🎯 Predicciones positivas: {resultados_test['predicciones_positivas']:,} ({resultados_test['porcentaje_positivas']:.2f}%)")
+
+
+    #06 Entrenar modelo final
+    logger.info("=== ENTRENAMIENTO FINAL ===")
+    logger.info("Preparar datos para entrenamiento final")
+    X_train, y_train, X_predict, clientes_predict = preparar_datos_entrenamiento_final(df_fe)
+  
+    # Entrenar modelo final
+    logger.info("Entrenar modelo final")
+    modelo_final = entrenar_modelo_final(X_train, y_train, mejores_params)
+  
+    # Generar predicciones finales
+    logger.info("Generar predicciones finales")
+    resultados = generar_predicciones_finales(modelo_final, X_predict, clientes_predict)
+  
+    # Guardar predicciones
+    logger.info("Guardar predicciones")
+    archivo_salida = guardar_predicciones_finales(resultados)
+  
+    # Resumen final
+    logger.info("=== RESUMEN FINAL ===")
+    logger.info(f"✅ Entrenamiento final completado exitosamente")
+    logger.info(f"📊 Mejores hiperparámetros utilizados: {mejores_params}")
+    logger.info(f"🎯 Períodos de entrenamiento: {FINAL_TRAIN}")
+    logger.info(f"🔮 Período de predicción: {FINAL_PREDIC}")
+    logger.info(f"📁 Archivo de salida: {archivo_salida}")
+    logger.info(f"📝 Log detallado: logs/{nombre_log}")
+
+
+    logger.info(f">>> Ejecución finalizada. Revisar logs para mas detalles.")
 
 if __name__ == "__main__":
     main()
-    
-
 
