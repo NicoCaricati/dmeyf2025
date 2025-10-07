@@ -1,15 +1,37 @@
 # config.yaml
-STUDY_NAME : "competencia01 - Agrego Ratios para top 20 + QTRX_Active adicionales + umbral 0.01 "
+STUDY_NAME : "Paso a clase ternaria BAJA+1 y BAJA+2"
 
 competencia01:
     DATA_PATH: "../data/competencia_03.csv"
-    SEMILLA: [555557, 555871, 556219, 556459, 556691]
-    MES_TRAIN: [202101,202102]
+    SEMILLA: [555557, 555871, 556219]
+    # SEMILLA: [555557, 555871, 556219, 556459, 556691]
+    MES_TRAIN: [202101,202102] 
     MES_VALIDACION: 202103
     MES_TEST: 202104
     GANANCIA_ACIERTO: 780000
     COSTO_ESTIMULO: 20000
-    FINAL_TRAIN: [202101, 202102, 202103, 202104]  
+    FINAL_TRAIN: [202101,202102,202103,202104]  
     FINAL_PREDIC: 202106
-    UMBRAL: 0.04
-                                  
+    UMBRAL: 0.017
+    HYPERPARAM_RANGES:
+        num_leaves:
+            min: 5
+            max: 100
+            type: int
+        learning_rate:
+            min: 0.005
+            max: 0.10
+            type: float
+        min_data_in_leaf:
+            min: 300
+            max: 1200
+            type: int
+        feature_fraction:
+            min: 0.1
+            max: 0.6
+            type: float
+        bagging_fraction:
+            min: 0.2
+            max: 0.6
+            type: float
+

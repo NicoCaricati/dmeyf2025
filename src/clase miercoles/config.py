@@ -23,6 +23,8 @@ try:
         FINAL_TRAIN = _cfg.get("FINAL_TRAIN", [202101, 202102, 202103, 202104])
         FINAL_PREDIC = _cfg.get("FINAL_PREDIC", 202106)
         UMBRAL = _cfg.get("UMBRAL", 0.04)
+        HYPERPARAM_RANGES = _cfg.get("HYPERPARAM_RANGES", {})
+
 
 except Exception as e:
     logger.error(f"Error al cargar el archivo de configuracion: {e}")

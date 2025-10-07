@@ -434,3 +434,34 @@ def generar_ctrx_features(df: pd.DataFrame) -> pd.DataFrame:
     con.close()
     return df_out
 
+def calculate_psi(expected, actual, buckets=10):
+    expected = np.array(expected)
+    actual = np.array(actual)
+    breakpoints = np.percentile(expected, np.linspace(0, 100, buckets + 1))
+
+    def get_counts(data):
+        counts = np.histogram(data, bins=breakpoints)[0]
+        return counts / len(data)
+
+    expected_percents = get_counts(expected)
+    actual_percents = get_counts(actual)
+
+    actual_percents = np.where(actual_percents == 0, 0.0001, actual_percents)
+    expected_percents = np.where(expected_percents == 0, 0.0001, expected_percents)
+
+    psi_values = (expected_percents - actual_percents) * np.log(expected_percents / actual_percents)
+    return np.sum(psi_values)
+
+
+def psi_by_columns(df, cols, fecha_base=202104, fecha_prod=202106, fotomes_col="fotomes"):
+    results = {}
+    for col in cols:
+        base = df.loc[df[fotomes_col] == fecha_base, col].dropna()
+        prod = df.loc[df[fotomes_col] == fecha_prod, col].dropna()
+        if len(base) > 0 and len(prod) > 0:
+            results[col] = calculate_psi(base, prod)
+        else:
+            results[col] = None
+    return pd.Series(results, name="PSI")
+
+

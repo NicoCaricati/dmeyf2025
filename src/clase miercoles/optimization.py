@@ -7,7 +7,7 @@ import json
 import os
 from datetime import datetime
 from config import *
-from gain_function import calcular_ganancia, ganancia_lgb_binary
+from gain_function import calcular_ganancia, ganancia_lgb_binary, ganancia_evaluator
 
 logger = logging.getLogger(__name__)
 
@@ -50,29 +50,39 @@ def objetivo_ganancia(trial, df) -> float:
     lgb_train = lgb.Dataset(X_train, label=y_train)
     lgb_val = lgb.Dataset(X_val, label=y_val, reference=lgb_train)
 
-    num_leaves = trial.suggest_int('num_leaves', 5, 70)
-    learning_rate = trial.suggest_float('learning_rate', 0.005, 0.15)  # más bajo, más iteraciones
-    min_data_in_leaf = trial.suggest_int('min_data_in_leaf', 300, 1000)
-    feature_fraction = trial.suggest_float('feature_fraction', 0.2, 0.8)
-    bagging_fraction = trial.suggest_float('bagging_fraction', 0.5, 1.0)
     
+    # Valores por defecto (fallback)
+    DEFAULT_HYPERPARAMS = {
+    "num_leaves":      {"min": 5, "max": 50, "type": "int"},
+    "learning_rate":   {"min": 0.005, "max": 0.10, "type": "float"},
+    "min_data_in_leaf":{"min": 300, "max": 800, "type": "int"},
+    "feature_fraction":{"min": 0.1, "max": 0.8, "type": "float"},
+    "bagging_fraction":{"min": 0.2, "max": 0.8, "type": "float"},
+    }
+
+    # Merge entre lo que viene del YAML y los defaults
+    PARAM_RANGES = {**DEFAULT_HYPERPARAMS, **HYPERPARAM_RANGES}
 
     params = {
-    'objective': 'binary',
-    'metric': 'custom',
-    'boosting_type': 'gbdt',
-    'first_metric_only': True,
-    'boost_from_average': True,
-    'feature_pre_filter': False,
-    'max_bin': 31,
-    'num_leaves': num_leaves,
-    'learning_rate': learning_rate,
-    'min_data_in_leaf': min_data_in_leaf,
-    'feature_fraction': feature_fraction,
-    'bagging_fraction': bagging_fraction,
-    'seed': semillas[0],
-    'verbose': -1
-    }   
+        'objective': 'binary',
+        'metric': 'custom',
+        'boosting_type': 'gbdt',
+        'first_metric_only': True,
+        'boost_from_average': True,
+        'feature_pre_filter': False,
+        'max_bin': 31,
+        'seed': semillas[0],
+        'verbose': -1,
+    }
+
+    # usar los rangos de PARAM_RANGES
+    for hp, cfg in PARAM_RANGES.items():
+        if cfg["type"] == "int":
+            params[hp] = trial.suggest_int(hp, cfg["min"], cfg["max"])
+        elif cfg["type"] == "float":
+            params[hp] = trial.suggest_float(hp, cfg["min"], cfg["max"])
+        else:
+            raise ValueError(f"Tipo de hiperparámetro no soportado: {cfg['type']}")
 
 
 
@@ -82,7 +92,7 @@ def objetivo_ganancia(trial, df) -> float:
         lgb_train,
         valid_sets=[lgb_train, lgb_val],
         valid_names=['train', 'valid'],
-        feval=ganancia_lgb_binary,
+        feval=ganancia_evaluator,
         num_boost_round=1000,
         callbacks=[
         lgb.early_stopping(stopping_rounds=50),
@@ -105,6 +115,158 @@ def objetivo_ganancia(trial, df) -> float:
     logger.debug(f"Trial {trial.number}: Ganancia = {ganancia_total:,.0f}")
 
     return ganancia_total
+
+
+
+def objetivo_ganancia_cv(trial, df) -> float:
+    """
+    Función objetivo para Optuna: maximiza ganancia en mes de validación.
+    - Usa configuración YAML para períodos y semilla.
+    - Define parámetros de LightGBM con rangos de YAML (con fallback).
+    - Entrena modelo con métrica de ganancia personalizada.
+    """
+
+    # Configuración desde YAML
+    semillas = SEMILLA
+    mes_train = MES_TRAIN
+    mes_validacion = MES_VALIDACION
+
+    # Dividir datos
+    df_train = df[df['foto_mes'].isin(mes_train + [mes_validacion])]
+
+
+    X_train = df_train.drop(columns=['target', 'foto_mes', 'numero_de_cliente'])
+    y_train = df_train['target']
+
+    # Datasets de LightGBM
+    lgb_train = lgb.Dataset(X_train, label=y_train)
+
+    # Defaults por si no están en el YAML
+    DEFAULT_HYPERPARAMS = {
+        "num_leaves":      {"min": 5, "max": 50, "type": "int"},
+        "learning_rate":   {"min": 0.005, "max": 0.10, "type": "float"},
+        "min_data_in_leaf":{"min": 300, "max": 800, "type": "int"},
+        "feature_fraction":{"min": 0.1, "max": 0.8, "type": "float"},
+        "bagging_fraction":{"min": 0.2, "max": 0.8, "type": "float"},
+        
+    }
+
+    # Merge YAML + defaults
+    PARAM_RANGES = {**DEFAULT_HYPERPARAMS, **HYPERPARAM_RANGES}
+
+    # Parámetros base de LightGBM
+    params = {
+        'objective': 'binary',
+        'metric': 'custom',
+        'boosting_type': 'gbdt',
+        'first_metric_only': True,
+        'boost_from_average': True,
+        'feature_pre_filter': False,
+        'max_bin': 31,
+        'seed': semillas[0],
+        'verbose': -1
+    }
+
+    # Agregar hiperparámetros desde YAML/defaults
+    for hp, cfg in PARAM_RANGES.items():
+        if cfg["type"] == "int":
+            params[hp] = trial.suggest_int(hp, cfg["min"], cfg["max"])
+        elif cfg["type"] == "float":
+            params[hp] = trial.suggest_float(hp, cfg["min"], cfg["max"])
+        else:
+            raise ValueError(f"Tipo de hiperparámetro no soportado: {cfg['type']}")
+
+    # Entrenamiento con función de ganancia personalizada
+    cv_results = lgb.cv(
+        params,
+        lgb_train,
+        feval=ganancia_evaluator,
+        nfold=5,
+        stratified=True,
+        shuffle=True,
+        num_boost_round=1000,
+        seed= SEMILLA[0],
+        callbacks=[
+            lgb.early_stopping(stopping_rounds=25),
+            lgb.log_evaluation(period=25)
+        ],
+    )
+    
+    print(cv_results.keys())
+
+
+    # Extraer resultados de CV
+    
+    # To get the best mean gain:
+    ganancias_cv = cv_results['valid ganancia-mean']
+    if not isinstance(ganancias_cv, list):
+        ganancias_cv = list(ganancias_cv)
+    ganancia_maxima = max(ganancias_cv)
+    best_iteration = len(ganancias_cv) - 1
+    
+    # Loggers debug
+    logger.debug(f"Trial {trial.number}: Ganancia CV: {ganancia_maxima:,.0f}")
+    logger.debug(f"Trial {trial.number}: Mejor Iteracion: {best_iteration}")
+
+    guardar_iteracion_cv(trial,ganancia_maxima,ganancias_cv)
+
+    return ganancia_maxima
+
+def guardar_iteracion_cv(trial, ganancia_maxima, ganancias_cv, archivo_base=None):
+    """
+    Guarda cada iteración de la optimización en un único archivo JSON.
+  
+    Args:
+        trial: Trial de Optuna
+        ganancia: Valor de ganancia obtenido
+        archivo_base: Nombre base del archivo (si es None, usa el de config.yaml)
+    """
+    if archivo_base is None:
+        archivo_base = STUDY_NAME
+  
+    # Nombre del archivo único para todas las iteraciones
+    archivo = f"resultados/{archivo_base}_iteraciones.json"
+  
+    # Datos de esta iteración
+    iteracion_data = {
+        'trial_number': trial.number,
+        'params': trial.params,
+        'value': float(ganancia_maxima),
+        'datetime': datetime.now().isoformat(),
+        'state': 'COMPLETE',  # Si llegamos aquí, el trial se completó exitosamente
+        'configuracion': {
+            'semilla': SEMILLA,
+            'mes_train': MES_TRAIN,
+            'mes_validacion': MES_VALIDACION
+        }
+    }
+  
+    # Cargar datos existentes si el archivo ya existe
+    if os.path.exists(archivo):
+        with open(archivo, 'r') as f:
+            try:
+                datos_existentes = json.load(f)
+                if not isinstance(datos_existentes, list):
+                    datos_existentes = []
+            except json.JSONDecodeError:
+                datos_existentes = []
+    else:
+        datos_existentes = []
+  
+    # Agregar nueva iteración
+    datos_existentes.append(iteracion_data)
+  
+    # Guardar todas las iteraciones en el archivo
+    with open(archivo, 'w') as f:
+        json.dump(datos_existentes, f, indent=2)
+  
+    logger.info(f"Iteración {trial.number} guardada en {archivo}")
+    logger.info(f"Ganancia: {ganancia_maxima:,.0f}" + "---" + "Parámetros: {params}")
+
+
+
+
+
 
 
 ### Guardar Iteracion
@@ -209,95 +371,51 @@ def optimizar(df, n_trials=30) -> optuna.Study:
     return study
 
 
-def evaluar_en_test(df, mejores_params) -> dict:
+
+
+### Optimizar
+
+def optimizar_con_cv(df, n_trials=50) -> optuna.Study:
     """
-    Evalúa el modelo con los mejores hiperparámetros en el conjunto de test.
-    Solo calcula la ganancia, sin usar sklearn.
-  
-    Args:
-        df: DataFrame con todos los datos
-        mejores_params: Mejores hiperparámetros encontrados por Optuna
-  
-    Returns:
-        dict: Resultados de la evaluación en test (ganancia + estadísticas básicas)
+    Ejecuta optimización bayesiana con Cross Validation usando Optuna.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        Dataframe con los datos (incluye target y foto_mes).
+    n_trials : int, default=50
+        Número de pruebas/iteraciones que ejecutará Optuna.
+
+    Returns
+    -------
+    optuna.Study
+        Objeto Study de Optuna con los resultados de la optimización.
     """
-    logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
-    logger.info(f"Período de test: {MES_TEST}")
-  
-    # Preparar datos de entrenamiento (TRAIN + VALIDACION)
-    if isinstance(MES_TRAIN, list):
-        periodos_entrenamiento = MES_TRAIN + [MES_VALIDACION]
-    else:
-        periodos_entrenamiento = [MES_TRAIN, MES_VALIDACION]
-  
-    df_train_completo = df[df['foto_mes'].isin(periodos_entrenamiento)]
 
-    df_test = df[df['foto_mes'] == MES_TEST]
-    y_test = df_test['target']
-    X_test = df_test.drop(columns=['target', 'foto_mes', 'numero_de_cliente'])
-    X_train = df_train_completo.drop(columns=['target', 'foto_mes', 'numero_de_cliente'])
-    y_train = df_train_completo['target']
+    study_name = STUDY_NAME
 
-    # Defino el modelo con los mejores hiperparametros para evaluar en test
-    params = mejores_params.copy()
-    params.update({
-        'objective': 'binary',
-        'metric': 'custom',
-        'boosting_type': 'gbdt',
-        'first_metric_only': True,
-        'boost_from_average': True,
-        'feature_pre_filter': False,
-        'max_bin': 31,
-        'seed': SEMILLA[0],
-        'verbose': -1
-    })
-
-    lgb_train = lgb.Dataset(X_train, label=y_train)
-
-    gbm = lgb.train(
-        params,
-        lgb_train,
-        num_boost_round=1000,
-        feval=ganancia_lgb_binary,
-        callbacks=[
-            lgb.log_evaluation(period=50)
-        ],
+    logger.info(f"Iniciando optimización con CV = {n_trials} trials")
+    logger.info(
+        f"Configuración CV: periodos = {MES_TRAIN + [MES_VALIDACION] if isinstance(MES_TRAIN, list) else [MES_TRAIN, MES_VALIDACION]}"
     )
 
-    # Predecir en conjunto de test
-    y_pred = gbm.predict(X_test, num_iteration=gbm.best_iteration)
-    y_pred_binary = (y_pred > UMBRAL).astype(int)
+    # Crear estudio de Optuna
+    study = optuna.create_study(
+        direction="maximize",
+        study_name=study_name,
+        sampler=optuna.samplers.TPESampler(seed=SEMILLA[0]),
+    )
 
-    # Calcular solo la ganancia
-    ganancia_test = calcular_ganancia(y_test, y_pred_binary)
-  
-    # Estadísticas básicas
-    total_predicciones = len(y_pred_binary)
-    predicciones_positivas = np.sum(y_pred_binary == 1)
-    porcentaje_positivas = (predicciones_positivas / total_predicciones) * 100
-  
-    resultados = {
-        'ganancia_test': float(ganancia_test),
-        'total_predicciones': int(total_predicciones),
-        'predicciones_positivas': int(predicciones_positivas),
-        'porcentaje_positivas': float(porcentaje_positivas)
-    }
-  
-    return resultados
+    # Ejecutar optimización
+    study.optimize(
+        lambda trial: objetivo_ganancia_cv(trial, df),
+        n_trials=n_trials,
+    )
 
-def guardar_resultados_test(resultados_test, archivo_base=None):
-    """
-    Guarda los resultados de la evaluación en test en un archivo JSON.
-    """
-    # Guarda en resultados/{STUDY_NAME}_test_results.json
-    # ... Implementar utilizando la misma logica que cuando guardamos una iteracion de la Bayesian Optimization
-    if archivo_base is None:
-        archivo_base = STUDY_NAME
-    
-    archivo = f"resultados/{archivo_base}_test_results.json"
-    with open(archivo, 'w') as f:
-        json.dump(resultados_test, f, indent=2)
-    logger.info(f"Resultados de test guardados en {archivo}")
+    # Resultados
+    logger.info("Optimización con CV completada")
+    logger.info(f"Mejor ganancia promedio: {study.best_value:,.0f}")
+    logger.info(f"Mejores parámetros: {study.best_params}")
+    logger.info(f"Total trials: {len(study.trials)}")
 
-
-
+    return study

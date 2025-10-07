@@ -4,9 +4,9 @@ import numpy as np
 import logging
 import os
 from datetime import datetime
-from config import FINAL_TRAIN, FINAL_PREDIC, SEMILLA
+from config import FINAL_TRAIN, FINAL_PREDIC, SEMILLA, STUDY_NAME, UMBRAL
 from best_params import cargar_mejores_hiperparametros
-from gain_function import ganancia_lgb_binary
+from gain_function import ganancia_lgb_binary, ganancia_evaluator
 
 logger = logging.getLogger(__name__)
 
@@ -34,14 +34,14 @@ def preparar_datos_entrenamiento_final(df: pd.DataFrame) -> tuple:
     #Corroborar que no esten vacios los df
 
     # Preparar features y target para entrenamiento
-    df_entrenamiento_final = pd.read_csv("data/competencia_fe_.csv")
+    df_entrenamiento_final = df
     df_train = df_entrenamiento_final[df_entrenamiento_final['foto_mes'].isin(FINAL_TRAIN)]
     df_predict = df_entrenamiento_final[df_entrenamiento_final['foto_mes'] == FINAL_PREDIC]
     #filtro los meses de train para entrenar el modelo final, y predigo en test
     y_train = df_train['target']
-    X_train = df_train.drop(columns=['target', 'foto_mes'])
+    X_train = df_train.drop(columns=['target'])
     y_predict = df_predict['target']
-    X_predict = df_predict.drop(columns=['target', 'foto_mes'])
+    X_predict = df_predict.drop(columns=['target'])
 
     # Preparar features para predicción
     clientes_predict = df_predict['numero_de_cliente'].values
@@ -90,7 +90,7 @@ def entrenar_modelo_final(X_train: pd.DataFrame, y_train: pd.Series, mejores_par
         callbacks=[
         lgb.early_stopping(stopping_rounds=30),
         lgb.log_evaluation(period=30)], 
-        feval=ganancia_lgb_binary
+        feval=ganancia_evaluator
     )
     return modelo
 
@@ -147,23 +147,16 @@ def feature_importance(modelo: lgb.Booster, max_num_features: int = 1000):
     import matplotlib.pyplot as plt
   
     # Obtener importancia de features
-    importance = modelo.feature_importance(importance_type='gain')
+    importance_gain = modelo.feature_importance(importance_type='gain')
+    importance_split = modelo.feature_importance(importance_type='split')
     feature_names = modelo.feature_name()
   
     # Crear DataFrame para visualización
     feat_imp_df = pd.DataFrame({
         'feature': feature_names,
-        'importance': importance
-    }).sort_values(by='importance', ascending=False).head(max_num_features)
+        'importance_gain': importance_gain,
+        'importance_split': importance_split
+    }).sort_values(by='importance_gain', ascending=False).head(max_num_features)
     
-    feat_imp_df.to_csv("data/feature_importance.csv", index=False)
-    logger.info(f"Importancia de las primeras {max_num_features} variables guardada en 'data/feature_importance.csv'")
-    # Graficar importancia de features
-    plt.figure(figsize=(10, 6))
-    plt.barh(feat_imp_df['feature'], feat_imp_df['importance'], color='skyblue')
-    plt.xlabel('Importancia (Gain)')
-    plt.title('Importancia de Variables - Modelo Final')
-    plt.gca().invert_yaxis()  # Invertir eje y para mostrar la más importante arriba
-    plt.show()
-
-
+    feat_imp_df.to_csv("feature_importance/feature_importance_{STUDY_NAME}.csv", index=False)
+    logger.info(f"Importancia de las primeras {max_num_features} variables guardada en 'feature_importance/feature_importance_{STUDY_NAME}.csv'")

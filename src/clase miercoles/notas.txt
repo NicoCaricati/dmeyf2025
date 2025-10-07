@@ -13,3 +13,13 @@
 
 
 
+ Cosas a probar
+ Dado un modelo, correr el umbral hasta 10/10.5K mejora el score en Kaggle
+ Hiperparametro para hacer para rapido el modelo
+ Opti con toda la muestra, o toda la muestra en solo un mes
+Notebook para analizar las corridas (json)
+Graficos copados para ver ganancias
+
+
+
+

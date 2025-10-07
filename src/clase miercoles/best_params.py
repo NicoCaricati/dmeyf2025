@@ -16,6 +16,8 @@ def cargar_mejores_hiperparametros(archivo_base: str = None) -> dict:
     """
     if archivo_base is None:
         archivo_base = STUDY_NAME
+        
+    logger.info("Cargando el json con los mejores hiperparametros")
   
     archivo = f"resultados/{archivo_base}_iteraciones.json"
   

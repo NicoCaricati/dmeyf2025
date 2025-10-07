@@ -1,7 +1,8 @@
 import numpy as np
 import pandas as pd
-from config import GANANCIA_ACIERTO, COSTO_ESTIMULO, UMBRAL
+from config import *
 import logging
+import polars as pl
 
 logger = logging.getLogger(__name__)
 
@@ -60,3 +61,61 @@ def ganancia_lgb_binary(y_pred, y_true):
   
     # Retornar en formato esperado por LightGBM
     return 'ganancia', ganancia_total, True  # True = higher is better
+
+
+def ganancia_evaluator(y_pred, y_true) -> float:
+    """
+    Calcula la ganancia máxima acumulada de un modelo binario en base a
+    probabilidades predichas y valores verdaderos.
+    Compatible tanto con uso interno en LightGBM (feval) como externo (post-test).
+
+    Parameters
+    ----------
+    y_pred : array-like
+        Probabilidades predichas por el modelo (LightGBM pasa este vector).
+    y_true : array-like o lightgbm.Dataset
+        Etiquetas verdaderas. Si es un Dataset de LightGBM, se accede con .get_label().
+
+    Returns
+    -------
+    tuple o float
+        - En contexto LightGBM: ('ganancia', valor, True)
+        - En contexto externo: valor numérico de la ganancia máxima
+    """
+
+    # Permitir uso interno y externo
+    is_lightgbm = hasattr(y_true, "get_label")
+    if is_lightgbm:
+        y_true = y_true.get_label()
+
+    # Convertir a dataframe de Polars
+    df_eval = pl.DataFrame({
+        "y_true": y_true,
+        "y_pred_proba": y_pred
+    })
+
+    # Ordenar por probabilidad descendente
+    df_ordenado = df_eval.sort("y_pred_proba", descending=True)
+
+    # Calcular ganancia individual
+    df_ordenado = df_ordenado.with_columns([
+        pl.when(pl.col("y_true") == 1)
+        .then(GANANCIA_ACIERTO)
+        .otherwise(-COSTO_ESTIMULO)
+        .alias("ganancia_individual")
+    ])
+
+    # Ganancia acumulada
+    df_ordenado = df_ordenado.with_columns([
+        pl.col("ganancia_individual").cum_sum().alias("ganancia_acumulada")
+    ])
+
+    # Ganancia máxima alcanzada
+    ganancia_maxima = df_ordenado["ganancia_acumulada"].max()
+
+    # Si se usa en LightGBM, devolver en formato feval
+    if is_lightgbm:
+        return ('ganancia', ganancia_maxima, True)
+    else:
+        return ganancia_maxima
+
