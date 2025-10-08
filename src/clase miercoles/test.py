@@ -60,7 +60,6 @@ def evaluar_en_test(df, mejores_params) -> dict:
     gbm = lgb.train(
         params,
         lgb_train,
-        num_boost_round=1000,
         feval=ganancia_evaluator,
         callbacks=[
             lgb.log_evaluation(period=50)
@@ -206,11 +205,101 @@ def registrar_resultados_modelo(modelo_nombre, ganancias, csv_path="resultados/c
 
 
 
+# def evaluar_en_test_v2(df, mejores_params) -> dict:
+#     """
+#     Evalúa el modelo con los mejores hiperparámetros en el conjunto de test,
+#     entrenando con todas las semillas definidas en config.py y generando
+#     el gráfico de ganancia avanzada promedio.
+
+#     Args:
+#         df: DataFrame con todos los datos.
+#         mejores_params: Mejores hiperparámetros encontrados por Optuna.
+
+#     Returns:
+#         dict: Resultados consolidados (media y desvío de la ganancia, etc.)
+#     """
+#     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
+#     logger.info(f"Período de test: {MES_TEST}")
+#     logger.info(f"Usando semillas: {SEMILLA}")
+
+#     # Preparar datos
+#     if isinstance(MES_TRAIN, list):
+#         periodos_entrenamiento = MES_TRAIN + [MES_VALIDACION]
+#     else:
+#         periodos_entrenamiento = [MES_TRAIN, MES_VALIDACION]
+
+#     df_train_completo = df[df['foto_mes'].isin(periodos_entrenamiento)]
+#     df_test = df[df['foto_mes'] == MES_TEST]
+
+#     X_train = df_train_completo.drop(columns=['target'])
+#     y_train = df_train_completo['target']
+#     X_test = df_test.drop(columns=['target'])
+#     y_test = df_test['target']
+
+#     # Para guardar resultados de todas las semillas
+#     resultados_semillas = []
+#     predicciones_acumuladas = np.zeros(len(X_test))
+
+#     for i, seed in enumerate(SEMILLA):
+#         logger.info(f"Entrenando modelo con semilla {seed} ({i+1}/{len(SEMILLA)})")
+
+#         params = mejores_params.copy()
+#         params.update({
+#             'objective': 'binary',
+#             'metric': 'custom',
+#             'boosting_type': 'gbdt',
+#             'first_metric_only': True,
+#             'boost_from_average': True,
+#             'feature_pre_filter': False,
+#             'max_bin': 31,
+#             'seed': seed,
+#             'verbose': -1
+#         })
+
+#         lgb_train = lgb.Dataset(X_train, label=y_train)
+
+#         gbm = lgb.train(
+#             params,
+#             lgb_train,
+#             feval=ganancia_evaluator,
+#             callbacks=[lgb.log_evaluation(period=100)],
+#         )
+
+#         # Predicción con esta semilla
+#         y_pred_proba = gbm.predict(X_test, num_iteration=gbm.best_iteration)
+#         predicciones_acumuladas += y_pred_proba / len(SEMILLA)  # promedio de predicciones
+
+#         # Ganancia binaria individual
+#         y_pred_binaria = (y_pred_proba > UMBRAL).astype(int)
+#         ganancia = calcular_ganancia(y_test, y_pred_binaria)
+#         resultados_semillas.append(ganancia)
+#         logger.info(f"Ganancia con semilla {seed}: {ganancia:,.2f}")
+
+#     # Promedio de ganancias
+#     ganancia_media = np.mean(resultados_semillas)
+#     ganancia_std = np.std(resultados_semillas)
+
+#     logger.info(f"Ganancia media (test): {ganancia_media:,.2f} ± {ganancia_std:,.2f}")
+
+#     # Generar gráfico avanzado usando el promedio de predicciones
+#     titulo = f"Ganancia promedio ({len(SEMILLA)} semillas)"
+#     ruta_ganancia = crear_grafico_ganancia_avanzado(y_test, predicciones_acumuladas, titulo)
+
+#     resultados = {
+#         'ganancia_media': float(ganancia_media),
+#         'ganancia_std': float(ganancia_std),
+#         'ganancias_por_semilla': [float(g) for g in resultados_semillas],
+#         'grafico_ganancia': ruta_ganancia
+#     }
+
+#     return resultados
+
+
 def evaluar_en_test_v2(df, mejores_params) -> dict:
     """
     Evalúa el modelo con los mejores hiperparámetros en el conjunto de test,
     entrenando con todas las semillas definidas en config.py y generando
-    el gráfico de ganancia avanzada promedio.
+    el gráfico de ganancia avanzada de cada semilla.
 
     Args:
         df: DataFrame con todos los datos.
@@ -223,7 +312,7 @@ def evaluar_en_test_v2(df, mejores_params) -> dict:
     logger.info(f"Período de test: {MES_TEST}")
     logger.info(f"Usando semillas: {SEMILLA}")
 
-    # Preparar datos
+    # --- Preparar datos ---
     if isinstance(MES_TRAIN, list):
         periodos_entrenamiento = MES_TRAIN + [MES_VALIDACION]
     else:
@@ -237,9 +326,9 @@ def evaluar_en_test_v2(df, mejores_params) -> dict:
     X_test = df_test.drop(columns=['target'])
     y_test = df_test['target']
 
-    # Para guardar resultados de todas las semillas
+    # --- Variables para resultados ---
     resultados_semillas = []
-    predicciones_acumuladas = np.zeros(len(X_test))
+    predicciones_semillas = []
 
     for i, seed in enumerate(SEMILLA):
         logger.info(f"Entrenando modelo con semilla {seed} ({i+1}/{len(SEMILLA)})")
@@ -262,14 +351,13 @@ def evaluar_en_test_v2(df, mejores_params) -> dict:
         gbm = lgb.train(
             params,
             lgb_train,
-            num_boost_round=1000,
             feval=ganancia_evaluator,
             callbacks=[lgb.log_evaluation(period=100)],
         )
 
         # Predicción con esta semilla
         y_pred_proba = gbm.predict(X_test, num_iteration=gbm.best_iteration)
-        predicciones_acumuladas += y_pred_proba / len(SEMILLA)  # promedio de predicciones
+        predicciones_semillas.append(y_pred_proba)
 
         # Ganancia binaria individual
         y_pred_binaria = (y_pred_proba > UMBRAL).astype(int)
@@ -277,21 +365,63 @@ def evaluar_en_test_v2(df, mejores_params) -> dict:
         resultados_semillas.append(ganancia)
         logger.info(f"Ganancia con semilla {seed}: {ganancia:,.2f}")
 
-    # Promedio de ganancias
+    # --- Promedio de ganancias ---
     ganancia_media = np.mean(resultados_semillas)
     ganancia_std = np.std(resultados_semillas)
-
     logger.info(f"Ganancia media (test): {ganancia_media:,.2f} ± {ganancia_std:,.2f}")
 
-    # Generar gráfico avanzado usando el promedio de predicciones
-    titulo = f"Ganancia promedio ({len(SEMILLA)} semillas)"
-    ruta_ganancia = crear_grafico_ganancia_avanzado(y_test, predicciones_acumuladas, titulo)
+    # --- Gráfico con todas las semillas ---
+    import matplotlib.pyplot as plt
+    plt.figure(figsize=(10, 6))
+    for i, (seed, y_pred_proba) in enumerate(zip(SEMILLA, predicciones_semillas)):
+        # La función crear_grafico_ganancia_avanzado devuelve (xs, ys) si la adaptás
+        xs, ys = obtener_curva_ganancia(y_test, y_pred_proba)  # función auxiliar
+        plt.plot(xs, ys, label=f"Semilla {seed}", alpha=0.8)
+
+    plt.title(f"Curvas de ganancia por semilla ({len(SEMILLA)} semillas)")
+    plt.xlabel("Cantidad de clientes contactados")
+    plt.ylabel("Ganancia acumulada")
+    plt.legend()
+    plt.grid(True)
+    ruta_grafico = f"ganancia_semillas_{MES_TEST}.png"
+    plt.savefig(ruta_grafico, bbox_inches="tight")
+    plt.close()
 
     resultados = {
         'ganancia_media': float(ganancia_media),
         'ganancia_std': float(ganancia_std),
         'ganancias_por_semilla': [float(g) for g in resultados_semillas],
-        'grafico_ganancia': ruta_ganancia
+        'grafico_ganancia': ruta_grafico
     }
 
     return resultados
+
+
+
+def obtener_curva_ganancia(y_true, y_pred_proba):
+    """
+    Calcula la curva de ganancia acumulada a partir de predicciones probabilísticas.
+    
+    Args:
+        y_true: array-like, valores reales (0/1)
+        y_pred_proba: array-like, probabilidades predichas
+    
+    Returns:
+        xs: número acumulado de clientes contactados (ordenados por probabilidad descendente)
+        ys: ganancia acumulada correspondiente
+    """
+    import numpy as np
+
+    # Ordenar por probabilidad descendente
+    orden = np.argsort(-y_pred_proba)
+    y_true_sorted = y_true.iloc[orden] if hasattr(y_true, "iloc") else y_true[orden]
+
+    # Ganancia acumulada: 1 cliente bueno = +$1, 1 cliente malo = -$10 (ejemplo, adaptá a tu cálculo real)
+    ganancia_unitaria = np.where(y_true_sorted == 1, 1, -10)
+    ganancia_acumulada = np.cumsum(ganancia_unitaria)
+
+    # Eje X: número de clientes contactados
+    xs = np.arange(1, len(y_true_sorted) + 1)
+    ys = ganancia_acumulada
+
+    return xs, ys

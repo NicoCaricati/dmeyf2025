@@ -338,14 +338,10 @@ def feature_engineering_ratio(df: pd.DataFrame, columnas: list[str]) -> pd.DataF
         if numerador in df.columns and denominador in df.columns:
             col_name = f"ratio_{numerador}_{denominador}"
             df[col_name] = df[numerador] / df[denominador].replace(0, np.nan)
-            logger.info(f"Columna creada: {col_name}")
 
             col_name_inv = f"ratio_{denominador}_{numerador}"
             df[col_name_inv] = df[denominador] / df[numerador].replace(0, np.nan)
-            logger.info(f"Columna creada: {col_name_inv}")
-        else:
-            logger.warning(f"Columna {numerador} o {denominador} no encontrada en el DataFrame")
-
+        
     logger.info(f"Feature engineering de ratios completado. DataFrame ahora tiene {df.shape[1]} columnas y {df.shape[0]} filas")
     return df
 

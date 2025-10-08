@@ -4,7 +4,7 @@ import numpy as np
 import logging
 import os
 from datetime import datetime
-from config import FINAL_TRAIN, FINAL_PREDIC, SEMILLA, STUDY_NAME, UMBRAL
+from config import FINAL_TRAIN, FINAL_PREDIC, SEMILLA, STUDY_NAME
 from best_params import cargar_mejores_hiperparametros
 from gain_function import ganancia_lgb_binary, ganancia_evaluator
 
@@ -85,55 +85,120 @@ def entrenar_modelo_final(X_train: pd.DataFrame, y_train: pd.Series, mejores_par
     modelo = lgb.train(
         params,
         lgb_train,
-        num_boost_round=1000,
         valid_sets=[lgb_train],
         callbacks=[
-        lgb.early_stopping(stopping_rounds=30),
-        lgb.log_evaluation(period=30)], 
+        lgb.early_stopping(stopping_rounds=100),
+        lgb.log_evaluation(period=100)], 
         feval=ganancia_evaluator
     )
     return modelo
 
-def generar_predicciones_finales(modelo: lgb.Booster, X_predict: pd.DataFrame, clientes_predict: np.ndarray, umbral: float = 0.04) -> pd.DataFrame:
-    """
-    Genera las predicciones finales para el período objetivo.
+# def generar_predicciones_finales(modelo: lgb.Booster, X_predict: pd.DataFrame, clientes_predict: np.ndarray, umbral: float = 0.04) -> pd.DataFrame:
+#     """
+#     Genera las predicciones finales para el período objetivo.
   
+#     Args:
+#         modelo: Modelo entrenado
+#         X_predict: Features para predicción
+#         clientes_predict: IDs de clientes
+#         umbral: Umbral para clasificación binaria
+  
+#     Returns:
+#         pd.DataFrame: DataFrame con numero_cliente y predict
+#     """
+#     logger.info("Generando predicciones finales")
+  
+#     # Generar probabilidades con el modelo entrenado
+#     y_pred = modelo.predict(X_predict, num_iteration=modelo.best_iteration)
+
+#     # Convertir a predicciones binarias con el umbral establecido
+#     y_pred_binary = (y_pred > umbral).astype(int)
+
+#     # Crear DataFrame de 'resultados' con nombres de atributos que pide kaggle
+#     resultados = pd.DataFrame({
+#         'numero_de_cliente': clientes_predict,
+#         'predict': y_pred_binary
+#     })
+
+#     # Estadísticas de predicciones
+#     total_predicciones = len(resultados)
+#     predicciones_positivas = (resultados['predict'] == 1).sum()
+#     porcentaje_positivas = (predicciones_positivas / total_predicciones) * 100
+
+#     feature_importance(modelo)
+  
+#     logger.info(f"Predicciones generadas:")
+#     logger.info(f"  Total clientes: {total_predicciones:,}")
+#     logger.info(f"  Predicciones positivas: {predicciones_positivas:,} ({porcentaje_positivas:.2f}%)")
+#     logger.info(f"  Predicciones negativas: {total_predicciones - predicciones_positivas:,}")
+#     logger.info(f"  Umbral utilizado: {umbral}")
+  
+#     return resultados
+
+def generar_predicciones_finales(
+    modelo: lgb.Booster,
+    X_predict: pd.DataFrame,
+    clientes_predict: np.ndarray,
+    umbral: float = 0.04,
+    top_k: int = 10000
+) -> dict:
+    """
+    Genera las predicciones finales para el período objetivo, tanto con umbral como con top_k.
+
     Args:
         modelo: Modelo entrenado
         X_predict: Features para predicción
         clientes_predict: IDs de clientes
         umbral: Umbral para clasificación binaria
-  
+        top_k: Cantidad de clientes con mayor probabilidad a seleccionar (opcional)
+
     Returns:
-        pd.DataFrame: DataFrame con numero_cliente y predict
+        dict: {'umbral': DataFrame, 'top_k': DataFrame (si aplica)}
     """
     logger.info("Generando predicciones finales")
-  
+
     # Generar probabilidades con el modelo entrenado
     y_pred = modelo.predict(X_predict, num_iteration=modelo.best_iteration)
 
-    # Convertir a predicciones binarias con el umbral establecido
+    # --- Predicciones con umbral ---
     y_pred_binary = (y_pred > umbral).astype(int)
-
-    # Crear DataFrame de 'resultados' con nombres de atributos que pide kaggle
-    resultados = pd.DataFrame({
+    resultados_umbral = pd.DataFrame({
         'numero_de_cliente': clientes_predict,
-        'predict': y_pred_binary
+        'predict': y_pred_binary,
+        'probabilidad': y_pred
     })
 
-    # Estadísticas de predicciones
-    total_predicciones = len(resultados)
-    predicciones_positivas = (resultados['predict'] == 1).sum()
+    total_predicciones = len(resultados_umbral)
+    predicciones_positivas = (resultados_umbral['predict'] == 1).sum()
     porcentaje_positivas = (predicciones_positivas / total_predicciones) * 100
 
     feature_importance(modelo)
-  
-    logger.info(f"Predicciones generadas:")
+
+    logger.info(f"Predicciones con umbral generadas:")
     logger.info(f"  Total clientes: {total_predicciones:,}")
-    logger.info(f"  Predicciones positivas: {predicciones_positivas:,} ({porcentaje_positivas:.2f}%)")
-    logger.info(f"  Predicciones negativas: {total_predicciones - predicciones_positivas:,}")
+    logger.info(f"  Positivas: {predicciones_positivas:,} ({porcentaje_positivas:.2f}%)")
     logger.info(f"  Umbral utilizado: {umbral}")
-  
+
+    resultados = {'umbral': resultados_umbral[['numero_de_cliente', 'predict']]}
+
+    # --- Predicciones con top_k ---
+    if top_k is not None:
+        logger.info(f"Generando predicciones con top_k={top_k:,}")
+        df_topk = pd.DataFrame({
+            'numero_de_cliente': clientes_predict,
+            'probabilidad': y_pred
+        }).sort_values('probabilidad', ascending=False)
+
+        df_topk['predict'] = 0
+        df_topk.iloc[:top_k, df_topk.columns.get_loc('predict')] = 1
+
+
+        resultados['top_k'] = df_topk[['numero_de_cliente', 'predict']]
+
+        logger.info(f"  Predicciones top_k generadas (K={top_k:,})")
+        logger.info(f"  Máxima probabilidad: {df_topk['probabilidad'].iloc[0]:.4f}")
+        logger.info(f"  Mínima probabilidad dentro del top_k: {df_topk['probabilidad'].iloc[top_k - 1]:.4f}")
+
     return resultados
 
 def feature_importance(modelo: lgb.Booster, max_num_features: int = 1000):
@@ -145,7 +210,7 @@ def feature_importance(modelo: lgb.Booster, max_num_features: int = 1000):
         max_num_features: Número máximo de features a mostrar
     """
     import matplotlib.pyplot as plt
-  
+    fecha = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     # Obtener importancia de features
     importance_gain = modelo.feature_importance(importance_type='gain')
     importance_split = modelo.feature_importance(importance_type='split')
@@ -156,7 +221,7 @@ def feature_importance(modelo: lgb.Booster, max_num_features: int = 1000):
         'feature': feature_names,
         'importance_gain': importance_gain,
         'importance_split': importance_split
-    }).sort_values(by='importance_gain', ascending=False).head(max_num_features)
+    }).sort_values(by='importance_gain', ascending=False)
     
-    feat_imp_df.to_csv("feature_importance/feature_importance_{STUDY_NAME}.csv", index=False)
+    feat_imp_df.to_csv(f"feature_importance/feature_importance_{STUDY_NAME}_{fecha}.csv", index=False)
     logger.info(f"Importancia de las primeras {max_num_features} variables guardada en 'feature_importance/feature_importance_{STUDY_NAME}.csv'")

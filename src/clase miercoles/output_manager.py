@@ -6,43 +6,32 @@ from config import STUDY_NAME
 
 logger = logging.getLogger(__name__)
 
-def guardar_predicciones_finales(resultados_df: pd.DataFrame, nombre_archivo=None) -> str:
+def guardar_predicciones_finales(resultados_dict: dict, nombre_archivo=None) -> dict:
     """
-    Guarda las predicciones finales en un archivo CSV en la carpeta predict.
-  
+    Guarda los distintos DataFrames de predicción en CSV (umbral, top_k si aplica).
+
     Args:
-        resultados_df: DataFrame con numero_cliente y predict
-        nombre_archivo: Nombre del archivo (si es None, usa STUDY_NAME)
-  
+        resultados_dict: Diccionario con DataFrames ('umbral', 'top_k')
+        nombre_archivo: Nombre base del archivo (si es None, usa STUDY_NAME)
+
     Returns:
-        str: Ruta del archivo guardado
+        dict: {'umbral': ruta_csv, 'top_k': ruta_csv (si aplica)}
     """
-    # Crear carpeta predict si no existe
     os.makedirs("predict", exist_ok=True)
-  
-    # Definir nombre del archivo
     if nombre_archivo is None:
         nombre_archivo = STUDY_NAME
-  
-    # Agregar timestamp para evitar sobrescribir
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    ruta_archivo = f"predict/{nombre_archivo}_{timestamp}.csv"
-  
-    # Validar formato del DataFrame
-  
-    # Validar tipos de datos
-  
-    # Validar valores de predict (deben ser 0 o 1)
 
-  
-    # Guardar archivo
-    resultados_df.to_csv(ruta_archivo, index=False)
-  
-    logger.info(f"Predicciones guardadas en: {ruta_archivo}")
-    logger.info(f"Formato del archivo:")
-    logger.info(f"  Columnas: {list(resultados_df.columns)}")
-    logger.info(f"  Registros: {len(resultados_df):,}")
-    logger.info(f"  Primeras filas:")
-    logger.info(f"{resultados_df.head()}")
-  
-    return ruta_archivo
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    rutas = {}
+
+    for tipo, df in resultados_dict.items():
+        ruta = f"predict/{nombre_archivo}_{tipo}_{timestamp}.csv"
+        df.to_csv(ruta, index=False)
+        rutas[tipo] = ruta
+
+        logger.info(f"Predicciones ({tipo}) guardadas en: {ruta}")
+        logger.info(f"  Columnas: {list(df.columns)}")
+        logger.info(f"  Registros: {len(df):,}")
+        logger.info(f"  Primeras filas:\n{df.head()}")
+
+    return rutas

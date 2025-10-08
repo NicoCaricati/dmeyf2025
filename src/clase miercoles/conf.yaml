@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "Paso a clase ternaria BAJA+1 y BAJA+2"
+STUDY_NAME : "Going Back to BM - Removing 0 FE Vars"
 
 competencia01:
     DATA_PATH: "../data/competencia_03.csv"
@@ -12,26 +12,38 @@ competencia01:
     COSTO_ESTIMULO: 20000
     FINAL_TRAIN: [202101,202102,202103,202104]  
     FINAL_PREDIC: 202106
-    UMBRAL: 0.017
+    UMBRAL: 0.015
+    TOP_K: 10000
     HYPERPARAM_RANGES:
         num_leaves:
             min: 5
-            max: 100
+            max: 800
             type: int
         learning_rate:
             min: 0.005
             max: 0.10
             type: float
         min_data_in_leaf:
-            min: 300
-            max: 1200
+            min: 10
+            max: 800
             type: int
         feature_fraction:
-            min: 0.1
-            max: 0.6
+            min: 0.3
+            max: 0.9
             type: float
         bagging_fraction:
-            min: 0.2
-            max: 0.6
+            min: 0.3
+            max: 0.9
             type: float
+        min_gain_to_split:
+            min: 0.0
+            max: 0.5
+            type: float
+        max_depth:
+            min: 5
+            max: 35
+            type: int
+
+
+
 

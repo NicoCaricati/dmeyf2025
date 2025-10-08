@@ -67,8 +67,16 @@ def main():
 
 
     df_to_select_columns = pd.read_csv("feature_importance/feature_importance_sin_canarios.csv").sort_values("importance",ascending=False)
+    # Leer el archivo de importancias
+    df_columnas_poco_importantes = pd.read_csv("feature_importance/feature_importance_Going Back to BM - Removing 0 FE Vars.csv")
 
-    # Top 20 de features de mayor importancia
+    # Filtrar las features con importance_split <= 1
+    columnas_poco_importantes = df_columnas_poco_importantes.loc[
+        df_columnas_poco_importantes['importance_split'] == 0, 
+        'feature'
+    ].tolist()
+
+    # Top 40 de features de mayor importancia
 
     columnas_20_mas_importantes = df_to_select_columns.head(40)["feature"].to_list()
 
@@ -81,7 +89,6 @@ def main():
     columnas_Master = [c for c in df.columns if c.startswith("Master_")]
     columnas_Visa = [c for c in df.columns if c.startswith("Visa_")]      
     columnas_categoricas = [c for c in df.columns if df[c].nunique() < 5]
-    df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
     for i in (1,3):
         df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
     for i in (1,2):
@@ -90,30 +97,35 @@ def main():
         df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
 
     # df_fe = feature_engineering_variables_canarios(df_fe)
-    logger.info(f"Feature Engineering completado: {df_fe.shape}")
 
-    print(df_fe.columns)
+    # Eliminar las columnas poco importantes de df_fe
+    df_fe = df_fe.drop(columns=columnas_poco_importantes, errors='ignore')
+
+    logger.info(f"Se eliminaron {len(columnas_poco_importantes)} columnas con importance_split <= 1")
+    
+    logger.info(f"Feature Engineering completado: {df_fe.shape}")
+    
 
     # 3. Convertir clase_ternaria a binario
     df_fe = convertir_clase_ternaria_a_target(df_fe)
 
-    df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+    # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
 
     # df_fe.to_csv("data/competencia_fe_.csv", index=False)
 
-    # # 3.5 Muestreo para acelerar optimización (opcional)
-    # clientes_202101 = df_fe[df_fe['foto_mes'] == 202101]['numero_de_cliente'].unique()
-    # clientes_muestra = np.random.choice(clientes_202101, size=int(0.45 * len(clientes_202101)), replace=False)
-    # df_fe_sampled = df_fe[df_fe['numero_de_cliente'].isin(clientes_muestra)]
+    # # # 3.5 Muestreo para acelerar optimización (opcional)
+    # # clientes_202101 = df_fe[df_fe['foto_mes'] == 202101]['numero_de_cliente'].unique()
+    # # clientes_muestra = np.random.choice(clientes_202101, size=int(0.45 * len(clientes_202101)), replace=False)
+    # # df_fe_sampled = df_fe[df_fe['numero_de_cliente'].isin(clientes_muestra)]
     # logger.info(f"Datos muestreados para optimización: {df_fe_sampled.shape}")
     # saco los meses 5 y 6 para que no haya fugas
     # df_fe_sampled = df_fe
     # df_fe_sampled = df_fe_sampled[~df_fe_sampled['foto_mes'].isin([202105,202106])]
     # logger.info(f"Excluyo de la muestra meses 5 y 6")
-    # df_fe_sampled.to_csv("data/competencia_fe_sampled.csv", index=False)
+    # # df_fe_sampled.to_csv("data/competencia_fe_sampled.csv", index=False)
 
     # # 4. Ejecutar optimización (función simple)
-    # study = optimizar_con_cv(df_fe_sampled, n_trials=100)
+    # study = optimizar_con_cv(df_fe_sampled, n_trials=80)
   
     # # 5. Análisis adicional
     # logger.info("=== ANÁLISIS DE RESULTADOS ===")
@@ -132,12 +144,25 @@ def main():
      #05 Test en mes desconocido
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
     # Cargar mejores hiperparámetros
-    mejores_params = {'num_leaves': 46, 'learning_rate': 0.016377657023274192, 'min_data_in_leaf': 710, 'feature_fraction': 0.2503218637353462, 'bagging_fraction': 0.2352773905721117}
+    # mejores_params = {'num_leaves': 46, 'learning_rate': 0.016377657023274192, 'min_data_in_leaf': 710, 'feature_fraction': 0.2503218637353462, 'bagging_fraction': 0.2352773905721117}
+    # mejores_params =  {
+    #   "num_leaves": 468,
+    #   "learning_rate": 0.09008244016707123,
+    #   "min_data_in_leaf": 238,
+    #   "feature_fraction": 0.5481791814620421,
+    #   "bagging_fraction": 0.7807387893805953,
+    #   "min_gain_to_split": 0.0014506741831737321,
+    #   "num_boost_round": 1061
+    # }
+
+    mejores_params = {'num_leaves': 46, 'learning_rate': 0.016377657023274192, 'min_data_in_leaf': 10, 'feature_fraction': 0.2503218637353462, 'bagging_fraction': 0.2352773905721117, 'num_boost_round': 1000}
+
     # mejores_params = cargar_mejores_hiperparametros()
 
   
     # Evaluar en test
     resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params)
+    
     # resultados_test_v2 = evaluar_en_test_v2(df_fe, mejores_params)
 
     # Simular distribución de ganancias
@@ -176,7 +201,7 @@ def main():
   
     # Generar predicciones finales
     logger.info("Generar predicciones finales")
-    resultados = generar_predicciones_finales(modelo_final, X_predict, clientes_predict, umbral=UMBRAL)
+    resultados = generar_predicciones_finales(modelo_final, X_predict, clientes_predict, umbral=UMBRAL, top_k=TOP_K)
   
     # Guardar predicciones
     logger.info("Guardar predicciones")

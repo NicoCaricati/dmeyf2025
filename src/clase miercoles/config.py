@@ -24,6 +24,8 @@ try:
         FINAL_PREDIC = _cfg.get("FINAL_PREDIC", 202106)
         UMBRAL = _cfg.get("UMBRAL", 0.04)
         HYPERPARAM_RANGES = _cfg.get("HYPERPARAM_RANGES", {})
+        TOP_K = _cfg.get("TOP_K", 10000)
+
 
 
 except Exception as e:
