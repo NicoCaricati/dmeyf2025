@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "Going Back to BM - Removing 0 FE Vars"
+STUDY_NAME : "Redefino los periodos incluyendo todos los meses - optimización con CV"
 
 competencia01:
     DATA_PATH: "../data/competencia_03.csv"
@@ -7,6 +7,7 @@ competencia01:
     # SEMILLA: [555557, 555871, 556219, 556459, 556691]
     MES_TRAIN: [202101,202102] 
     MES_VALIDACION: 202103
+    MESES_OPTIMIZACION: [202101,202102,202103,202104]
     MES_TEST: 202104
     GANANCIA_ACIERTO: 780000
     COSTO_ESTIMULO: 20000
@@ -16,7 +17,7 @@ competencia01:
     TOP_K: 10000
     HYPERPARAM_RANGES:
         num_leaves:
-            min: 5
+            min: 20
             max: 800
             type: int
         learning_rate:
@@ -24,8 +25,8 @@ competencia01:
             max: 0.10
             type: float
         min_data_in_leaf:
-            min: 10
-            max: 800
+            min: 3
+            max: 30
             type: int
         feature_fraction:
             min: 0.3
@@ -41,7 +42,7 @@ competencia01:
             type: float
         max_depth:
             min: 5
-            max: 35
+            max: 70
             type: int
 
 

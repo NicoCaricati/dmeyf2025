@@ -58,6 +58,7 @@ def objetivo_ganancia(trial, df) -> float:
     "min_data_in_leaf":{"min": 300, "max": 800, "type": "int"},
     "feature_fraction":{"min": 0.1, "max": 0.8, "type": "float"},
     "bagging_fraction":{"min": 0.2, "max": 0.8, "type": "float"},
+    "max_depth": {"min": 10, "max": 50, "type": "int"}
     }
 
     # Merge entre lo que viene del YAML y los defaults
@@ -129,9 +130,10 @@ def objetivo_ganancia_cv(trial, df) -> float:
     semillas = SEMILLA
     mes_train = MES_TRAIN
     mes_validacion = MES_VALIDACION
+    meses_optimizacion = MESES_OPTIMIZACION
 
     # Dividir datos
-    df_train = df[df['foto_mes'].isin(mes_train + [mes_validacion])]
+    df_train = df[df['foto_mes'].isin(meses_optimizacion)]
 
 
     X_train = df_train.drop(columns=['target'])
@@ -148,8 +150,8 @@ def objetivo_ganancia_cv(trial, df) -> float:
         "feature_fraction":{"min": 0.1, "max": 0.8, "type": "float"},
         "bagging_fraction":{"min": 0.2, "max": 0.8, "type": "float"},
         "min_gain_to_split":{"min": 0.0, "max": 0.2,  "type": "float"},
-        "num_boost_round":  {"min": 300, "max": 2000, "type": "int"}
-
+        "num_boost_round":  {"min": 300, "max": 2000, "type": "int"},
+        "max_depth": {"min": 10, "max": 50, "type": "int"}
     }
 
     # Merge YAML + defaults
@@ -235,9 +237,7 @@ def guardar_iteracion_cv(trial, ganancia_maxima, ganancias_cv, archivo_base=None
         'datetime': datetime.now().isoformat(),
         'state': 'COMPLETE',  # Si llegamos aquí, el trial se completó exitosamente
         'configuracion': {
-            'semilla': SEMILLA,
-            'mes_train': MES_TRAIN,
-            'mes_validacion': MES_VALIDACION
+            'semilla': SEMILLA
         }
     }
   
@@ -294,9 +294,7 @@ def guardar_iteracion(trial, ganancia, archivo_base=None):
         'datetime': datetime.now().isoformat(),
         'state': 'COMPLETE',  # Si llegamos aquí, el trial se completó exitosamente
         'configuracion': {
-            'semilla': SEMILLA,
-            'mes_train': MES_TRAIN,
-            'mes_validacion': MES_VALIDACION
+            'semilla': SEMILLA
         }
     }
   
@@ -360,7 +358,7 @@ def optimizar(df, n_trials=30) -> optuna.Study:
 
 
     logger.info(f"Iniciando optimización con {n_trials} trials")
-    logger.info(f"Configuración: TRAIN={MES_TRAIN}, VALID={MES_VALIDACION}, SEMILLA={SEMILLA}")
+    logger.info(f"Configuración MESES OPTIMIZACION {MESES_OPTIMIZACION}")
 
   
     # Resultados
@@ -396,8 +394,8 @@ def optimizar_con_cv(df, n_trials=50) -> optuna.Study:
 
     logger.info(f"Iniciando optimización con CV = {n_trials} trials")
     logger.info(
-        f"Configuración CV: periodos = {MES_TRAIN + [MES_VALIDACION] if isinstance(MES_TRAIN, list) else [MES_TRAIN, MES_VALIDACION]}"
-    )
+        f"Configuración CV: periodos = {MESES_OPTIMIZACION}")
+    
 
     # Crear estudio de Optuna
     study = optuna.create_study(
