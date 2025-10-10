@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "Redefino los periodos incluyendo todos los meses - optimización con CV"
+STUDY_NAME : "Retesting...Vuelvo a solo B2 y agrego Vars Aux"
 
 competencia01:
     DATA_PATH: "../data/competencia_03.csv"

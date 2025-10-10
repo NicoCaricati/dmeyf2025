@@ -33,8 +33,9 @@ def feature_engineering_lag(df: pd.DataFrame, columnas: list[str], cant_lag: int
         return df
   
     # Construir la consulta SQL
-    sql = "SELECT *"
-  
+    columnas_sql = ", ".join(df.columns)
+    sql = f"SELECT {columnas_sql}"
+
     # Agregar los lags para los atributos especificados
     for attr in columnas:
         if attr in df.columns:
@@ -88,7 +89,8 @@ def feature_engineering_delta(df: pd.DataFrame, columnas: list[str], cant_delta:
         return df
   
     # Construir la consulta SQL
-    sql = "SELECT *"
+    columnas_sql = ", ".join(df.columns)
+    sql = f"SELECT {columnas_sql}"
   
     # Agregar los deltas para los atributos especificados
     for attr in columnas:
@@ -339,8 +341,8 @@ def feature_engineering_ratio(df: pd.DataFrame, columnas: list[str]) -> pd.DataF
             col_name = f"ratio_{numerador}_{denominador}"
             df[col_name] = df[numerador] / df[denominador].replace(0, np.nan)
 
-            col_name_inv = f"ratio_{denominador}_{numerador}"
-            df[col_name_inv] = df[denominador] / df[numerador].replace(0, np.nan)
+            # col_name_inv = f"ratio_{denominador}_{numerador}"
+            # df[col_name_inv] = df[denominador] / df[numerador].replace(0, np.nan)
         
     logger.info(f"Feature engineering de ratios completado. DataFrame ahora tiene {df.shape[1]} columnas y {df.shape[0]} filas")
     return df
@@ -461,3 +463,172 @@ def psi_by_columns(df, cols, fecha_base=202104, fecha_prod=202106, fotomes_col="
     return pd.Series(results, name="PSI")
 
 
+
+def feature_engineering_mpayroll_corregida(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Corrige el monto de payroll en meses de aguinaldo.
+    Para fotomes 202106, si mpayroll > 0, multiplica por 0.67.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+
+    Returns
+    -------
+    pd.DataFrame
+    """
+    mask = (df["foto_mes"] == 202106) & (df["mpayroll"] > 0)
+    df["mpayroll_corregida"] = df["mpayroll"]
+    df.loc[mask, "mpayroll_corregida"] = df.loc[mask, "mpayroll"] * 0.67
+    return df
+
+
+def feature_engineering_cpayroll_trx_corregida(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Corrige el conteo de transacciones de payroll en meses de aguinaldo.
+    Para foto_mes  202106, si mpayroll > 0, resta una transacción.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+
+    Returns
+    -------
+    pd.DataFrame
+    """
+    mask = (df["foto_mes"] == 202106) & (df["mpayroll"] > 0)
+    df["cpayroll_trx_corregida"] = df["cpayroll_trx"]
+    df.loc[mask, "cpayroll_trx_corregida"] = df.loc[mask, "cpayroll_trx"] - 1
+    return df
+
+
+
+import numpy as np
+import pandas as pd
+
+def variables_aux(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+
+    # ===============================
+    # 1. ACTIVIDAD / ENGAGEMENT
+    # ===============================
+    df["actividad_total"] = (
+        df["ctarjeta_visa_transacciones"].fillna(0) +
+        df["ctarjeta_master_transacciones"].fillna(0) +
+        df["ctarjeta_debito_transacciones"].fillna(0) +
+        df["chomebanking_transacciones"].fillna(0) +
+        df["cmobile_app_trx"].fillna(0) +
+        df["ctransferencias_emitidas"].fillna(0) +
+        df["ctransferencias_recibidas"].fillna(0)
+    )
+
+    df["uso_digital_ratio"] = (
+        (df["chomebanking_transacciones"].fillna(0) + df["cmobile_app_trx"].fillna(0))
+        / (1 + df["actividad_total"])
+    )
+
+    df["uso_tarjeta_ratio"] = (
+        (df["ctarjeta_visa_transacciones"].fillna(0) + df["ctarjeta_master_transacciones"].fillna(0))
+        / (1 + df["actividad_total"])
+    )
+
+    df["canales_activos"] = (
+        df["thomebanking"].fillna(0) + df["tcallcenter"].fillna(0) + df["tmobile_app"].fillna(0)
+    )
+
+    df["usa_app_o_homebanking"] = (
+        ((df["tmobile_app"] == 1) | (df["thomebanking"] == 1)).astype(int)
+    )
+
+    # ===============================
+    # 2. RENTABILIDAD / VALOR
+    # ===============================
+    df["rentabilidad_media_mensual"] = df["mrentabilidad_annual"].fillna(0) / (1 + df["cliente_antiguedad"].fillna(0))
+    df["margen_total"] = df["mactivos_margen"].fillna(0) + df["mpasivos_margen"].fillna(0)
+    df["rentabilidad_vs_margen"] = df["mrentabilidad"].fillna(0) / (1 + df["margen_total"])
+    df["margen_por_producto"] = df["margen_total"] / (1 + df["cproductos"].fillna(0))
+    df["comisiones_ratio"] = df["mcomisiones"].fillna(0) / (1 + np.abs(df["mrentabilidad"].fillna(0)))
+
+    # ===============================
+    # 3. CRÉDITO Y APALANCAMIENTO
+    # ===============================
+    df["deuda_tarjetas_total"] = df["Visa_msaldototal"].fillna(0) + df["Master_msaldototal"].fillna(0)
+    df["limite_tarjetas_total"] = df["Visa_mlimitecompra"].fillna(0) + df["Master_mlimitecompra"].fillna(0)
+    df["uso_credito_ratio"] = df["deuda_tarjetas_total"] / (1 + df["limite_tarjetas_total"])
+    df["mora_total"] = ((df["Visa_delinquency"].fillna(0) == 1) | (df["Master_delinquency"].fillna(0) == 1)).astype(int)
+    df["dias_mora_promedio"] = (
+        df[["Visa_Finiciomora", "Master_Finiciomora"]].fillna(0).mean(axis=1)
+    )
+
+    # ===============================
+    # 4. AHORRO / INVERSIÓN
+    # ===============================
+    df["saldo_total_pesos"] = (
+        df["mcaja_ahorro"].fillna(0) +
+        df["mcuenta_corriente"].fillna(0) +
+        df["mplazo_fijo_pesos"].fillna(0) +
+        df["minversion1_pesos"].fillna(0) +
+        df["minversion2"].fillna(0)
+    )
+
+    df["saldo_total_dolares"] = (
+        df["mcaja_ahorro_dolares"].fillna(0) +
+        df["mplazo_fijo_dolares"].fillna(0) +
+        df["minversion1_dolares"].fillna(0)
+    )
+
+    df["saldo_total"] = df["saldo_total_pesos"] + df["saldo_total_dolares"]
+
+    df["inversion_ratio"] = (
+        (df["mplazo_fijo_pesos"].fillna(0) + df["minversion1_pesos"].fillna(0) + df["minversion2"].fillna(0))
+        / (1 + df["saldo_total"])
+    )
+
+    df["diversificacion_financiera"] = (
+        (df[["mplazo_fijo_pesos", "mplazo_fijo_dolares", "minversion1_pesos", "minversion2"]].fillna(0) > 0)
+        .sum(axis=1)
+    )
+
+    # ===============================
+    # 5. MOVIMIENTOS OPERATIVOS
+    # ===============================
+    df["flujo_netotransf"] = df["mtransferencias_recibidas"].fillna(0) - df["mtransferencias_emitidas"].fillna(0)
+    df["flujo_cheques"] = df["mcheques_depositados"].fillna(0) - df["mcheques_emitidos"].fillna(0)
+    df["saldo_vs_movimientos"] = df["mcuentas_saldo"].fillna(0) / (
+        1 + df["ctransferencias_emitidas"].fillna(0) + df["ctransferencias_recibidas"].fillna(0)
+    )
+    df["extracciones_ratio"] = df["mextraccion_autoservicio"].fillna(0) / (1 + df["mcuentas_saldo"].fillna(0))
+
+    # ===============================
+    # 6. INGRESOS / PAYROLL
+    # ===============================
+    df["ingresos_mensuales"] = df["mpayroll"].fillna(0) + df["mpayroll2"].fillna(0)
+    df["ingresos_vs_saldo"] = df["ingresos_mensuales"] / (1 + df["mcuentas_saldo"].fillna(0))
+    df["es_empleado"] = (df["cpayroll_trx"].fillna(0) > 0).astype(int)
+    df["cantidad_empleadores"] = df["cpayroll_trx"].fillna(0)
+
+    # ===============================
+    # 7. FLAGS BINARIOS / CONDICIONALES
+    # ===============================
+    df["sin_transacciones_mes"] = (df["actividad_total"] == 0).astype(int)
+    df["sin_sueldo_mes"] = (df["ingresos_mensuales"] == 0).astype(int)
+    df["alta_mora"] = (df["mora_total"] == 1).astype(int)
+    df["sin_inversiones"] = (
+        (df["mplazo_fijo_pesos"].fillna(0) + df["minversion1_pesos"].fillna(0) + df["minversion2"].fillna(0) == 0)
+    ).astype(int)
+    df["solo_tarjetas"] = (
+        ((df["ctarjeta_visa"].fillna(0) + df["ctarjeta_master"].fillna(0)) > 0)
+        & (df["tcuentas"].fillna(0) == 0)
+    ).astype(int)
+
+    # ===============================
+    # 8. INTERACCIONES / RELACIONES
+    # ===============================
+    df["ratio_productos_uso"] = df["actividad_total"] / (1 + df["cproductos"].fillna(0))
+    df["ingresos_por_producto"] = df["ingresos_mensuales"] / (1 + df["cproductos"].fillna(0))
+    df["margen_por_cuenta"] = df["margen_total"] / (1 + df["tcuentas"].fillna(0))
+    df["clientes_vip_baja_actividad"] = (
+        (df["cliente_vip"] == 1) & (df["actividad_total"] < df["actividad_total"].quantile(0.25))
+    ).astype(int)
+
+    return df

@@ -3,7 +3,7 @@ from datetime import datetime
 import os
 import pandas as pd
 import numpy as np
-from features import feature_engineering_lag, feature_engineering_delta, feature_engineering_regr_slope_window, feature_engineering_ratio, feature_engineering_variables_canarios, feature_engineering_tc_total, generar_ctrx_features, calculate_psi, psi_by_columns
+from features import feature_engineering_lag, feature_engineering_delta, feature_engineering_regr_slope_window, feature_engineering_ratio, feature_engineering_tc_total, generar_ctrx_features, feature_engineering_cpayroll_trx_corregida, feature_engineering_mpayroll_corregida, variables_aux
 from loader import cargar_datos, convertir_clase_ternaria_a_target
 from optimization import *
 from best_params import cargar_mejores_hiperparametros
@@ -13,6 +13,7 @@ from best_params import obtener_estadisticas_optuna
 from config import *
 from test import *
 from grafico_test import *
+import re
 
 ### Configuración de logging ###
 os.makedirs("logs", exist_ok=True)
@@ -56,6 +57,7 @@ def main():
     # 1. Cargar datos
     df = cargar_datos("data/competencia_01_crudo.csv")
     logger.info(f"Datos cargados: {df.shape}")
+    columnas_base = df.columns.tolist()
 
     # Saco cpayroll_trx por tener mucho drifting
 
@@ -67,7 +69,8 @@ def main():
     # df = df.drop(columns="cpayroll_trx")
 
 
-    df_to_select_columns = pd.read_csv("feature_importance/feature_importance_sin_canarios.csv").sort_values("importance",ascending=False)
+    # df_to_select_columns = pd.read_csv("feature_importance/feature_importance_sin_canarios.csv").sort_values("importance",ascending=False)
+
     
     # Leer el archivo de importancias
     # df_columnas_poco_importantes = pd.read_csv("feature_importance/feature_importance_Going Back to BM - Removing 0 FE Vars.csv")
@@ -80,23 +83,38 @@ def main():
 
     # Top 40 de features de mayor importancia
 
-    columnas_40_mas_importantes = df_to_select_columns.head(40)["feature"].to_list()
+    # columnas_40_mas_importantes = df_to_select_columns.head(40)["feature"].to_list()
+    columnas_40_mas_importantes = ["ctrx_quarter","mpayroll","cpayroll_trx","mprestamos_personales","mcuentas_saldo","mpasivos_margen","mcaja_ahorro","mtarjeta_visa_consumo","mrentabilidad_annual","Visa_msaldopesos","ctarjeta_visa_transacciones","cliente_edad","mactivos_margen","ctarjeta_master","Master_fechaalta","Visa_fechaalta","Visa_Fvencimiento","Visa_msaldototal","TC_Total_mpagospesos","TC_Total_mpagominimo","mtransferencias_recibidas","TC_Total_fechaalta","Master_Fvencimiento","numero_de_cliente","cliente_antiguedad","mrentabilidad","ctarjeta_debito_transacciones","TC_Total_msaldototal","chomebanking_transacciones","Visa_mpagospesos","ccomisiones_otras","Visa_mpagominimo","mcomisiones","mpayroll_corregida", "cpayroll_trx_corregida","ctrx_30d","ctrx_60d",["saldo_total","uso_credito_ratio","TC_Total_msaldototal","uso_tarjeta_ratio","flujo_netotransf","uso_digital_ratio"]
+]
+
+    
+
 
     # 2. Feature Engineering
-    df_fe = feature_engineering_tc_total(df)
+    df_fe = feature_engineering_cpayroll_trx_corregida(df)
+    df_fe = feature_engineering_mpayroll_corregida(df_fe)
+    df_fe = feature_engineering_tc_total(df_fe)
     df_fe = generar_ctrx_features(df_fe)
+    df_fe = variables_aux(df_fe)
+    columnas_base = df_fe.columns.tolist()
     df_fe = feature_engineering_ratio(df_fe,columnas_40_mas_importantes)
     columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target"]
-    atributos = [c for c in df.columns if c not in columnas_a_excluir]
-    columnas_Master = [c for c in df.columns if c.startswith("Master_")]
-    columnas_Visa = [c for c in df.columns if c.startswith("Visa_")]      
-    columnas_categoricas = [c for c in df.columns if df[c].nunique() < 5]
-    for i in (1,2):
+    atributos = [c for c in columnas_base if c not in columnas_a_excluir]
+    # columnas_Master = [c for c in columnas_base if c.startswith("Master_")]
+    # columnas_Visa = [c for c in columnas_base if c.startswith("Visa_")]      
+    # columnas_categoricas = [c for c in columnas_base if df[c].nunique() < 5]
+    for i in (1,3):
         df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
     for i in (1,2):
         df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
-    
-    df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = 3)
+    df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+    for i in (2,3):
+        df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
+    df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+    df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'_delta_\d+_delta_', c)]]
+    df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'_delta_\d+_\d+$', c)]]
+    df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'lag\d+lag', c)]]
+    df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'lag\d+_\d+$', c)]]
 
     # df_fe = feature_engineering_variables_canarios(df_fe)
 
@@ -121,27 +139,27 @@ def main():
     # # df_fe_sampled = df_fe[df_fe['numero_de_cliente'].isin(clientes_muestra)]
     # logger.info(f"Datos muestreados para optimización: {df_fe_sampled.shape}")
     # saco los meses 5 y 6 para que no haya fugas
-    df_fe_sampled = df_fe
-    df_fe_sampled = df_fe_sampled[~df_fe_sampled['foto_mes'].isin([202105,202106])]
-    logger.info(f"Excluyo de la muestra meses 5 y 6")
-    # df_fe_sampled.to_csv("data/competencia_fe_sampled.csv", index=False)
+    # df_fe_sampled = df_fe
+    # df_fe_sampled = df_fe_sampled[~df_fe_sampled['foto_mes'].isin([202105,202106])]
+    # logger.info(f"Excluyo de la muestra meses 5 y 6")
+    # # df_fe_sampled.to_csv("data/competencia_fe_sampled.csv", index=False)
 
-    # 4. Ejecutar optimización (función simple)
-    study = optimizar_con_cv(df_fe_sampled, n_trials=100)
+    # # 4. Ejecutar optimización (función simple)
+    # study = optimizar_con_cv(df_fe_sampled, n_trials=100)
   
-    # 5. Análisis adicional
-    logger.info("=== ANÁLISIS DE RESULTADOS ===")
-    trials_df = study.trials_dataframe()
-    if len(trials_df) > 0:
-        top_5 = trials_df.nlargest(5, 'value')
-        logger.info("Top 5 mejores trials:")
-        for idx, trial in top_5.iterrows():
-            logger.info(
-            f"Trial {int(trial['number'])}: "
-            f"Ganancia = {trial['value']:,.0f} | "
-            f"Parámetros: {trial['params']}")
+    # # 5. Análisis adicional
+    # logger.info("=== ANÁLISIS DE RESULTADOS ===")
+    # trials_df = study.trials_dataframe()
+    # if len(trials_df) > 0:
+    #     top_5 = trials_df.nlargest(5, 'value')
+    #     logger.info("Top 5 mejores trials:")
+    #     for idx, trial in top_5.iterrows():
+    #         logger.info(
+    #         f"Trial {int(trial['number'])}: "
+    #         f"Ganancia = {trial['value']:,.0f} | "
+    #         f"Parámetros: {trial['params']}")
   
-    logger.info("=== OPTIMIZACIÓN COMPLETADA ===")
+    # logger.info("=== OPTIMIZACIÓN COMPLETADA ===")
 
      #05 Test en mes desconocido
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
@@ -157,9 +175,9 @@ def main():
     #   "num_boost_round": 1061
     # }
 
-    # mejores_params = {'num_leaves': 46, 'learning_rate': 0.016377657023274192, 'min_data_in_leaf': 710, 'feature_fraction': 0.2503218637353462, 'bagging_fraction': 0.2352773905721117, 'num_boost_round': 1000}
+    mejores_params = {'num_leaves': 46, 'learning_rate': 0.016377657023274192, 'min_data_in_leaf': 710, 'feature_fraction': 0.2503218637353462, 'bagging_fraction': 0.2352773905721117, 'num_boost_round': 1000}
 
-    mejores_params = cargar_mejores_hiperparametros()
+    # mejores_params = cargar_mejores_hiperparametros()
 
   
     # Evaluar en test

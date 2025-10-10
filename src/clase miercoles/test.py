@@ -343,7 +343,8 @@ def evaluar_en_test_v2(df, mejores_params) -> dict:
             'feature_pre_filter': False,
             'max_bin': 31,
             'seed': seed,
-            'verbose': -1
+            'verbose': -1,
+            'extra_trees': False  # Para mayor diversidad entre semillas
         })
 
         lgb_train = lgb.Dataset(X_train, label=y_train)
@@ -383,7 +384,7 @@ def evaluar_en_test_v2(df, mejores_params) -> dict:
     plt.ylabel("Ganancia acumulada")
     plt.legend()
     plt.grid(True)
-    ruta_grafico = f"ganancia_semillas_{MES_TEST}.png"
+    ruta_grafico = f"resultados/plots/ganancia_semillas_{STUDY_NAME}.png"
     plt.savefig(ruta_grafico, bbox_inches="tight")
     plt.close()
 
@@ -417,8 +418,9 @@ def obtener_curva_ganancia(y_true, y_pred_proba):
     y_true_sorted = y_true.iloc[orden] if hasattr(y_true, "iloc") else y_true[orden]
 
     # Ganancia acumulada: 1 cliente bueno = +$1, 1 cliente malo = -$10 (ejemplo, adaptá a tu cálculo real)
-    ganancia_unitaria = np.where(y_true_sorted == 1, 1, -10)
-    ganancia_acumulada = np.cumsum(ganancia_unitaria)
+    # ganancia_unitaria = np.where(y_true_sorted == 1, 1, -10)
+    # ganancia_acumulada = np.cumsum(ganancia_unitaria)
+    ganancia_acumulada = ganancia_evaluator(y_true_sorted, np.ones_like(y_true_sorted))
 
     # Eje X: número de clientes contactados
     xs = np.arange(1, len(y_true_sorted) + 1)

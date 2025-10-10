@@ -72,6 +72,7 @@ def entrenar_modelo_final(X_train: pd.DataFrame, y_train: pd.Series, mejores_par
         'metric': 'None',  # Usamos nuestra métrica personalizada
         'random_state': SEMILLA[0] if isinstance(SEMILLA, list) else SEMILLA,
         'verbose': -1,
+        'extra_trees': False,  # Para mayor diversidad entre semillas
         **mejores_params  # Agregar los mejores hiperparámetros
     }
   
