@@ -11,8 +11,10 @@ from gain_function import calcular_ganancia, ganancia_lgb_binary, ganancia_evalu
 import matplotlib.pyplot as plt
 import seaborn as sns
 from grafico_test import crear_grafico_ganancia_avanzado 
+import random
+from grafico_test import calcular_ganancia_acumulada_optimizada
 
-def evaluar_en_test(df, mejores_params) -> dict:
+def evaluar_en_test(df, mejores_params, seed = SEMILLA[0]) -> dict:
     """
     Evalúa el modelo con los mejores hiperparámetros en el conjunto de test.
     Solo calcula la ganancia, sin usar sklearn.
@@ -51,7 +53,7 @@ def evaluar_en_test(df, mejores_params) -> dict:
         'boost_from_average': True,
         'feature_pre_filter': False,
         'max_bin': 31,
-        'seed': SEMILLA[0],
+        'seed': seed,
         'verbose': -1
     })
 
@@ -427,3 +429,188 @@ def obtener_curva_ganancia(y_true, y_pred_proba):
     ys = ganancia_acumulada
 
     return xs, ys
+
+
+def evaluar_con_varias_semillas(df_fe, mejores_params, semillas, study_name_base="experimento_multi_seed"):
+    """
+    Evalúa el modelo con distintas semillas, grafica las curvas de ganancia acumulada y 
+    muestra la curva promedio.
+    """
+    logger.info(f"=== Evaluando modelo con {len(semillas)} semillas ===")
+
+    ganancias_por_seed = []
+    curvas = []
+
+    for seed in semillas:
+        logger.info(f"🔁 Ejecutando con seed = {seed}")
+
+        # Fijar la semilla
+        np.random.seed(seed)
+        random.seed(seed)
+
+        # Evaluar modelo
+        resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params)
+
+        # Calcular ganancia acumulada
+        ganancias_acumuladas, indices_ordenados, _ = calcular_ganancia_acumulada_optimizada(y_test, y_pred_proba)
+        curvas.append(ganancias_acumuladas)
+        ganancias_por_seed.append(np.max(ganancias_acumuladas))
+
+    # Alinear todas las curvas al mismo largo (por si alguna difiere)
+    min_len = min(len(curva) for curva in curvas)
+    curvas = [curva[:min_len] for curva in curvas]
+    curvas = np.array(curvas)
+
+    # Calcular promedio y desvío
+    curva_promedio = np.mean(curvas, axis=0)
+    curva_std = np.std(curvas, axis=0)
+    
+    max_std = np.max(curva_std)
+    logger.warning(f"⚠️ MÁXIMA DESVIACIÓN EN LAS CURVAS: {max_std:.6f}")
+    if max_std < 0.001:
+        logger.warning("Curvas de semillas casi idénticas. La variación es absorbida por el modelo.")
+    
+    # === Graficar ===
+    plt.style.use('seaborn-v0_8')
+    fig, ax = plt.subplots(figsize=(12, 7))
+
+    # Graficar cada curva individual
+    for i, curva in enumerate(curvas):
+        ax.plot(curva, alpha=0.3, lw=1.5, label=f"Seed {semillas[i]}")
+
+    # Graficar curva promedio con intervalo de confianza
+    ax.plot(curva_promedio, color='black', lw=3, label='Promedio', zorder=5)
+    ax.fill_between(range(min_len),
+                    curva_promedio - curva_std,
+                    curva_promedio + curva_std,
+                    color='gray', alpha=0.2, label='±1σ')
+
+    ax.set_title(f"Ganancia acumulada por semilla - {study_name_base}", fontsize=14, fontweight='bold')
+    ax.set_xlabel("Clientes ordenados por probabilidad", fontsize=12)
+    ax.set_ylabel("Ganancia acumulada", fontsize=12)
+    ax.grid(True, alpha=0.3)
+    ax.legend(fontsize=9)
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f'{x:,.0f}'))
+
+    # Guardar resultado
+    os.makedirs("resultados/plots", exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    ruta_grafico = f"resultados/plots/{study_name_base}_ganancia_multi_seed_{timestamp}.png"
+    plt.savefig(ruta_grafico, dpi=300, bbox_inches="tight", facecolor="white")
+    plt.close()
+
+    logger.info(f"✅ Gráfico multi-seed guardado en: {ruta_grafico}")
+
+    return {
+        "ganancias_por_seed": ganancias_por_seed,
+        "curva_promedio": curva_promedio,
+        "curva_std": curva_std,
+        "ruta_grafico": ruta_grafico
+    }
+
+
+
+
+def comparar_semillas_en_grafico(df_fe, mejores_params, semillas, study_name="multi_seed"):
+    """
+    Corre el modelo con distintas semillas y muestra las curvas de ganancia acumulada
+    de cada corrida junto con la curva promedio, con ajustes automáticos de ejes
+    y marcando el punto óptimo del promedio.
+    """
+    logger.info(f"=== Comparando {len(semillas)} semillas ===")
+
+    curvas = []
+    ganancias_max = []
+
+    # ... (Código para calcular curvas de ganancia acumulada por semilla)
+    for seed in semillas:
+        logger.info(f"🔁 Semilla: {seed}")
+        np.random.seed(seed)
+        random.seed(seed)
+        resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params, seed=seed)
+        y_test = np.asarray(y_test)
+        y_pred_proba = np.asarray(y_pred_proba)
+        ganancias_acumuladas, _, _ = calcular_ganancia_acumulada_optimizada(y_test, y_pred_proba)
+        curvas.append(ganancias_acumuladas)
+        ganancias_max.append(np.max(ganancias_acumuladas))
+    # ... (Fin del cálculo de curvas)
+
+
+    # Emparejar largo de las curvas
+    min_len = min(len(c) for c in curvas)
+    curvas = np.array([c[:min_len] for c in curvas])
+
+    # Promedio y desviación
+    curva_prom = curvas.mean(axis=0)
+    curva_std = curvas.std(axis=0)
+
+    # 1. Definir el límite de X (25,000 clientes)
+    LIMITE_X = 20000 
+    x_max = min(min_len, LIMITE_X)
+    
+    # ⭐️ CALCULAR PUNTO ÓPTIMO DEL PROMEDIO ⭐️
+    curva_prom_cortada = curva_prom[:x_max]
+    idx_max = np.argmax(curva_prom_cortada)
+    ganancia_optima = curva_prom_cortada[idx_max]
+    clientes_optimos = idx_max
+    
+    # === GRAFICAR ===
+    plt.style.use('seaborn-v0_8')
+    fig, ax = plt.subplots(figsize=(12, 7))
+
+    # Todas las curvas individuales (Aumentada visibilidad y cortada a x_max)
+    for i, curva in enumerate(curvas):
+        ax.plot(curva[:x_max], alpha=0.8, lw=1.8, label=f"Seed {semillas[i]}")
+
+    # Curva promedio (Cortada a x_max)
+    # Se añade 'zorder=5' para asegurar que la línea promedio esté sobre las individuales
+    ax.plot(curva_prom[:x_max], color="black", lw=3, label="Promedio", zorder=5)
+    
+    # Sombreado
+    ax.fill_between(range(x_max), 
+                    curva_prom[:x_max] - curva_std[:x_max], 
+                    curva_prom[:x_max] + curva_std[:x_max], 
+                    color="gray", alpha=0.2)
+
+    # ⭐️ MARCAR EL PUNTO ÓPTIMO EN EL GRÁFICO ⭐️
+    # Usamos scatter para un punto, con zorder alto para que sea visible
+    ax.scatter(clientes_optimos, ganancia_optima, 
+               color='red', 
+               s=100, # Tamaño del marcador
+               marker='*', # Forma de estrella para destacar
+               zorder=10, 
+               label=f"Óptimo Promedio: {ganancia_optima:,.0f} ({clientes_optimos} Clientes)")
+
+
+    # Configuración del gráfico
+    ax.set_title(f"Ganancia acumulada por semilla - {study_name}", fontsize=14, fontweight="bold")
+    ax.set_xlabel("Clientes ordenados por probabilidad", fontsize=12)
+    ax.set_ylabel("Ganancia acumulada", fontsize=12)
+    ax.grid(True, alpha=0.3)
+    
+    # Mostrar la leyenda con el punto óptimo incluido
+    ax.legend(fontsize=9, ncol=2) 
+    
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f"{x:,.0f}"))
+
+    # AJUSTES DE LÍMITES 
+    ax.set_xlim(right=x_max)
+    ax.set_ylim(bottom=0) 
+    
+    plt.tight_layout()
+
+    # Guardar imagen
+    os.makedirs("resultados/plots", exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    ruta = f"resultados/plots/{study_name}_comparativo_semillas_{timestamp}.png"
+    plt.savefig(ruta, dpi=300, bbox_inches="tight", facecolor="white")
+    plt.close()
+
+    logger.info(f"✅ Gráfico comparativo guardado: {ruta}")
+
+    return {
+        "ruta_grafico": ruta,
+        "ganancias_max": ganancias_max,
+        "curva_prom": curva_prom,
+        "curva_std": curva_std,
+    }

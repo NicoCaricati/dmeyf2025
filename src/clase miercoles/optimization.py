@@ -40,10 +40,10 @@ def objetivo_ganancia(trial, df) -> float:
     df_val = df[df['foto_mes'].isin([mes_validacion])]
 
     # Sepa rar características y target
-    X_train = df_train.drop(columns=['target'])
+    X_train = df_train.drop(columns=['target', 'foto_mes', 'numero_de_cliente'])
     y_train = df_train['target']
 
-    X_val = df_val.drop(columns=['target'])
+    X_val = df_val.drop(columns=['target', 'foto_mes', 'numero_de_cliente'])
     y_val = df_val['target']
 
     # Crear datasets de LightGBM
@@ -58,7 +58,6 @@ def objetivo_ganancia(trial, df) -> float:
     "min_data_in_leaf":{"min": 300, "max": 800, "type": "int"},
     "feature_fraction":{"min": 0.1, "max": 0.8, "type": "float"},
     "bagging_fraction":{"min": 0.2, "max": 0.8, "type": "float"},
-    "max_depth": {"min": 10, "max": 50, "type": "int"}
     }
 
     # Merge entre lo que viene del YAML y los defaults
@@ -94,6 +93,7 @@ def objetivo_ganancia(trial, df) -> float:
         valid_sets=[lgb_train, lgb_val],
         valid_names=['train', 'valid'],
         feval=ganancia_evaluator,
+        num_boost_round=1000,
         callbacks=[
         lgb.early_stopping(stopping_rounds=50),
         lgb.log_evaluation(period=50)],  # opcional, logs cada 50 rounds
@@ -130,13 +130,12 @@ def objetivo_ganancia_cv(trial, df) -> float:
     semillas = SEMILLA
     mes_train = MES_TRAIN
     mes_validacion = MES_VALIDACION
-    meses_optimizacion = MESES_OPTIMIZACION
 
     # Dividir datos
-    df_train = df[df['foto_mes'].isin(meses_optimizacion)]
+    df_train = df[df['foto_mes'].isin(mes_train + [mes_validacion])]
 
 
-    X_train = df_train.drop(columns=['target'])
+    X_train = df_train.drop(columns=['target', 'foto_mes', 'numero_de_cliente'])
     y_train = df_train['target']
 
     # Datasets de LightGBM
@@ -149,9 +148,7 @@ def objetivo_ganancia_cv(trial, df) -> float:
         "min_data_in_leaf":{"min": 300, "max": 800, "type": "int"},
         "feature_fraction":{"min": 0.1, "max": 0.8, "type": "float"},
         "bagging_fraction":{"min": 0.2, "max": 0.8, "type": "float"},
-        "min_gain_to_split":{"min": 0.0, "max": 0.2,  "type": "float"},
-        "num_boost_round":  {"min": 300, "max": 2000, "type": "int"},
-        "max_depth": {"min": 10, "max": 50, "type": "int"}
+        
     }
 
     # Merge YAML + defaults
@@ -187,6 +184,7 @@ def objetivo_ganancia_cv(trial, df) -> float:
         nfold=5,
         stratified=True,
         shuffle=True,
+        num_boost_round=1000,
         seed= SEMILLA[0],
         callbacks=[
             lgb.early_stopping(stopping_rounds=25),
@@ -237,7 +235,9 @@ def guardar_iteracion_cv(trial, ganancia_maxima, ganancias_cv, archivo_base=None
         'datetime': datetime.now().isoformat(),
         'state': 'COMPLETE',  # Si llegamos aquí, el trial se completó exitosamente
         'configuracion': {
-            'semilla': SEMILLA
+            'semilla': SEMILLA,
+            'mes_train': MES_TRAIN,
+            'mes_validacion': MES_VALIDACION
         }
     }
   
@@ -294,7 +294,9 @@ def guardar_iteracion(trial, ganancia, archivo_base=None):
         'datetime': datetime.now().isoformat(),
         'state': 'COMPLETE',  # Si llegamos aquí, el trial se completó exitosamente
         'configuracion': {
-            'semilla': SEMILLA
+            'semilla': SEMILLA,
+            'mes_train': MES_TRAIN,
+            'mes_validacion': MES_VALIDACION
         }
     }
   
@@ -358,7 +360,7 @@ def optimizar(df, n_trials=30) -> optuna.Study:
 
 
     logger.info(f"Iniciando optimización con {n_trials} trials")
-    logger.info(f"Configuración MESES OPTIMIZACION {MESES_OPTIMIZACION}")
+    logger.info(f"Configuración: TRAIN={MES_TRAIN}, VALID={MES_VALIDACION}, SEMILLA={SEMILLA}")
 
   
     # Resultados
@@ -394,8 +396,8 @@ def optimizar_con_cv(df, n_trials=50) -> optuna.Study:
 
     logger.info(f"Iniciando optimización con CV = {n_trials} trials")
     logger.info(
-        f"Configuración CV: periodos = {MESES_OPTIMIZACION}")
-    
+        f"Configuración CV: periodos = {MES_TRAIN + [MES_VALIDACION] if isinstance(MES_TRAIN, list) else [MES_TRAIN, MES_VALIDACION]}"
+    )
 
     # Crear estudio de Optuna
     study = optuna.create_study(

@@ -295,7 +295,7 @@ def feature_engineering_regr_slope_window(df: pd.DataFrame, columnas: list[str],
                             ORDER BY foto_mes
                             ROWS BETWEEN {ventana-1} PRECEDING AND CURRENT ROW
                         )
-                    ) AS slope_{col}_window
+                    ) AS slope_{col}_{ventana}_window
                 """
                 slope_exprs.append(expr)
             else:

@@ -168,7 +168,7 @@ def convertir_clase_ternaria_a_target(df: pd.DataFrame) -> pd.DataFrame:
     # Convertir clase_ternaria a binario en el mismo atributo
     df_result['target'] = df_result['target'].map({
         'CONTINUA': 0,
-        'BAJA+1': 0,
+        'BAJA+1': 1,
         'BAJA+2': 1
     })
   
@@ -177,7 +177,7 @@ def convertir_clase_ternaria_a_target(df: pd.DataFrame) -> pd.DataFrame:
     n_unos = (df_result['target'] == 1).sum()
   
     logger.info(f"Conversión completada:")
-    logger.info(f"  Mapeo utilizado: CONTINUA -> 0, BAJA+1 -> 0, BAJA+2 -> 1")
+    logger.info(f"  Mapeo utilizado: CONTINUA -> 0, BAJA+1 -> 1, BAJA+2 -> 1")
     logger.info(f"  Original - CONTINUA: {n_continua_orig}, BAJA+1: {n_baja1_orig}, BAJA+2: {n_baja2_orig}")
     logger.info(f"  Binario - 0: {n_ceros}, 1: {n_unos}")
     logger.info(f"  Distribución: {n_unos/(n_ceros + n_unos)*100:.2f}% casos positivos")

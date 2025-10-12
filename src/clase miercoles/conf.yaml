@@ -1,49 +1,47 @@
 # config.yaml
-STUDY_NAME : "Retesting...Vuelvo a solo B2 y agrego Vars Aux"
+STUDY_NAME : "Param Viejos y CON Enero - Retesteo Optimo"
 
 competencia01:
     DATA_PATH: "../data/competencia_03.csv"
-    SEMILLA: [555557, 555871, 556219]
-    # SEMILLA: [555557, 555871, 556219, 556459, 556691]
-    MES_TRAIN: [202101,202102] 
+    # SEMILLA: [555557, 555871, 556219]
+    SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
+    MES_TRAIN: [2021,202102] 
     MES_VALIDACION: 202103
-    MESES_OPTIMIZACION: [202101,202102,202103,202104]
+    MESES_OPTIMIZACION: [202102,202103]
     MES_TEST: 202104
     GANANCIA_ACIERTO: 780000
     COSTO_ESTIMULO: 20000
-    FINAL_TRAIN: [202101,202102,202103,202104]  
+    FINAL_TRAIN: [2021,202102,202103,202104]  
     FINAL_PREDIC: 202106
     UMBRAL: 0.015
-    TOP_K: 10000
+    TOP_K: 9176
     HYPERPARAM_RANGES:
         num_leaves:
             min: 20
-            max: 800
+            max: 200
             type: int
         learning_rate:
             min: 0.005
-            max: 0.10
+            max: 0.06
             type: float
         min_data_in_leaf:
-            min: 3
-            max: 30
+            min: 300
+            max: 1000
             type: int
         feature_fraction:
-            min: 0.3
-            max: 0.9
+            min: 0.15
+            max: 0.6
             type: float
         bagging_fraction:
-            min: 0.3
-            max: 0.9
+            min: 0.15
+            max: 0.7
             type: float
-        min_gain_to_split:
-            min: 0.0
-            max: 0.5
             type: float
-        max_depth:
-            min: 5
-            max: 70
+        num_boost_round:
+            min: 300
+            max: 1200
             type: int
+
 
 
 
