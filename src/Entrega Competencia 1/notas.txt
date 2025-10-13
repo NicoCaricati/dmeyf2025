@@ -1,0 +1,25 @@
+ La idea del entorno virtual es SIMULAR lo q vamos a tener q hacer en un servidor.
+ Dejar en claro en requirements.txt las librerias que vamos a usar, y sus versiones.
+
+ No hacer scripts sueltos de cada tema. Ir integrando todo en un solo script.
+ Dejar todo en un archivo bastante limpio y ordenado.
+ Hasta ahora agregar clase ternaria, arboles, bosques, obstuza
+
+ Jupyter notebook sirve para EDA, visualizaciones
+ Py files para crear variables, preprocesamiento ORDENADO, hiperparametros, modelos, predicciones
+
+ Try except para manejo de errores: se usa cuando el codigo puede fallar.
+ Especialmente cuando el codigo depende de archivos externos, o interactua con otras APIs
+
+
+
+ Cosas a probar
+ Dado un modelo, correr el umbral hasta 10/10.5K mejora el score en Kaggle
+ Hiperparametro para hacer para rapido el modelo
+ Opti con toda la muestra, o toda la muestra en solo un mes
+Notebook para analizar las corridas (json)
+Graficos copados para ver ganancias
+
+
+
+
