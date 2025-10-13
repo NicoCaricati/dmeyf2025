@@ -135,7 +135,7 @@ def objetivo_ganancia_cv(trial, df) -> float:
     df_train = df[df['foto_mes'].isin(mes_train + [mes_validacion])]
 
 
-    X_train = df_train.drop(columns=['target', 'foto_mes', 'numero_de_cliente'])
+    X_train = df_train.drop(columns=['target', 'foto_mes','target_to_calculate_gan'])
     y_train = df_train['target']
 
     # Datasets de LightGBM

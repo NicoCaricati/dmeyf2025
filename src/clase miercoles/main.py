@@ -98,7 +98,7 @@ def main():
 
     df_fe = feature_engineering_cpayroll_trx_corregida(df)
     df_fe = feature_engineering_mpayroll_corregida(df_fe)
-    df_fe = feature_engineering_tc_total(df_fe)
+    df_fe = feature_engineering_tc_total(df)
     df_fe = generar_ctrx_features(df_fe)
     df_fe = variables_aux(df_fe)
     columnas_base = df_fe.columns.tolist()
@@ -118,7 +118,7 @@ def main():
 
     # montos_vars = ["matm", "matm_other", "mautoservicio", "mcaja_ahorro", "mcaja_ahorro_adicional", "mcaja_ahorro_dolares", "mcajeros_propios_descuentos", "mcheques_depositados", "mcheques_depositados_rechazados", "mcheques_emitidos", "mcheques_emitidos_rechazados", "mcomisiones", "mcomisiones_mantenimiento", "mcomisiones_otras", "mcuenta_corriente", "mcuenta_corriente_adicional", "mcuenta_debitos_automaticos", "mcuentas_saldo", "mextraccion_autoservicio", "mforex_buy", "mforex_sell", "minversion1_dolares", "minversion1_pesos", "minversion2", "mora_total", "mpagodeservicios", "mpagomiscuentas", "mpasivos_margen", "mpayroll", "mpayroll_corregida", "mpayroll2", "mplazo_fijo_dolares", "mplazo_fijo_pesos", "mprestamos_hipotecarios", "mprestamos_personales", "mprestamos_prendarios", "mrentabilidad", "mrentabilidad_annual", "mtarjeta_master_consumo", "mtarjeta_master_descuentos", "mtarjeta_visa_consumo", "mtarjeta_visa_descuentos", "mtransferencias_emitidas", "mtransferencias_recibidas", "mttarjeta_master_debitos_automaticos", "mttarjeta_visa_debitos_automaticos", "mactivos_margen", "margen_por_cuenta", "margen_por_producto", "margen_total", "Master_madelantodolares", "Master_madelantopesos", "Master_mconsumosdolares", "Master_mconsumospesos", "Master_mconsumototal", "Master_mfinanciacion_limite", "Master_mlimitecompra", "Master_mpagado", "Master_mpagominimo", "Master_mpagosdolares", "Master_mpagospesos", "Master_msaldodolares", "Master_msaldopesos", "Master_msaldototal", "Visa_madelantodolares", "Visa_madelantopesos", "Visa_mconsumosdolares", "Visa_mconsumospesos", "Visa_mconsumototal", "Visa_mfinanciacion_limite", "Visa_mlimitecompra", "Visa_mpagado", "Visa_mpagominimo", "Visa_mpagosdolares", "Visa_mpagospesos", "Visa_msaldodolares", "Visa_msaldopesos", "Visa_msaldototal", "TC_Total_madelantodolares", "TC_Total_madelantopesos", "TC_Total_mconsumosdolares", "TC_Total_mconsumospesos", "TC_Total_mconsumototal", "TC_Total_mfinanciacion_limite", "TC_Total_mlimitecompra", "TC_Total_mpagado", "TC_Total_mpagominimo", "TC_Total_mpagosdolares", "TC_Total_mpagospesos", "TC_Total_msaldodolares", "TC_Total_msaldopesos", "TC_Total_msaldototal"]
 
-    # columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target", montos_vars]
+    # columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target","target_to_calculate_gan"]
     # atributos = [c for c in columnas_base if c not in columnas_a_excluir]
 
     # df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = 2)
@@ -150,11 +150,16 @@ def main():
 
     # df_fe.to_csv("data/competencia_fe_.csv", index=False)
 
-    # # # 3.5 Muestreo para acelerar optimización (opcional)
-    # # clientes_202101 = df_fe[df_fe['foto_mes'] == 202101]['numero_de_cliente'].unique()
-    # # clientes_muestra = np.random.choice(clientes_202101, size=int(0.45 * len(clientes_202101)), replace=False)
-    # # df_fe_sampled = df_fe[df_fe['numero_de_cliente'].isin(clientes_muestra)]
-    # logger.info(f"Datos muestreados para optimización: {df_fe_sampled.shape}")
+    # # 3.5 Muestreo para acelerar optimización (opcional)
+    # clientes_202101 = df_fe[df_fe['foto_mes'] == 202101]['numero_de_cliente'].unique()
+    # clientes_muestra = np.random.choice(clientes_202101, size=int(0.45 * len(clientes_202101)), replace=False)
+    # clientes_target0 = df.loc[(df['foto_mes'] == 202101) & (df['target'] == 0), 'numero_de_cliente'].unique()
+    # clientes_muestra = np.random.choice(
+    # clientes_target0,
+    # size=int(0.2 * len(clientes_target0)),
+    # replace=False)
+    # df_fe_sampled = df_fe[df_fe['numero_de_cliente'].isin(clientes_muestra)]
+    # # logger.info(f"Datos muestreados para optimización: {df_fe_sampled.shape}")
     # # saco los meses 5 y 6 para que no haya fugas
     # df_fe_sampled = df_fe
     # df_fe_sampled = df_fe_sampled[~df_fe_sampled['foto_mes'].isin([202105,202106])]
@@ -162,7 +167,7 @@ def main():
     # # df_fe_sampled.to_csv("data/competencia_fe_sampled.csv", index=False)
 
     # # 4. Ejecutar optimización (función simple)
-    # study = optimizar_con_cv(df_fe_sampled, n_trials=120)
+    # study = optimizar_con_cv(df_fe_sampled, n_trials=50)
   
     # # 5. Análisis adicional
     # logger.info("=== ANÁLISIS DE RESULTADOS ===")
@@ -184,7 +189,7 @@ def main():
 
     mejores_params = {'num_leaves': 46, 'learning_rate': 0.016377657023274192, 'min_data_in_leaf': 710, 'feature_fraction': 0.2503218637353462, 'bagging_fraction': 0.2352773905721117, 'num_boost_round': 1000}
 
-    #  mejores_params ={
+    # mejores_params = {
     #   "num_leaves": 480,
     #   "learning_rate": 0.0317163548889023,
     #   "min_data_in_leaf": 177,
@@ -194,8 +199,7 @@ def main():
     #   "num_boost_round": 1062
     # }
 
-    # mejores_params = {'num_leaves': 107, 'learning_rate': 0.026360408, 'min_data_in_leaf': 881, 'feature_fraction':0.396962695, 'bagging_fraction': 0.619601585121235,  'num_boost_round': 929} 
-
+    # mejores_params = {'num_leaves': 173, 'learning_rate': 0.05341811211926391, 'min_data_in_leaf': 751, 'feature_fraction': 0.28618267208195725, 'bagging_fraction': 0.380548133981898, 'num_boost_round': 824}
 
     # mejores_params = cargar_mejores_hiperparametros()
 

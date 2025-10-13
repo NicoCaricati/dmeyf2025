@@ -131,8 +131,8 @@ def cargar_datos(path: str) -> pd.DataFrame | None:
         # Pasar a pandas
         df = con.execute("SELECT * FROM competencia_03").fetchdf()
 
-        # Filtrar meses de interés
-        df = df[df['foto_mes'].isin(MES_TRAIN + [MES_VALIDACION] + [MES_TEST] + [FINAL_PREDIC])]
+        # # Filtrar meses de interés
+        # df = df[df['foto_mes'].isin(MES_TRAIN + [MES_VALIDACION] + [MES_TEST] + [FINAL_PREDIC])]
 
         logger.info(f"Dataset cargado con {df.shape[0]} filas y {df.shape[1]} columnas")
         return df
@@ -166,11 +166,20 @@ def convertir_clase_ternaria_a_target(df: pd.DataFrame) -> pd.DataFrame:
     n_baja2_orig = (df_result['target'] == 'BAJA+2').sum()
   
     # Convertir clase_ternaria a binario en el mismo atributo
+    df_result['target_to_calculate_gan'] = df_result['target'].map({
+        'CONTINUA': 0,
+        'BAJA+1': 0,
+        'BAJA+2': 1
+    })
+  
+
     df_result['target'] = df_result['target'].map({
         'CONTINUA': 0,
         'BAJA+1': 1,
         'BAJA+2': 1
     })
+
+
   
     # Log de la conversión
     n_ceros = (df_result['target'] == 0).sum()

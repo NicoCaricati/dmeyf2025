@@ -412,17 +412,6 @@ def generar_ctrx_features(df: pd.DataFrame) -> pd.DataFrame:
             ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
         ) AS ctrx_90d,
 
-        sum(
-            coalesce(ctarjeta_debito_transacciones,0)
-            + coalesce(ctarjeta_visa_transacciones,0)
-            + coalesce(ctarjeta_master_transacciones,0)
-            + coalesce(ccajas_transacciones,0)
-        ) OVER (
-            PARTITION BY numero_de_cliente
-            ORDER BY foto_mes
-            ROWS BETWEEN 3 PRECEDING AND CURRENT ROW
-        ) AS ctrx_120d
-
     FROM df
     """
 

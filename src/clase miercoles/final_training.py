@@ -39,9 +39,9 @@ def preparar_datos_entrenamiento_final(df: pd.DataFrame) -> tuple:
     df_predict = df_entrenamiento_final[df_entrenamiento_final['foto_mes'] == FINAL_PREDIC]
     #filtro los meses de train para entrenar el modelo final, y predigo en test
     y_train = df_train['target']
-    X_train = df_train.drop(columns=['target'])
+    X_train = df_train.drop(columns=['target','target_to_calculate_gan'])
     y_predict = df_predict['target']
-    X_predict = df_predict.drop(columns=['target'])
+    X_predict = df_predict.drop(columns=['target','target_to_calculate_gan'])
 
     # Preparar features para predicción
     clientes_predict = df_predict['numero_de_cliente'].values

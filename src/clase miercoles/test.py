@@ -38,9 +38,9 @@ def evaluar_en_test(df, mejores_params, seed = SEMILLA[0]) -> dict:
     df_train_completo = df[df['foto_mes'].isin(periodos_entrenamiento)]
 
     df_test = df[df['foto_mes'] == MES_TEST]
-    y_test = df_test['target']
-    X_test = df_test.drop(columns=['target'])
-    X_train = df_train_completo.drop(columns=['target'])
+    y_test = df_test['target_to_calculate_gan']
+    X_test = df_test.drop(columns=['target','target_to_calculate_gan'])
+    X_train = df_train_completo.drop(columns=['target', 'target_to_calculate_gan'])
     y_train = df_train_completo['target']
 
     # Defino el modelo con los mejores hiperparametros para evaluar en test
