@@ -1,0 +1,75 @@
+2025-10-15 01:13:16,393 - INFO - __main__ 33 - Iniciando programa de optimización con log fechado
+2025-10-15 01:13:16,393 - INFO - __main__ 36 - Configuración cargada desde YAML
+2025-10-15 01:13:16,393 - INFO - __main__ 37 - STUDY_NAME: Modelo Final - Test con Historicas - Prueba Git desde VM
+2025-10-15 01:13:16,393 - INFO - __main__ 38 - DATA_PATH: ../data/competencia_03.csv
+2025-10-15 01:13:16,393 - INFO - __main__ 39 - SEMILLA: [555557]
+2025-10-15 01:13:16,393 - INFO - __main__ 40 - MES_TRAIN: [2021, 202102]
+2025-10-15 01:13:16,393 - INFO - __main__ 41 - MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
+2025-10-15 01:13:16,393 - INFO - __main__ 42 - MES_VALIDACION: 202103
+2025-10-15 01:13:16,393 - INFO - __main__ 43 - MES_TEST: 202104
+2025-10-15 01:13:16,393 - INFO - __main__ 44 - FINAL_TRAIN: [202101, 202102, 202103, 202104]
+2025-10-15 01:13:16,393 - INFO - __main__ 45 - FINAL_PREDIC: 202106
+2025-10-15 01:13:16,393 - INFO - __main__ 46 - GANANCIA_ACIERTO: 780000
+2025-10-15 01:13:16,393 - INFO - __main__ 47 - COSTO_ESTIMULO: 20000
+2025-10-15 01:13:16,393 - INFO - __main__ 48 - UMBRAL: 0.015
+2025-10-15 01:13:16,393 - INFO - __main__ 49 - HIPERPARAMETROS: {'num_leaves': {'min': 20, 'max': 200, 'type': 'int'}, 'learning_rate': {'min': 0.005, 'max': 0.06, 'type': 'float'}, 'min_data_in_leaf': {'min': 300, 'max': 1000, 'type': 'int'}, 'feature_fraction': {'min': 0.15, 'max': 0.6, 'type': 'float'}, 'bagging_fraction': {'min': 0.15, 'max': 0.7, 'type': 'float'}, 'num_boost_round': {'min': 300, 'max': 1200, 'type': 'int'}}
+2025-10-15 01:13:16,394 - INFO - __main__ 55 - === INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===
+2025-10-15 01:13:16,394 - INFO - loader 88 - Cargando dataset desde ../../../datasets/competencia_01_crudo.csv
+2025-10-15 01:13:24,143 - INFO - loader 137 - Dataset cargado con 978439 filas y 155 columnas
+2025-10-15 01:13:24,660 - INFO - __main__ 62 - Datos cargados: (978439, 155)
+2025-10-15 01:13:24,909 - INFO - __name__ 223 - Variables TC_Total generadas. DataFrame resultante con 179 columnas
+2025-10-15 01:13:29,461 - INFO - __name__ 29 - Realizando feature engineering con 1 lags para 215 atributos
+2025-10-15 01:13:40,649 - INFO - __name__ 60 - Feature engineering completado. DataFrame resultante con 434 columnas
+2025-10-15 01:13:40,664 - INFO - __name__ 29 - Realizando feature engineering con 2 lags para 215 atributos
+2025-10-15 01:14:03,492 - INFO - __name__ 60 - Feature engineering completado. DataFrame resultante con 864 columnas
+2025-10-15 01:14:03,514 - INFO - __name__ 85 - Realizando feature engineering con 1 deltas para 215 atributos
+2025-10-15 01:14:30,939 - INFO - __name__ 116 - Feature engineering completado. DataFrame resultante con 1079 columnas
+2025-10-15 01:14:30,969 - INFO - __name__ 85 - Realizando feature engineering con 2 deltas para 215 atributos
+2025-10-15 01:15:10,211 - INFO - __name__ 116 - Feature engineering completado. DataFrame resultante con 1509 columnas
+2025-10-15 01:15:10,245 - INFO - __name__ 85 - Realizando feature engineering con 2 deltas para 215 atributos
+2025-10-15 01:16:30,728 - INFO - __name__ 116 - Feature engineering completado. DataFrame resultante con 1939 columnas
+2025-10-15 01:17:02,560 - INFO - features 248 - Calculando slope con ventana móvil de 2 meses para 215 atributos
+2025-10-15 01:18:27,010 - INFO - features 314 - Slope con ventana móvil calculado. DataFrame resultante con 2154 columnas
+2025-10-15 01:18:27,029 - INFO - features 248 - Calculando slope con ventana móvil de 3 meses para 215 atributos
+2025-10-15 01:20:00,091 - INFO - features 314 - Slope con ventana móvil calculado. DataFrame resultante con 2369 columnas
+2025-10-15 01:20:00,134 - INFO - __main__ 144 - Feature Engineering completado: (978439, 2369)
+2025-10-15 01:20:02,643 - INFO - loader 188 - Conversión completada:
+2025-10-15 01:20:02,643 - INFO - loader 189 -   Mapeo utilizado: CONTINUA -> 0, BAJA+1 -> 1, BAJA+2 -> 1
+2025-10-15 01:20:02,643 - INFO - loader 190 -   Original - CONTINUA: 642840, BAJA+1: 3434, BAJA+2: 3935
+2025-10-15 01:20:02,643 - INFO - loader 191 -   Binario - 0: 642840, 1: 7369
+2025-10-15 01:20:02,643 - INFO - loader 192 -   Distribución: 1.13% casos positivos
+2025-10-15 01:20:02,688 - INFO - __main__ 188 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-15 01:20:02,688 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-15 01:20:02,689 - INFO - config 30 - Período de test: 202104
+2025-10-15 01:25:51,482 - INFO - config 520 - === Comparando 1 semillas ===
+2025-10-15 01:25:51,483 - INFO - config 527 - 🔁 Semilla: 555557
+2025-10-15 01:25:51,483 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-15 01:25:51,483 - INFO - config 30 - Período de test: 202104
+2025-10-15 01:32:04,313 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-15 01:32:04,436 - INFO - grafico_test 40 - Ganancia máxima: 372,680,000 en posición 9405
+2025-10-15 01:32:04,436 - INFO - grafico_test 41 - Umbral óptimo: 0.037497
+2025-10-15 01:32:06,558 - INFO - config 609 - ✅ Gráfico comparativo guardado: resultados/plots/Modelo Final - Test con Historicas - Prueba Git desde VM_comparativo_semillas_20251015_013205.png
+2025-10-15 01:32:16,715 - INFO - config 104 - Resultados de test guardados en resultados/Modelo Final - Test con Historicas - Prueba Git desde VM_test_results.json
+2025-10-15 01:32:16,715 - INFO - __main__ 220 - === RESUMEN DE EVALUACIÓN EN TEST ===
+2025-10-15 01:32:16,715 - INFO - __main__ 221 - ✅ Ganancia en test: 2,147,472,704
+2025-10-15 01:32:16,715 - INFO - __main__ 222 - 🎯 Predicciones positivas: 17,863 (10.93%)
+2025-10-15 01:32:16,715 - INFO - __main__ 225 - === GRAFICO DE TEST ===
+2025-10-15 01:32:17,440 - INFO - __main__ 234 - === GRAFICO DE TEST ===
+2025-10-15 01:32:17,440 - INFO - grafico_test 58 - Generando gráfico de ganancia avanzado...
+2025-10-15 01:32:17,440 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-15 01:32:17,448 - INFO - grafico_test 40 - Ganancia máxima: 372,680,000 en posición 9405
+2025-10-15 01:32:17,448 - INFO - grafico_test 41 - Umbral óptimo: 0.037497
+2025-10-15 01:32:19,190 - INFO - grafico_test 149 - Gráfico avanzado guardado: resultados/plots/Modelo Final - Test con Historicas - Prueba Git desde VM_ganancia_avanzado_20251015_013217.png
+2025-10-15 01:32:19,191 - INFO - grafico_test 150 - Datos guardados: resultados/Modelo Final - Test con Historicas - Prueba Git desde VM_datos_ganancia_20251015_013217.csv
+2025-10-15 01:32:19,191 - INFO - __main__ 239 - === ENTRENAMIENTO FINAL ===
+2025-10-15 01:32:19,191 - INFO - __main__ 240 - Preparar datos para entrenamiento final
+2025-10-15 01:32:19,191 - INFO - final_training 23 - Preparando datos para entrenamiento final
+2025-10-15 01:32:19,191 - INFO - final_training 24 - Períodos de entrenamiento: [202101, 202102, 202103, 202104]
+2025-10-15 01:32:19,191 - INFO - final_training 25 - Período de predicción: 202106
+2025-10-15 01:32:31,678 - INFO - final_training 50 - Features utilizadas: 2368
+2025-10-15 01:32:31,682 - INFO - final_training 51 - Distribución del target - 0: 642,840, 1: 7,369
+2025-10-15 01:32:31,686 - INFO - __main__ 244 - Entrenar modelo final
+2025-10-15 01:32:31,686 - INFO - final_training 67 - Iniciando entrenamiento del modelo final
+2025-10-15 01:32:31,687 - INFO - final_training 79 - Parámetros del modelo: {'objective': 'binary', 'metric': 'None', 'random_state': 555557, 'verbose': -1, 'extra_trees': False, 'num_leaves': 46, 'learning_rate': 0.016377657023274192, 'min_data_in_leaf': 710, 'feature_fraction': 0.2503218637353462, 'bagging_fraction': 0.2352773905721117, 'num_boost_round': 1000}
+2025-10-15 01:39:31,377 - INFO - __main__ 248 - Generar predicciones finales
+2025-10-15 01:39:31,380 - INFO - final_training 159 - Generando predicciones finales

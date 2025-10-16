@@ -157,6 +157,8 @@ def generar_predicciones_finales(
         dict: {'umbral': DataFrame, 'top_k': DataFrame (si aplica)}
     """
     logger.info("Generando predicciones finales")
+    import os
+    os.makedirs("predict", exist_ok=True)
 
     # Generar probabilidades con el modelo entrenado
     y_pred = modelo.predict(X_predict, num_iteration=modelo.best_iteration)
@@ -211,6 +213,8 @@ def feature_importance(modelo: lgb.Booster, max_num_features: int = 1000):
         max_num_features: Número máximo de features a mostrar
     """
     import matplotlib.pyplot as plt
+    import os
+    os.makedirs("feature_importance", exist_ok=True)
     fecha = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     # Obtener importancia de features
     importance_gain = modelo.feature_importance(importance_type='gain')

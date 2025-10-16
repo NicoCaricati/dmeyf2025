@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "Modelo Final"
+STUDY_NAME : "Modelo Final - Testing Git en VM"
 
 competencia01:
     DATA_PATH: "../data/competencia_03.csv"
