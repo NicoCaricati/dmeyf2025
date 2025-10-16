@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "Modelo Final - Testing Git en VM"
+STUDY_NAME : "TEST 1 - Modelo Final  - Solo Corregidas sin las Variables sin Drifting"
 
 competencia01:
     DATA_PATH: "../data/competencia_03.csv"
@@ -14,7 +14,7 @@ competencia01:
     FINAL_TRAIN: [202101,202102,202103,202104]  
     FINAL_PREDIC: 202106
     UMBRAL: 0.015
-    TOP_K: 12000
+    TOP_K: 11750
     HYPERPARAM_RANGES:
         num_leaves:
             min: 20
