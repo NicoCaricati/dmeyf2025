@@ -111,14 +111,14 @@ def main():
     # columnas_Master = [c for c in columnas_base if c.startswith("Master_")]
     # columnas_Visa = [c for c in columnas_base if c.startswith("Visa_")]      
     # columnas_categoricas = [c for c in columnas_base if df[c].nunique() < 5]
-    #for i in (1,2):
-    #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
-    # for i in (1,2):
-    # #     df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
+    for i in (1,2):
+        df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
+    for i in (1,2):
+        df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
     # df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=2)
     # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
-    # for i in (2,3):
-    #   df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
+    for i in (2,3):
+        df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
 
     # montos_vars = ["matm", "matm_other", "mautoservicio", "mcaja_ahorro", "mcaja_ahorro_adicional", "mcaja_ahorro_dolares", "mcajeros_propios_descuentos", "mcheques_depositados", "mcheques_depositados_rechazados", "mcheques_emitidos", "mcheques_emitidos_rechazados", "mcomisiones", "mcomisiones_mantenimiento", "mcomisiones_otras", "mcuenta_corriente", "mcuenta_corriente_adicional", "mcuenta_debitos_automaticos", "mcuentas_saldo", "mextraccion_autoservicio", "mforex_buy", "mforex_sell", "minversion1_dolares", "minversion1_pesos", "minversion2", "mora_total", "mpagodeservicios", "mpagomiscuentas", "mpasivos_margen", "mpayroll", "mpayroll_corregida", "mpayroll2", "mplazo_fijo_dolares", "mplazo_fijo_pesos", "mprestamos_hipotecarios", "mprestamos_personales", "mprestamos_prendarios", "mrentabilidad", "mrentabilidad_annual", "mtarjeta_master_consumo", "mtarjeta_master_descuentos", "mtarjeta_visa_consumo", "mtarjeta_visa_descuentos", "mtransferencias_emitidas", "mtransferencias_recibidas", "mttarjeta_master_debitos_automaticos", "mttarjeta_visa_debitos_automaticos", "mactivos_margen", "margen_por_cuenta", "margen_por_producto", "margen_total", "Master_madelantodolares", "Master_madelantopesos", "Master_mconsumosdolares", "Master_mconsumospesos", "Master_mconsumototal", "Master_mfinanciacion_limite", "Master_mlimitecompra", "Master_mpagado", "Master_mpagominimo", "Master_mpagosdolares", "Master_mpagospesos", "Master_msaldodolares", "Master_msaldopesos", "Master_msaldototal", "Visa_madelantodolares", "Visa_madelantopesos", "Visa_mconsumosdolares", "Visa_mconsumospesos", "Visa_mconsumototal", "Visa_mfinanciacion_limite", "Visa_mlimitecompra", "Visa_mpagado", "Visa_mpagominimo", "Visa_mpagosdolares", "Visa_mpagospesos", "Visa_msaldodolares", "Visa_msaldopesos", "Visa_msaldototal", "TC_Total_madelantodolares", "TC_Total_madelantopesos", "TC_Total_mconsumosdolares", "TC_Total_mconsumospesos", "TC_Total_mconsumototal", "TC_Total_mfinanciacion_limite", "TC_Total_mlimitecompra", "TC_Total_mpagado", "TC_Total_mpagominimo", "TC_Total_mpagosdolares", "TC_Total_mpagospesos", "TC_Total_msaldodolares", "TC_Total_msaldopesos", "TC_Total_msaldototal"]
 
