@@ -117,60 +117,6 @@ def feature_engineering_delta(df: pd.DataFrame, columnas: list[str], cant_delta:
 
     return df
 
-def feature_engineering_tasa_variacion(df: pd.DataFrame, columnas: list[str], cant_tasa_variacion: int = 1) -> pd.DataFrame:
-    """
-    Genera variables de tasa de variación para los atributos especificados utilizando SQL.
-    La tasa se define como (X_t - X_{t-i}) / X_{t-i}.
-    
-    Parameters
-    ----------
-    df : pd.DataFrame
-        DataFrame con los datos
-    columnas : list[str]
-        Lista de atributos para los cuales generar tasas de variación
-    cant_delta : int, default=1
-        Cantidad de lags a usar para calcular tasas
-    
-    Returns
-    -------
-    pd.DataFrame
-        DataFrame con las tasas de variación agregadas
-    """
-    if not columnas:
-        logger.warning("No se especificaron atributos para generar tasas de variación")
-        return df
-
-    sql = "SELECT *,\n"
-
-    exprs = []
-    for attr in columnas:
-        if attr in df.columns:
-            for i in range(1, cant_tasa_variacion + 1):
-                exprs.append(
-                    f"CASE WHEN LAG({attr}, {i}) OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) IS NULL "
-                    f"OR LAG({attr}, {i}) OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) = 0 "
-                    f"THEN NULL ELSE "
-                    f"(({attr} - LAG({attr}, {i}) OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes)) "
-                    f"/ NULLIF(LAG({attr}, {i}) OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes),0.0)) END "
-                    f"AS {attr}_tasa_var_{i}"
-                )
-        else:
-            logger.warning(f"El atributo {attr} no existe en el DataFrame")
-
-    sql += ",\n".join(exprs)
-    sql += " FROM df"
-
-    logger.debug(f"Consulta SQL: {sql}")
-
-    con = duckdb.connect(database=":memory:")
-    con.register("df", df)
-    df = con.execute(sql).df()
-    con.close()
-
-    logger.info(f"Tasas de variación generadas. DataFrame resultante con {df.shape[1]} columnas")
-
-    return df
-
 
 def feature_engineering_tc_total(df: pd.DataFrame) -> pd.DataFrame:
     """
