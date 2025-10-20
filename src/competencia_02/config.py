@@ -14,6 +14,7 @@ try:
         _cfg = _cfgGeneral["competencia01"]
         STUDY_NAME = _cfgGeneral.get("STUDY_NAME", "Wednesday")
         DATA_PATH = _cfg.get("DATA_PATH", "../data/competencia_03.csv")
+        BUCKET_NAME = _cfg.get("BUCKET_NAME", "../../../buckets/b1/Compe_02")
         SEMILLA = _cfg.get("SEMILLA", [42])
         MES_TRAIN = _cfg.get("MES_TRAIN",[202101,202102,202103])
         MES_VALIDACION = _cfg.get("MES_VALIDACION", 202104)

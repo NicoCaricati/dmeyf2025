@@ -11,29 +11,76 @@ from gain_function import calcular_ganancia, ganancia_lgb_binary, ganancia_evalu
 
 logger = logging.getLogger(__name__)
 
-def objetivo_ganancia(trial, df) -> float:
+def objetivo_ganancia(trial, df, undersampling=0.2) -> float:
     """
     Parameters:
     trial: trial de optuna
     df: dataframe con datos
+    undersampling: float en (0,1) o False. Proporción de clientes con target=0 a mantener.
 
     Description:
     Función objetivo que maximiza ganancia en mes de validación.
     Utiliza configuración YAML para períodos y semilla.
     Define parámetros para el modelo LightGBM.
-    Prepara dataset para entrenamiento y validación.
+    Prepara dataset para entrenamiento y validación, aplicando undersampling a nivel cliente.
     Entrena 10 modelos (uno por cada semilla) con función de ganancia personalizada.
     Devuelve la ganancia promedio entre las semillas.
     """
 
-    # Hiperparámetros a optimizar
-    semillas = SEMILLA  # lista de semillas desde configuración YAML
+    # Hiperparámetros y configuración general
+    semillas = SEMILLA
     mes_train = MES_TRAIN
     mes_validacion = MES_VALIDACION
 
-    # Dividir datos en train y validación según meses
-    df_train = df[df['foto_mes'].isin(mes_train)]
-    df_val = df[df['foto_mes'].isin([mes_validacion])]
+    # Dividir datos en train y validación
+    df_train = df[df['foto_mes'].isin(mes_train)].copy()
+    df_val = df[df['foto_mes'].isin([mes_validacion])].copy()
+
+    # --- UNDERSAMPLING A NIVEL CLIENTE ---
+    if isinstance(undersampling, float) and 0 < undersampling < 1:
+        np.random.seed(SEMILLA[0])
+
+        # Clientes que alguna vez tuvieron target=1 → conservar todos sus registros
+        clientes_con_target1 = (
+            df_train.groupby("numero_de_cliente")["target"]
+            .max()
+            .reset_index()
+        )
+        clientes_con_target1 = clientes_con_target1[
+            clientes_con_target1["target"] == 1
+        ]["numero_de_cliente"]
+
+        # Clientes que siempre fueron 0
+        clientes_siempre_0 = (
+            df_train.loc[
+                ~df_train["numero_de_cliente"].isin(clientes_con_target1),
+                "numero_de_cliente",
+            ]
+            .unique()
+        )
+
+        # Subsamplear clientes 0
+        n_subsample = int(len(clientes_siempre_0) * undersampling)
+        clientes_siempre_0_sample = np.random.choice(
+            clientes_siempre_0, n_subsample, replace=False
+        )
+
+        # Combinar ambos grupos
+        clientes_final = np.concatenate(
+            [clientes_con_target1.values, clientes_siempre_0_sample]
+        )
+
+        # Filtrar train
+        df_train = df_train[df_train["numero_de_cliente"].isin(clientes_final)]
+
+        logger.debug(
+            f"Undersampling aplicado: {len(clientes_con_target1)} clientes con target=1 "
+            f"+ {len(clientes_siempre_0_sample)} clientes 0 (de {len(clientes_siempre_0)} posibles) "
+            f"→ total {len(clientes_final)} clientes en train."
+        )
+
+    else:
+        logger.debug("Sin undersampling: se usan todos los clientes en train.")
 
     # Separar características y target
     X_train = df_train.drop(columns=['target', 'target_to_calculate_gan'])
@@ -51,7 +98,7 @@ def objetivo_ganancia(trial, df) -> float:
         "bagging_fraction":{"min": 0.2, "max": 0.8, "type": "float"},
     }
 
-    # Merge entre lo que viene del YAML y los defaults
+    # Merge entre YAML y defaults
     PARAM_RANGES = {**DEFAULT_HYPERPARAMS, **HYPERPARAM_RANGES}
 
     # Sugerir hiperparámetros desde Optuna
@@ -66,7 +113,6 @@ def objetivo_ganancia(trial, df) -> float:
         'verbose': -1,
     }
 
-    # Usar los rangos de PARAM_RANGES
     for hp, cfg in PARAM_RANGES.items():
         if cfg["type"] == "int":
             params_base[hp] = trial.suggest_int(hp, cfg["min"], cfg["max"])
@@ -82,7 +128,7 @@ def objetivo_ganancia(trial, df) -> float:
         params = params_base.copy()
         params['seed'] = seed
 
-        # Crear datasets de LightGBM
+        # Crear datasets LightGBM
         lgb_train = lgb.Dataset(X_train, label=y_train)
         lgb_val = lgb.Dataset(X_val, label=y_val, reference=lgb_train)
 
@@ -100,27 +146,28 @@ def objetivo_ganancia(trial, df) -> float:
             ],
         )
 
-        # Predecir en conjunto de validación
+        # Predicción y ganancia
         y_pred = gbm.predict(X_val, num_iteration=gbm.best_iteration)
         y_pred_binary = (y_pred > UMBRAL).astype(int)
 
-        # Calcular ganancia
         _, ganancia_total, _ = ganancia_evaluator(y_val, y_pred_binary)
         ganancias.append(ganancia_total)
 
-    # Promediar ganancias
+    # Promedio de ganancias
     ganancia_promedio = np.mean(ganancias)
 
-    # Guardar en JSON (solo promedio o podés guardar lista también)
+    # Guardar en JSON y loggear
     guardar_iteracion(trial, ganancia_promedio)
-
-    logger.debug(f"Trial {trial.number}: Ganancias = {[int(g) for g in ganancias]} | Promedio = {ganancia_promedio:,.0f}")
+    logger.debug(
+        f"Trial {trial.number}: Ganancias = {[int(g) for g in ganancias]} | Promedio = {ganancia_promedio:,.0f}"
+    )
 
     return ganancia_promedio
 
 
 
-def optimizar(df: pd.DataFrame, n_trials: int, study_name: str = None, undersampling: float = 0.01) -> optuna.Study:
+
+def optimizar(df: pd.DataFrame, n_trials: int, study_name: str = None, undersampling: float = 0.2) -> optuna.Study:
     """
     Args:
         df: DataFrame con datos
