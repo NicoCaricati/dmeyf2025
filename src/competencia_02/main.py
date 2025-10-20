@@ -170,20 +170,20 @@ def main():
     # logger.info(f"Excluyo de la muestra meses 5 y 6")
     # # df_fe_sampled.to_csv("data/competencia_fe_sampled.csv", index=False)
 
-    # # 4. Ejecutar optimización (función simple)
-    # study = optimizar_con_cv(df_fe_sampled, n_trials=50)
+    # 4. Ejecutar optimización (función simple)
+    study = optimizar(df_fe_sampled, n_trials=50, undersampling = 0.1)
   
-    # # 5. Análisis adicional
-    # logger.info("=== ANÁLISIS DE RESULTADOS ===")
-    # trials_df = study.trials_dataframe()
-    # if len(trials_df) > 0:
-    #     top_5 = trials_df.nlargest(5, 'value')
-    #     logger.info("Top 5 mejores trials:")
-    #     for idx, trial in top_5.iterrows():
-    #         logger.info(
-    #         f"Trial {int(trial['number'])}: "
-    #         f"Ganancia = {trial['value']:,.0f} | "
-    #         f"Parámetros: {trial['params']}")
+    # 5. Análisis adicional
+    logger.info("=== ANÁLISIS DE RESULTADOS ===")
+    trials_df = study.trials_dataframe()
+    if len(trials_df) > 0:
+        top_5 = trials_df.nlargest(5, 'value')
+        logger.info("Top 5 mejores trials:")
+        for idx, trial in top_5.iterrows():
+            logger.info(
+            f"Trial {int(trial['number'])}: "
+            f"Ganancia = {trial['value']:,.0f} | "
+            f"Parámetros: {trial['params']}")
   
     # logger.info("=== OPTIMIZACIÓN COMPLETADA ===")
 
