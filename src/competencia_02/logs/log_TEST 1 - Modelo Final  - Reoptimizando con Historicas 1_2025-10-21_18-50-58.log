@@ -1,0 +1,34 @@
+2025-10-21 18:50:58,338 - INFO - __main__ 33 - Iniciando programa de optimización con log fechado
+2025-10-21 18:50:58,339 - INFO - __main__ 36 - Configuración cargada desde YAML
+2025-10-21 18:50:58,339 - INFO - __main__ 37 - STUDY_NAME: TEST 1 - Modelo Final  - Reoptimizando con Historicas 1
+2025-10-21 18:50:58,340 - INFO - __main__ 38 - DATA_PATH: ../../../data/competencia_03.csv
+2025-10-21 18:50:58,340 - INFO - __main__ 39 - SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
+2025-10-21 18:50:58,340 - INFO - __main__ 40 - MES_TRAIN: [2021, 202102]
+2025-10-21 18:50:58,340 - INFO - __main__ 41 - MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
+2025-10-21 18:50:58,340 - INFO - __main__ 42 - MES_VALIDACION: 202103
+2025-10-21 18:50:58,341 - INFO - __main__ 43 - MES_TEST: 202104
+2025-10-21 18:50:58,341 - INFO - __main__ 44 - FINAL_TRAIN: [202101, 202102, 202103, 202104]
+2025-10-21 18:50:58,341 - INFO - __main__ 45 - FINAL_PREDIC: 202106
+2025-10-21 18:50:58,341 - INFO - __main__ 46 - GANANCIA_ACIERTO: 780000
+2025-10-21 18:50:58,341 - INFO - __main__ 47 - COSTO_ESTIMULO: 20000
+2025-10-21 18:50:58,341 - INFO - __main__ 48 - UMBRAL: 0.015
+2025-10-21 18:50:58,342 - INFO - __main__ 49 - HIPERPARAMETROS: {'num_leaves': {'min': 20, 'max': 200, 'type': 'int'}, 'learning_rate': {'min': 0.005, 'max': 0.06, 'type': 'float'}, 'min_data_in_leaf': {'min': 300, 'max': 1000, 'type': 'int'}, 'feature_fraction': {'min': 0.15, 'max': 0.6, 'type': 'float'}, 'bagging_fraction': {'min': 0.15, 'max': 0.7, 'type': 'float'}, 'num_boost_round': {'min': 300, 'max': 1200, 'type': 'int'}}
+2025-10-21 18:50:58,342 - INFO - __main__ 55 - === INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===
+2025-10-21 18:50:59,784 - INFO - __main__ 58 - ✅ df_fe.csv encontrado
+2025-10-21 18:57:44,285 - INFO - __main__ 165 - ⏳ CSV cargado o creado, ahora ejecutando optimización...
+2025-10-21 18:57:44,285 - INFO - optimization 192 - Iniciando optimización con 5 trials
+2025-10-21 18:57:44,285 - INFO - optimization 193 - Configuración: TRAIN=[2021, 202102], VALID=202103, SEMILLA=[555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
+2025-10-21 18:57:45,047 - INFO - optimization 254 - 📁 Usando storage: sqlite:///../../../buckets/b1/Compe_02/optuna_db/TEST 1 - Modelo Final  - Reoptimizando con Historicas 1.db
+2025-10-21 18:58:01,640 - INFO - optimization 269 - ⚠️ No hay trials válidos aún para mostrar mejor valor
+2025-10-21 18:58:02,841 - INFO - optimization 212 - 🔄 Retomando desde trial 2
+2025-10-21 18:58:02,841 - INFO - optimization 213 - 📝 Trials a ejecutar: 3 (total objetivo: 5)
+2025-10-21 19:04:25,077 - INFO - optimization 324 - Iteración 2 guardada en resultados/TEST 1 - Modelo Final  - Reoptimizando con Historicas 1_iteraciones.json
+2025-10-21 19:04:25,078 - INFO - optimization 325 - Ganancia: 2,147,427,923---Parámetros: {params}
+2025-10-21 19:14:06,574 - INFO - optimization 324 - Iteración 3 guardada en resultados/TEST 1 - Modelo Final  - Reoptimizando con Historicas 1_iteraciones.json
+2025-10-21 19:14:06,574 - INFO - optimization 325 - Ganancia: 2,147,451,734---Parámetros: {params}
+2025-10-21 19:27:04,488 - INFO - optimization 324 - Iteración 4 guardada en resultados/TEST 1 - Modelo Final  - Reoptimizando con Historicas 1_iteraciones.json
+2025-10-21 19:27:04,488 - INFO - optimization 325 - Ganancia: 2,147,403,760---Parámetros: {params}
+2025-10-21 19:27:29,918 - INFO - optimization 221 - 🏆 Mejor ganancia: 2,147,451,734
+2025-10-21 19:27:34,400 - INFO - optimization 222 - Mejores parámetros: {'num_leaves': 23, 'learning_rate': 0.015429635744314982, 'min_data_in_leaf': 471, 'feature_fraction': 0.2908610795670702, 'bagging_fraction': 0.6839570348974631, 'num_boost_round': 958}
+2025-10-21 19:27:34,401 - INFO - __main__ 170 - === ANÁLISIS DE RESULTADOS ===
+2025-10-21 19:27:39,136 - INFO - __main__ 174 - Top 5 mejores trials:

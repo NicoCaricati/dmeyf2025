@@ -1,0 +1,101 @@
+[
+  {
+    "trial_number": 2,
+    "params": {
+      "num_leaves": 53,
+      "learning_rate": 0.044922772942821855,
+      "min_data_in_leaf": 877,
+      "feature_fraction": 0.4032861618416379,
+      "bagging_fraction": 0.22846843449206128,
+      "num_boost_round": 814
+    },
+    "value": 2147427923.2,
+    "datetime": "2025-10-21T19:04:25.077326",
+    "state": "COMPLETE",
+    "configuracion": {
+      "semilla": [
+        555557,
+        555871,
+        556219,
+        556459,
+        556691,
+        556903,
+        557159,
+        557399,
+        557597,
+        557861
+      ],
+      "mes_train": [
+        2021,
+        202102
+      ],
+      "mes_validacion": 202103
+    }
+  },
+  {
+    "trial_number": 3,
+    "params": {
+      "num_leaves": 23,
+      "learning_rate": 0.015429635744314982,
+      "min_data_in_leaf": 471,
+      "feature_fraction": 0.2908610795670702,
+      "bagging_fraction": 0.6839570348974631,
+      "num_boost_round": 958
+    },
+    "value": 2147451734.4,
+    "datetime": "2025-10-21T19:14:06.573765",
+    "state": "COMPLETE",
+    "configuracion": {
+      "semilla": [
+        555557,
+        555871,
+        556219,
+        556459,
+        556691,
+        556903,
+        557159,
+        557399,
+        557597,
+        557861
+      ],
+      "mes_train": [
+        2021,
+        202102
+      ],
+      "mes_validacion": 202103
+    }
+  },
+  {
+    "trial_number": 4,
+    "params": {
+      "num_leaves": 35,
+      "learning_rate": 0.007294745318610658,
+      "min_data_in_leaf": 626,
+      "feature_fraction": 0.5410246812787127,
+      "bagging_fraction": 0.539238063640356,
+      "num_boost_round": 1086
+    },
+    "value": 2147403760.0,
+    "datetime": "2025-10-21T19:27:04.487949",
+    "state": "COMPLETE",
+    "configuracion": {
+      "semilla": [
+        555557,
+        555871,
+        556219,
+        556459,
+        556691,
+        556903,
+        557159,
+        557399,
+        557597,
+        557861
+      ],
+      "mes_train": [
+        2021,
+        202102
+      ],
+      "mes_validacion": 202103
+    }
+  }
+]
