@@ -54,7 +54,6 @@ def main():
     """Pipeline principal con optimización usando configuración YAML."""
     logger.info("=== INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===")
 
-
     if os.path.exists(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv")):
         logger.info("✅ df_fe.csv encontrado")
         df_fe = pd.read_csv(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv"))
@@ -161,9 +160,11 @@ def main():
     
         # 4. Ejecutar optimización (función simple)
 
-            df_fe.to_csv(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv"), index=False)
-
-    study = optimizar(df_fe, n_trials=100,study_name = STUDY_NAME ,undersampling = 0.2)
+        df_fe.to_csv(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv"), index=False)
+    
+    logger.info("⏳ CSV cargado o creado, ahora ejecutando optimización...")
+    
+    study = optimizar(df_fe, n_trials=5,study_name = STUDY_NAME ,undersampling = 0.2)
   
     # 5. Análisis adicional
     logger.info("=== ANÁLISIS DE RESULTADOS ===")

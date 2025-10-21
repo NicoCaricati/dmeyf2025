@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "TEST 1 - Modelo Final  - Reoptimizando con Historicas 0"
+STUDY_NAME : "TEST 1 - Modelo Final  - Reoptimizando con Historicas 1"
 
 competencia01:
     DATA_PATH: "../../../data/competencia_03.csv"

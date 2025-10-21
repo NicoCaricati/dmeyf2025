@@ -227,63 +227,99 @@ def optimizar(df: pd.DataFrame, n_trials: int, study_name: str = None, undersamp
 
 def crear_o_cargar_estudio(study_name: str = None, semilla: int = None) -> optuna.Study:
     """
-    Crea un nuevo estudio de Optuna o carga uno existente desde SQLite.
-  
+    Crea un nuevo estudio de Optuna o carga uno existente de manera segura.
+
     Args:
         study_name: Nombre del estudio (si es None, usa STUDY_NAME del config)
         semilla: Semilla para reproducibilidad
-  
+
     Returns:
         optuna.Study: Estudio de Optuna (nuevo o cargado)
     """
-    study_name = STUDY_NAME
-  
-    if semilla is None:
-        semilla = SEMILLA[0] if isinstance(SEMILLA, list) else SEMILLA
-  
+    # Usar valores por defecto del config si no se pasan
+    study_name = study_name or STUDY_NAME
+    semilla = semilla or (SEMILLA[0] if isinstance(SEMILLA, list) else SEMILLA)
+
     # Crear carpeta para bases de datos si no existe
     path_db = os.path.join(BUCKET_NAME, "optuna_db")
     os.makedirs(path_db, exist_ok=True)
-  
+
     # Ruta completa de la base de datos
     db_file = os.path.join(path_db, f"{study_name}.db")
     storage = f"sqlite:///{db_file}"
-  
-    # Verificar si existe un estudio previo
-    if os.path.exists(db_file):
-        logger.info(f"⚡ Base de datos encontrada: {db_file}")
-        logger.info(f"🔄 Cargando estudio existente: {study_name}")
-  
-        try:
-            #PRESTAR ATENCION Y RAZONAR!!!
-            study = optuna.load_study(study_name=study_name, storage=storage)
-            n_trials_previos = len(study.trials)
-  
-            logger.info(f"✅ Estudio cargado exitosamente")
-            logger.info(f"📊 Trials previos: {n_trials_previos}")
-  
-            if n_trials_previos > 0:
-                logger.info(f"🏆 Mejor ganancia hasta ahora: {study.best_value:,.0f}")
-  
-            return study
-  
-        except Exception as e:
-            logger.warning(f"⚠️ No se pudo cargar el estudio: {e}")
-            logger.info(f"🆕 Creando nuevo estudio...")
-    else:
-        logger.info(f"🆕 No se encontró base de datos previa")
-        logger.info(f"📁 Creando nueva base de datos: {db_file}")
-  
-    # Crear nuevo estudio
+
+    logger.info(f"📁 Usando storage: {storage}")
+
+    # Crear o cargar el estudio de manera segura
     study = optuna.create_study(
         direction="maximize",
         study_name=study_name,
-        sampler=optuna.samplers.TPESampler(seed=SEMILLA[0]),
+        sampler=optuna.samplers.TPESampler(seed=semilla),
         storage=storage,
+        load_if_exists=True  # <--- evita DuplicatedStudyError
     )
-    
-    logger.info(f"✅ Nuevo estudio creado: {study_name}")
-    logger.info(f"💾 Storage: {storage}")
-    
+
+    valid_trials = [t for t in study.trials if t.value is not None]
+    if valid_trials:
+        logger.info(f"🏆 Mejor ganancia hasta ahora: {study.best_value:,.0f}")
+    else:
+        logger.info("⚠️ No hay trials válidos aún para mostrar mejor valor")
+
+
     return study
+
+
+
+def guardar_iteracion_cv(trial, ganancia_promedio, archivo_base=None):
+    """
+    Guarda cada iteración de la optimización en un único archivo JSON.
+  
+    Args:
+        trial: Trial de Optuna
+        ganancia: Valor de ganancia obtenido
+        archivo_base: Nombre base del archivo (si es None, usa el de config.yaml)
+    """
+    if archivo_base is None:
+        archivo_base = STUDY_NAME
+  
+    # Nombre del archivo único para todas las iteraciones
+    archivo = f"resultados/{archivo_base}_iteraciones.json"
+  
+    # Datos de esta iteración
+    iteracion_data = {
+        'trial_number': trial.number,
+        'params': trial.params,
+        'value': float(ganancia_promedio),
+        'datetime': datetime.now().isoformat(),
+        'state': 'COMPLETE',  # Si llegamos aquí, el trial se completó exitosamente
+        'configuracion': {
+            'semilla': SEMILLA,
+            'mes_train': MES_TRAIN,
+            'mes_validacion': MES_VALIDACION
+        }
+    }
+  
+    # Cargar datos existentes si el archivo ya existe
+    if os.path.exists(archivo):
+        with open(archivo, 'r') as f:
+            try:
+                datos_existentes = json.load(f)
+                if not isinstance(datos_existentes, list):
+                    datos_existentes = []
+            except json.JSONDecodeError:
+                datos_existentes = []
+    else:
+        datos_existentes = []
+  
+    # Agregar nueva iteración
+    datos_existentes.append(iteracion_data)
+  
+    # Guardar todas las iteraciones en el archivo
+    with open(archivo, 'w') as f:
+        json.dump(datos_existentes, f, indent=2)
+  
+    logger.info(f"Iteración {trial.number} guardada en {archivo}")
+    logger.info(f"Ganancia: {ganancia_maxima:,.0f}" + "---" + "Parámetros: {params}")
+
+
 
