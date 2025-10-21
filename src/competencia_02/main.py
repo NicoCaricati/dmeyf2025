@@ -53,111 +53,116 @@ logger.info(f"HIPERPARAMETROS: {HYPERPARAM_RANGES}")
 def main():
     """Pipeline principal con optimización usando configuración YAML."""
     logger.info("=== INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===")
-  
-    # 1. Cargar datos
-    df = cargar_datos("../../../datasets/competencia_01_crudo.csv")
-    if df is None:
-        logger.error("No se pudieron cargar los datos; 'cargar_datos' retornó None.")
-        raise ValueError("cargar_datos devolvió None. Verificar ruta o contenido de 'data/competencia_01_crudo.csv'.")
-    logger.info(f"Datos cargados: {df.shape}")
 
 
-    # Saco cpayroll_trx por tener mucho drifting
-
-    # # 1.5 PSI para detectar data drifting
-    # num_cols = df.select_dtypes(include=[np.number]).columns
-    # psi_resultados = psi_by_columns(df,num_cols, 202104, 202106,"foto_mes")
-    # psi_resultados.to_csv("feature_importance/psi_resultados.csv")
-    # Saco cpayroll_trx por tener mucho drifting
-    # df = df.drop(columns="cpayroll_trx")
-
-
-    # df_to_select_columns = pd.read_csv("feature_importance/feature_importance_sin_canarios.csv").sort_values("importance",ascending=False)
-
+    if os.path.exists(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv")):
+        logger.info("✅ df_fe.csv encontrado")
+        df_fe = pd.read_csv(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv"))
+    else:
+        logger.info("❌ df_fe.csv no encontrado")
+        
+        # 1. Cargar datos
+        df = cargar_datos("../../../datasets/competencia_01_crudo.csv")
+        if df is None:
+            logger.error("No se pudieron cargar los datos; 'cargar_datos' retornó None.")
+            raise ValueError("cargar_datos devolvió None. Verificar ruta o contenido de 'data/competencia_01_crudo.csv'.")
+        logger.info(f"Datos cargados: {df.shape}")
     
-    # Leer el archivo de importancias
-    # df_columnas_poco_importantes = pd.read_csv("feature_importance/feature_importance_Retesting...Saco Enero y Febrero para Limpiar FI 0 Vars_2025-10-10_12-56-35.csv")
-
-    # # Filtrar las features con importance_split <= 1
-    # columnas_poco_importantes = df_columnas_poco_importantes.loc[
-    #     df_columnas_poco_importantes['importance_split'] == 0, 
-    #     'feature'
-    # ].tolist()
-
-    # Top 40 de features de mayor importancia
-
-    # # columnas_40_mas_importantes = df_to_select_columns.head(40)["feature"].to_list()
-    # columnas_40_mas_importantes = ["ctrx_quarter","mpayroll","cpayroll_trx","mprestamos_personales","mcuentas_saldo","mpasivos_margen","mcaja_ahorro","mtarjeta_visa_consumo","mrentabilidad_annual","Visa_msaldopesos","ctarjeta_visa_transacciones","cliente_edad","mactivos_margen","ctarjeta_master","Master_fechaalta","Visa_fechaalta","Visa_Fvencimiento","Visa_msaldototal","TC_Total_mpagospesos","TC_Total_mpagominimo","mtransferencias_recibidas","TC_Total_fechaalta","Master_Fvencimiento","numero_de_cliente","cliente_antiguedad","mrentabilidad","ctarjeta_debito_transacciones","TC_Total_msaldototal","chomebanking_transacciones","Visa_mpagospesos","ccomisiones_otras","Visa_mpagominimo","mcomisiones","mpayroll_corregida", "cpayroll_trx_corregida","ctrx_30d","ctrx_60d","saldo_total","uso_credito_ratio","TC_Total_msaldototal","uso_tarjeta_ratio","flujo_netotransf","uso_digital_ratio"]
-
-
     
-
-
-    # 2. Feature Engineering
-    # Excluyo las variables no corregidas
-
-    # df_fe = feature_engineering_cpayroll_trx_corregida(df)
-    # df_fe = feature_engineering_mpayroll_corregida(df_fe)
-    df_fe = feature_engineering_tc_total(df_fe)
-    df_fe = generar_ctrx_features(df_fe)
-    df_fe = variables_aux(df_fe)
-    columnas_base = df_fe.columns.tolist()
-    columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target","target_to_calculate_gan"]
-    atributos = [c for c in columnas_base if c not in columnas_a_excluir]
-    # df_fe = feature_engineering_ratio(df_fe,columnas_40_mas_importantes)
-
-    # columnas_Master = [c for c in columnas_base if c.startswith("Master_")]
-    # columnas_Visa = [c for c in columnas_base if c.startswith("Visa_")]      
-    # columnas_categoricas = [c for c in columnas_base if df[c].nunique() < 5]
-    for i in (1,2):
-        df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
-    for i in (1,2):
-        df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
-    df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=2)
-    df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
-    for i in (2,3):
-        df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
-
-    # montos_vars = ["matm", "matm_other", "mautoservicio", "mcaja_ahorro", "mcaja_ahorro_adicional", "mcaja_ahorro_dolares", "mcajeros_propios_descuentos", "mcheques_depositados", "mcheques_depositados_rechazados", "mcheques_emitidos", "mcheques_emitidos_rechazados", "mcomisiones", "mcomisiones_mantenimiento", "mcomisiones_otras", "mcuenta_corriente", "mcuenta_corriente_adicional", "mcuenta_debitos_automaticos", "mcuentas_saldo", "mextraccion_autoservicio", "mforex_buy", "mforex_sell", "minversion1_dolares", "minversion1_pesos", "minversion2", "mora_total", "mpagodeservicios", "mpagomiscuentas", "mpasivos_margen", "mpayroll", "mpayroll_corregida", "mpayroll2", "mplazo_fijo_dolares", "mplazo_fijo_pesos", "mprestamos_hipotecarios", "mprestamos_personales", "mprestamos_prendarios", "mrentabilidad", "mrentabilidad_annual", "mtarjeta_master_consumo", "mtarjeta_master_descuentos", "mtarjeta_visa_consumo", "mtarjeta_visa_descuentos", "mtransferencias_emitidas", "mtransferencias_recibidas", "mttarjeta_master_debitos_automaticos", "mttarjeta_visa_debitos_automaticos", "mactivos_margen", "margen_por_cuenta", "margen_por_producto", "margen_total", "Master_madelantodolares", "Master_madelantopesos", "Master_mconsumosdolares", "Master_mconsumospesos", "Master_mconsumototal", "Master_mfinanciacion_limite", "Master_mlimitecompra", "Master_mpagado", "Master_mpagominimo", "Master_mpagosdolares", "Master_mpagospesos", "Master_msaldodolares", "Master_msaldopesos", "Master_msaldototal", "Visa_madelantodolares", "Visa_madelantopesos", "Visa_mconsumosdolares", "Visa_mconsumospesos", "Visa_mconsumototal", "Visa_mfinanciacion_limite", "Visa_mlimitecompra", "Visa_mpagado", "Visa_mpagominimo", "Visa_mpagosdolares", "Visa_mpagospesos", "Visa_msaldodolares", "Visa_msaldopesos", "Visa_msaldototal", "TC_Total_madelantodolares", "TC_Total_madelantopesos", "TC_Total_mconsumosdolares", "TC_Total_mconsumospesos", "TC_Total_mconsumototal", "TC_Total_mfinanciacion_limite", "TC_Total_mlimitecompra", "TC_Total_mpagado", "TC_Total_mpagominimo", "TC_Total_mpagosdolares", "TC_Total_mpagospesos", "TC_Total_msaldodolares", "TC_Total_msaldopesos", "TC_Total_msaldototal"]
-
-
-
-    # df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = 2)
-
-    variables_con_drfting =["Visa_Finiciomora","Master_fultimo_cierre","Visa_fultimo_cierre","Master_Finiciomora","cpayroll_trx","mpayroll"]
-
-
-    df_fe = df_fe.drop(columns=variables_con_drfting, errors='ignore')
-
-
-
-    # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
-    # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'_delta_\d+_delta_', c)]]
-    # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'_delta_\d+_\d+$', c)]]
-    # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'lag\d+lag', c)]]
-    # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'lag\d+_\d+$', c)]]
-
-    # df_fe = feature_engineering_variables_canarios(df_fe)
-
-    # Eliminar las columnas poco importantes de df_fe
-    # df_fe = df_fe.drop(columns=columnas_poco_importantes, errors='ignore')
-
-    # logger.info(f"Se eliminaron {len(columnas_poco_importantes)} columnas con importance_split <= 1")
+        # Saco cpayroll_trx por tener mucho drifting
     
-    logger.info(f"Feature Engineering completado: {df_fe.shape}")
+        # # 1.5 PSI para detectar data drifting
+        # num_cols = df.select_dtypes(include=[np.number]).columns
+        # psi_resultados = psi_by_columns(df,num_cols, 202104, 202106,"foto_mes")
+        # psi_resultados.to_csv("feature_importance/psi_resultados.csv")
+        # Saco cpayroll_trx por tener mucho drifting
+        # df = df.drop(columns="cpayroll_trx")
     
+    
+        # df_to_select_columns = pd.read_csv("feature_importance/feature_importance_sin_canarios.csv").sort_values("importance",ascending=False)
+    
+        
+        # Leer el archivo de importancias
+        # df_columnas_poco_importantes = pd.read_csv("feature_importance/feature_importance_Retesting...Saco Enero y Febrero para Limpiar FI 0 Vars_2025-10-10_12-56-35.csv")
+    
+        # # Filtrar las features con importance_split <= 1
+        # columnas_poco_importantes = df_columnas_poco_importantes.loc[
+        #     df_columnas_poco_importantes['importance_split'] == 0, 
+        #     'feature'
+        # ].tolist()
+    
+        # Top 40 de features de mayor importancia
+    
+        # # columnas_40_mas_importantes = df_to_select_columns.head(40)["feature"].to_list()
+        # columnas_40_mas_importantes = ["ctrx_quarter","mpayroll","cpayroll_trx","mprestamos_personales","mcuentas_saldo","mpasivos_margen","mcaja_ahorro","mtarjeta_visa_consumo","mrentabilidad_annual","Visa_msaldopesos","ctarjeta_visa_transacciones","cliente_edad","mactivos_margen","ctarjeta_master","Master_fechaalta","Visa_fechaalta","Visa_Fvencimiento","Visa_msaldototal","TC_Total_mpagospesos","TC_Total_mpagominimo","mtransferencias_recibidas","TC_Total_fechaalta","Master_Fvencimiento","numero_de_cliente","cliente_antiguedad","mrentabilidad","ctarjeta_debito_transacciones","TC_Total_msaldototal","chomebanking_transacciones","Visa_mpagospesos","ccomisiones_otras","Visa_mpagominimo","mcomisiones","mpayroll_corregida", "cpayroll_trx_corregida","ctrx_30d","ctrx_60d","saldo_total","uso_credito_ratio","TC_Total_msaldototal","uso_tarjeta_ratio","flujo_netotransf","uso_digital_ratio"]
+    
+    
+        # 2. Feature Engineering
+        # Excluyo las variables no corregidas
+    
+        # df_fe = feature_engineering_cpayroll_trx_corregida(df)
+        # df_fe = feature_engineering_mpayroll_corregida(df_fe)
+        df_fe = feature_engineering_tc_total(df)
+        df_fe = generar_ctrx_features(df_fe)
+        df_fe = variables_aux(df_fe)
+        columnas_base = df_fe.columns.tolist()
+        columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target","target_to_calculate_gan"]
+        atributos = [c for c in columnas_base if c not in columnas_a_excluir]
+        # df_fe = feature_engineering_ratio(df_fe,columnas_40_mas_importantes)
+    
+        # columnas_Master = [c for c in columnas_base if c.startswith("Master_")]
+        # columnas_Visa = [c for c in columnas_base if c.startswith("Visa_")]      
+        # columnas_categoricas = [c for c in columnas_base if df[c].nunique() < 5]
+        for i in (1,2):
+            df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
+        for i in (1,2):
+            df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
+        df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=2)
+        df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+        for i in (2,3):
+            df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
+    
+        # montos_vars = ["matm", "matm_other", "mautoservicio", "mcaja_ahorro", "mcaja_ahorro_adicional", "mcaja_ahorro_dolares", "mcajeros_propios_descuentos", "mcheques_depositados", "mcheques_depositados_rechazados", "mcheques_emitidos", "mcheques_emitidos_rechazados", "mcomisiones", "mcomisiones_mantenimiento", "mcomisiones_otras", "mcuenta_corriente", "mcuenta_corriente_adicional", "mcuenta_debitos_automaticos", "mcuentas_saldo", "mextraccion_autoservicio", "mforex_buy", "mforex_sell", "minversion1_dolares", "minversion1_pesos", "minversion2", "mora_total", "mpagodeservicios", "mpagomiscuentas", "mpasivos_margen", "mpayroll", "mpayroll_corregida", "mpayroll2", "mplazo_fijo_dolares", "mplazo_fijo_pesos", "mprestamos_hipotecarios", "mprestamos_personales", "mprestamos_prendarios", "mrentabilidad", "mrentabilidad_annual", "mtarjeta_master_consumo", "mtarjeta_master_descuentos", "mtarjeta_visa_consumo", "mtarjeta_visa_descuentos", "mtransferencias_emitidas", "mtransferencias_recibidas", "mttarjeta_master_debitos_automaticos", "mttarjeta_visa_debitos_automaticos", "mactivos_margen", "margen_por_cuenta", "margen_por_producto", "margen_total", "Master_madelantodolares", "Master_madelantopesos", "Master_mconsumosdolares", "Master_mconsumospesos", "Master_mconsumototal", "Master_mfinanciacion_limite", "Master_mlimitecompra", "Master_mpagado", "Master_mpagominimo", "Master_mpagosdolares", "Master_mpagospesos", "Master_msaldodolares", "Master_msaldopesos", "Master_msaldototal", "Visa_madelantodolares", "Visa_madelantopesos", "Visa_mconsumosdolares", "Visa_mconsumospesos", "Visa_mconsumototal", "Visa_mfinanciacion_limite", "Visa_mlimitecompra", "Visa_mpagado", "Visa_mpagominimo", "Visa_mpagosdolares", "Visa_mpagospesos", "Visa_msaldodolares", "Visa_msaldopesos", "Visa_msaldototal", "TC_Total_madelantodolares", "TC_Total_madelantopesos", "TC_Total_mconsumosdolares", "TC_Total_mconsumospesos", "TC_Total_mconsumototal", "TC_Total_mfinanciacion_limite", "TC_Total_mlimitecompra", "TC_Total_mpagado", "TC_Total_mpagominimo", "TC_Total_mpagosdolares", "TC_Total_mpagospesos", "TC_Total_msaldodolares", "TC_Total_msaldopesos", "TC_Total_msaldototal"]
+    
+    
+    
+        # df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = 2)
+    
+        variables_con_drfting =["Visa_Finiciomora","Master_fultimo_cierre","Visa_fultimo_cierre","Master_Finiciomora","cpayroll_trx","mpayroll"]
+    
+    
+        df_fe = df_fe.drop(columns=variables_con_drfting, errors='ignore')
+    
+    
+    
+        # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+        # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'_delta_\d+_delta_', c)]]
+        # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'_delta_\d+_\d+$', c)]]
+        # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'lag\d+lag', c)]]
+        # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'lag\d+_\d+$', c)]]
+    
+        # df_fe = feature_engineering_variables_canarios(df_fe)
+    
+        # Eliminar las columnas poco importantes de df_fe
+        # df_fe = df_fe.drop(columns=columnas_poco_importantes, errors='ignore')
+    
+        # logger.info(f"Se eliminaron {len(columnas_poco_importantes)} columnas con importance_split <= 1")
+        
+        logger.info(f"Feature Engineering completado: {df_fe.shape}")
+        
+    
+        # 3. Convertir clase_ternaria a binario
+        df_fe = convertir_clase_ternaria_a_target(df_fe)
+    
+        # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+    
+        # df_fe.to_csv("data/competencia_fe_.csv", index=False)
+    
+    
+        # 4. Ejecutar optimización (función simple)
 
-    # 3. Convertir clase_ternaria a binario
-    df_fe = convertir_clase_ternaria_a_target(df_fe)
+            df_fe.to_csv(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv"), index=False)
 
-    # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
-
-    # df_fe.to_csv("data/competencia_fe_.csv", index=False)
-
-
-    # 4. Ejecutar optimización (función simple)
-
-    print(type(df_fe), df_fe.shape)
     study = optimizar(df_fe, n_trials=100,study_name = STUDY_NAME ,undersampling = 0.2)
   
     # 5. Análisis adicional

@@ -150,7 +150,7 @@ def objetivo_ganancia(trial, df, undersampling=0.2) -> float:
         y_pred = gbm.predict(X_val, num_iteration=gbm.best_iteration)
         y_pred_binary = (y_pred > UMBRAL).astype(int)
 
-        _, ganancia_total, _ = ganancia_evaluator(y_val, y_pred_binary)
+        ganancia_total = ganancia_evaluator(y_val, y_pred_binary)
         ganancias.append(ganancia_total)
 
     # Promedio de ganancias
@@ -194,8 +194,12 @@ def optimizar(df: pd.DataFrame, n_trials: int, study_name: str = None, undersamp
   
     # Crear o cargar estudio desde DuckDB
     study = crear_o_cargar_estudio(study_name, SEMILLA)
-    print("Trials previos:", len(study.trials))
-    print("Best trial hasta ahora:", getattr(study, "best_value", None))
+    if study.trials:
+        print("Trials previos:", len(study.trials))
+        print("Best trial hasta ahora:", study.best_value)
+    else:
+        print("Aún no hay trials en este estudio")
+
 
     # Calcular cuántos trials faltan
     trials_previos = len(study.trials)
