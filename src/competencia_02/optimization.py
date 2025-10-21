@@ -286,8 +286,3 @@ def crear_o_cargar_estudio(study_name: str = None, semilla: int = None) -> optun
   
     return study
 
-
-def aplicar_undersampling(df: pd.DataFrame, ratio: float, random_state: int = None) -> pd.DataFrame:
-    pass
-```
-
