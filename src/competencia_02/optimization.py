@@ -273,16 +273,11 @@ def crear_o_cargar_estudio(study_name: str = None, semilla: int = None) -> optun
         direction="maximize",
         study_name=study_name,
         sampler=optuna.samplers.TPESampler(seed=SEMILLA[0]),
+        storage=storage,
     )
-
-    # Ejecutar optimización
-    study.optimize(
-        lambda trial: objetivo_ganancia(trial, df, undersampling = 1.0),
-        n_trials=n_trials,
-    )
-
+    
     logger.info(f"✅ Nuevo estudio creado: {study_name}")
     logger.info(f"💾 Storage: {storage}")
-  
+    
     return study
 
