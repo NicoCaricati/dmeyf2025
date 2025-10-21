@@ -1,0 +1,57 @@
+2025-10-21 13:28:28,022 - INFO - __main__ 33 - Iniciando programa de optimización con log fechado
+2025-10-21 13:28:28,022 - INFO - __main__ 36 - Configuración cargada desde YAML
+2025-10-21 13:28:28,022 - INFO - __main__ 37 - STUDY_NAME: TEST 1 - Modelo Final  - Solo Corregidas sin las Variables sin Drifting
+2025-10-21 13:28:28,022 - INFO - __main__ 38 - DATA_PATH: ../data/competencia_03.csv
+2025-10-21 13:28:28,022 - INFO - __main__ 39 - SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
+2025-10-21 13:28:28,023 - INFO - __main__ 40 - MES_TRAIN: [2021, 202102]
+2025-10-21 13:28:28,023 - INFO - __main__ 41 - MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
+2025-10-21 13:28:28,023 - INFO - __main__ 42 - MES_VALIDACION: 202103
+2025-10-21 13:28:28,023 - INFO - __main__ 43 - MES_TEST: 202104
+2025-10-21 13:28:28,023 - INFO - __main__ 44 - FINAL_TRAIN: [202101, 202102, 202103, 202104]
+2025-10-21 13:28:28,023 - INFO - __main__ 45 - FINAL_PREDIC: 202106
+2025-10-21 13:28:28,023 - INFO - __main__ 46 - GANANCIA_ACIERTO: 780000
+2025-10-21 13:28:28,023 - INFO - __main__ 47 - COSTO_ESTIMULO: 20000
+2025-10-21 13:28:28,023 - INFO - __main__ 48 - UMBRAL: 0.015
+2025-10-21 13:28:28,023 - INFO - __main__ 49 - HIPERPARAMETROS: {'num_leaves': {'min': 20, 'max': 200, 'type': 'int'}, 'learning_rate': {'min': 0.005, 'max': 0.06, 'type': 'float'}, 'min_data_in_leaf': {'min': 300, 'max': 1000, 'type': 'int'}, 'feature_fraction': {'min': 0.15, 'max': 0.6, 'type': 'float'}, 'bagging_fraction': {'min': 0.15, 'max': 0.7, 'type': 'float'}, 'num_boost_round': {'min': 300, 'max': 1200, 'type': 'int'}}
+2025-10-21 13:28:28,023 - INFO - __main__ 55 - === INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===
+2025-10-21 13:28:28,023 - INFO - loader 88 - Cargando dataset desde ../../../datasets/competencia_01_crudo.csv
+2025-10-21 13:28:47,647 - INFO - loader 137 - Dataset cargado con 978439 filas y 155 columnas
+2025-10-21 13:28:48,076 - INFO - __main__ 62 - Datos cargados: (978439, 155)
+2025-10-21 13:28:48,736 - INFO - __name__ 169 - Variables TC_Total generadas. DataFrame resultante con 179 columnas
+2025-10-21 13:28:57,897 - INFO - __main__ 147 - Feature Engineering completado: (978439, 213)
+2025-10-21 13:29:00,054 - INFO - loader 188 - Conversión completada:
+2025-10-21 13:29:00,054 - INFO - loader 189 -   Mapeo utilizado: CONTINUA -> 0, BAJA+1 -> 1, BAJA+2 -> 1
+2025-10-21 13:29:00,054 - INFO - loader 190 -   Original - CONTINUA: 642840, BAJA+1: 3434, BAJA+2: 3935
+2025-10-21 13:29:00,054 - INFO - loader 191 -   Binario - 0: 642840, 1: 7369
+2025-10-21 13:29:00,054 - INFO - loader 192 -   Distribución: 1.13% casos positivos
+2025-10-21 13:29:00,074 - INFO - __main__ 191 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-21 13:29:00,074 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-21 13:29:00,074 - INFO - config 30 - Período de test: 202104
+2025-10-21 13:29:54,996 - INFO - config 520 - === Comparando 10 semillas ===
+2025-10-21 13:29:54,996 - INFO - config 527 - 🔁 Semilla: 555557
+2025-10-21 13:29:54,996 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-21 13:29:54,996 - INFO - config 30 - Período de test: 202104
+2025-10-21 13:30:46,941 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-21 13:30:47,014 - INFO - grafico_test 40 - Ganancia máxima: 370,060,000 en posición 10496
+2025-10-21 13:30:47,014 - INFO - grafico_test 41 - Umbral óptimo: 0.037682
+2025-10-21 13:30:47,014 - INFO - config 527 - 🔁 Semilla: 555871
+2025-10-21 13:30:47,014 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-21 13:30:47,015 - INFO - config 30 - Período de test: 202104
+2025-10-21 13:31:40,500 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-21 13:31:40,514 - INFO - grafico_test 40 - Ganancia máxima: 369,060,000 en posición 10186
+2025-10-21 13:31:40,514 - INFO - grafico_test 41 - Umbral óptimo: 0.039471
+2025-10-21 13:31:40,514 - INFO - config 527 - 🔁 Semilla: 556219
+2025-10-21 13:31:40,515 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-21 13:31:40,515 - INFO - config 30 - Período de test: 202104
+2025-10-21 13:32:31,940 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-21 13:32:31,951 - INFO - grafico_test 40 - Ganancia máxima: 365,300,000 en posición 8854
+2025-10-21 13:32:31,951 - INFO - grafico_test 41 - Umbral óptimo: 0.046650
+2025-10-21 13:32:31,952 - INFO - config 527 - 🔁 Semilla: 556459
+2025-10-21 13:32:31,952 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-21 13:32:31,952 - INFO - config 30 - Período de test: 202104
+2025-10-21 13:33:25,162 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-21 13:33:25,173 - INFO - grafico_test 40 - Ganancia máxima: 364,460,000 en posición 10256
+2025-10-21 13:33:25,173 - INFO - grafico_test 41 - Umbral óptimo: 0.039321
+2025-10-21 13:33:25,174 - INFO - config 527 - 🔁 Semilla: 556691
+2025-10-21 13:33:25,174 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-21 13:33:25,174 - INFO - config 30 - Período de test: 202104
