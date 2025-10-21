@@ -194,11 +194,14 @@ def optimizar(df: pd.DataFrame, n_trials: int, study_name: str = None, undersamp
   
     # Crear o cargar estudio desde DuckDB
     study = crear_o_cargar_estudio(study_name, SEMILLA)
-    if study.trials:
-        print("Trials previos:", len(study.trials))
+    
+    n_trials_previos = len([t for t in study.trials if t.value is not None])
+
+    if n_trials_previos > 0:
+        print("Trials previos válidos:", n_trials_previos)
         print("Best trial hasta ahora:", study.best_value)
     else:
-        print("Aún no hay trials en este estudio")
+        print("Aún no hay trials válidos en este estudio")
 
 
     # Calcular cuántos trials faltan
@@ -270,7 +273,7 @@ def crear_o_cargar_estudio(study_name: str = None, semilla: int = None) -> optun
 
 
 
-def guardar_iteracion_cv(trial, ganancia_promedio, archivo_base=None):
+def guardar_iteracion(trial, ganancia, archivo_base=None):
     """
     Guarda cada iteración de la optimización en un único archivo JSON.
   
@@ -289,7 +292,7 @@ def guardar_iteracion_cv(trial, ganancia_promedio, archivo_base=None):
     iteracion_data = {
         'trial_number': trial.number,
         'params': trial.params,
-        'value': float(ganancia_promedio),
+        'value': float(ganancia),
         'datetime': datetime.now().isoformat(),
         'state': 'COMPLETE',  # Si llegamos aquí, el trial se completó exitosamente
         'configuracion': {
@@ -319,7 +322,4 @@ def guardar_iteracion_cv(trial, ganancia_promedio, archivo_base=None):
         json.dump(datos_existentes, f, indent=2)
   
     logger.info(f"Iteración {trial.number} guardada en {archivo}")
-    logger.info(f"Ganancia: {ganancia_maxima:,.0f}" + "---" + "Parámetros: {params}")
-
-
-
+    logger.info(f"Ganancia: {ganancia:,.0f}" + "---" + "Parámetros: {params}")
