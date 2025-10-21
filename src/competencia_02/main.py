@@ -156,6 +156,8 @@ def main():
 
 
     # 4. Ejecutar optimización (función simple)
+
+    print(type(df_fe), df_fe.shape)
     study = optimizar(df_fe, n_trials=100,study_name = STUDY_NAME ,undersampling = 0.2)
   
     # 5. Análisis adicional

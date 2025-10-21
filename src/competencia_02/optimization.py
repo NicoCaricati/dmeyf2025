@@ -194,6 +194,8 @@ def optimizar(df: pd.DataFrame, n_trials: int, study_name: str = None, undersamp
   
     # Crear o cargar estudio desde DuckDB
     study = crear_o_cargar_estudio(study_name, SEMILLA)
+    print("Trials previos:", len(study.trials))
+    print("Best trial hasta ahora:", getattr(study, "best_value", None))
 
     # Calcular cuántos trials faltan
     trials_previos = len(study.trials)
