@@ -60,7 +60,7 @@ def main():
     print(f"📂 Subiendo resultados para estudio: {STUDY_NAME}")
 
     # Agregar cambios a Git (forzar si están en .gitignore)
-    ejecutar_cmd("git add -f logs/ output/ resultados/ feature_importance/ || true")
+    ejecutar_cmd("git add -f logs/ predict/ resultados/ feature_importance/ || true")
 
     # Hacer commit y push si hay cambios
     diff_check = subprocess.run("git diff --cached --quiet", shell=True)
