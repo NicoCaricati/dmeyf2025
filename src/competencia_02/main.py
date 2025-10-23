@@ -1,9 +1,10 @@
+# main
 import logging
 from datetime import datetime
 import os
 import pandas as pd
 import numpy as np
-from features import feature_engineering_lag, feature_engineering_delta, feature_engineering_regr_slope_window, feature_engineering_ratio, feature_engineering_tc_total, generar_ctrx_features, feature_engineering_cpayroll_trx_corregida, feature_engineering_mpayroll_corregida, variables_aux
+from features import feature_engineering_lag, feature_engineering_delta, feature_engineering_regr_slope_window, feature_engineering_ratio, feature_engineering_tc_total, generar_ctrx_features, feature_engineering_cpayroll_trx_corregida, feature_engineering_mpayroll_corregida, variables_aux,feature_engineering_robust_by_month
 from loader import cargar_datos, convertir_clase_ternaria_a_target
 from optimization import *
 from best_params import cargar_mejores_hiperparametros
@@ -131,6 +132,8 @@ def main():
     
     
         df_fe = df_fe.drop(columns=variables_con_drfting, errors='ignore')
+
+        df_fe = feature_engineering_robust_by_month(df_fe)
     
     
     
@@ -146,6 +149,8 @@ def main():
         # df_fe = df_fe.drop(columns=columnas_poco_importantes, errors='ignore')
     
         # logger.info(f"Se eliminaron {len(columnas_poco_importantes)} columnas con importance_split <= 1")
+
+        
         
         logger.info(f"Feature Engineering completado: {df_fe.shape}")
         
@@ -164,7 +169,7 @@ def main():
     
     logger.info("⏳ CSV cargado o creado, ahora ejecutando optimización...")
     
-    study = optimizar(df_fe, n_trials=100,study_name = STUDY_NAME ,undersampling = 0.2)
+    # study = optimizar(df_fe, n_trials=100,study_name = STUDY_NAME ,undersampling = 0.2)
   
     # # 5. Análisis adicional
     # logger.info("=== ANÁLISIS DE RESULTADOS ===")
@@ -196,7 +201,7 @@ def main():
     #   "num_boost_round": 1062
     # }
 
-    mejores_params = {'num_leaves': 169, 'learning_rate': 01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
+    mejores_params = {'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
 
   
     # Evaluar en test

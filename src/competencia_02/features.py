@@ -1,3 +1,5 @@
+# features
+
 import pandas as pd
 import duckdb
 import logging
@@ -567,3 +569,87 @@ def variables_aux(df: pd.DataFrame) -> pd.DataFrame:
     ).astype(int)
 
     return df
+
+
+
+
+
+def feature_engineering_robust_by_month(df: pd.DataFrame, columnas: list[str] | None = None) -> pd.DataFrame:
+    """
+    Normaliza variables de forma robusta (usando mediana e IQR) dentro de cada foto_mes.
+    Reemplaza las columnas originales, sin generar duplicados.
+    Si no se especifican columnas, se aplica automáticamente a todas las numéricas excepto 'foto_mes'.
+
+    Fórmula por mes:
+        x = (x - mediana_mes) / IQR_mes
+    Si IQR_mes = 0 o no se puede calcular, se deja el valor original.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame con los datos (debe contener 'foto_mes').
+    columnas : list[str] | None, default=None
+        Lista de columnas a normalizar. Si es None, se aplicará a todas las numéricas excepto 'foto_mes'.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame con las columnas reemplazadas por sus versiones normalizadas.
+    """
+
+    logger.info("Iniciando normalización robusta por 'foto_mes'")
+
+    import numpy as np
+    import duckdb
+
+    if "foto_mes" not in df.columns:
+        logger.error("El DataFrame no contiene la columna 'foto_mes'.")
+        raise KeyError("El DataFrame debe contener 'foto_mes' para aplicar esta función")
+
+    # Si no se pasan columnas, aplicar a todas las numéricas excepto 'foto_mes'
+    if columnas is None:
+        columnas = [
+            c for c in df.select_dtypes(include=[np.number]).columns 
+            if c != "foto_mes"
+        ]
+        logger.info(f"No se especificaron columnas: se aplicará a todas las numéricas ({len(columnas)})")
+    elif len(columnas) == 0:
+        logger.warning("La lista de columnas está vacía: no se aplica transformación")
+        return df
+
+    # Construcción de la consulta SQL
+    columnas_sql_parts = []
+    for col in df.columns:
+        if col in columnas:
+            columnas_sql_parts.append(f"""
+                CASE 
+                    WHEN (quantile_cont(0.75) WITHIN GROUP (ORDER BY {col}) OVER (PARTITION BY foto_mes)
+                          - quantile_cont(0.25) WITHIN GROUP (ORDER BY {col}) OVER (PARTITION BY foto_mes)) = 0
+                         OR quantile_cont(0.75) WITHIN GROUP (ORDER BY {col}) OVER (PARTITION BY foto_mes) IS NULL
+                         OR quantile_cont(0.25) WITHIN GROUP (ORDER BY {col}) OVER (PARTITION BY foto_mes) IS NULL
+                    THEN {col}
+                    ELSE 
+                        ({col} - median({col}) OVER (PARTITION BY foto_mes))
+                        / NULLIF(
+                            quantile_cont(0.75) WITHIN GROUP (ORDER BY {col}) OVER (PARTITION BY foto_mes)
+                            - quantile_cont(0.25) WITHIN GROUP (ORDER BY {col}) OVER (PARTITION BY foto_mes),
+                            0
+                        )
+                END AS {col}
+            """)
+        else:
+            columnas_sql_parts.append(col)
+
+    columnas_sql = ", ".join(columnas_sql_parts)
+    sql = f"SELECT {columnas_sql} FROM df"
+
+    logger.debug(f"Consulta SQL robusta:\n{sql}")
+
+    con = duckdb.connect(database=":memory:")
+    con.register("df", df)
+    df_norm = con.execute(sql).df()
+    con.close()
+
+    logger.info(f"Normalización robusta completada. DataFrame resultante con {df_norm.shape[1]} columnas y {df_norm.shape[0]} filas.")
+
+    return df_norm
