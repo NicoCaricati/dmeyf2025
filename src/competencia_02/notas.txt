@@ -28,3 +28,9 @@ Graficos copados para ver ganancias
 !cd ../competencia_02 && git status && git add . && git commit -m "Actualizo main y opt" && git push
 
 !cd /home/nicolascaricati99/dmeyf2025/src/competencia_02 && python run_pipeline.py
+
+
+Cosas a probar
+Escalar / normalizar las funciones
+Learning rate q tome valores distintos
+Ver EDA de los meses (principalmente ver cuando se normaliza el churn post pandemia

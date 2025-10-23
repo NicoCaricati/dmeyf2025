@@ -1,9 +1,10 @@
 # config.yaml
-STUDY_NAME : "TEST 1 - Modelo Final  - Reoptimizando con Historicas 1"
+STUDY_NAME : "TEST 1 - Modelo Final  - Reoptimizando con Mejores Parametros"
 
 competencia01:
     DATA_PATH: "../../../data/competencia_03.csv"
     BUCKET_NAME: "../../../buckets/b1/Compe_02"
+    # SEMILLA: [5555571]
     SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
     MES_TRAIN: [2021,202102] 
     MES_VALIDACION: 202103
@@ -18,23 +19,23 @@ competencia01:
     HYPERPARAM_RANGES:
         num_leaves:
             min: 20
-            max: 200
+            max: 300
             type: int
         learning_rate:
             min: 0.005
             max: 0.06
             type: float
         min_data_in_leaf:
-            min: 300
+            min: 10
             max: 1000
             type: int
         feature_fraction:
             min: 0.15
-            max: 0.6
+            max: 0.8
             type: float
         bagging_fraction:
             min: 0.15
-            max: 0.7
+            max: 0.8
             type: float
             type: float
         num_boost_round:

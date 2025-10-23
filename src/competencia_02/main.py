@@ -116,8 +116,8 @@ def main():
             df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
         for i in (1,2):
             df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
-        df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=2)
-        df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+        # df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=2)
+        # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
         for i in (2,3):
             df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
     
@@ -164,19 +164,19 @@ def main():
     
     logger.info("⏳ CSV cargado o creado, ahora ejecutando optimización...")
     
-    study = optimizar(df_fe, n_trials=5,study_name = STUDY_NAME ,undersampling = 0.2)
+    study = optimizar(df_fe, n_trials=100,study_name = STUDY_NAME ,undersampling = 0.2)
   
-    # 5. Análisis adicional
-    logger.info("=== ANÁLISIS DE RESULTADOS ===")
-    trials_df = study.trials_dataframe()
-    if len(trials_df) > 0:
-        top_5 = trials_df.nlargest(5, 'value')
-        logger.info("Top 5 mejores trials:")
-        for idx, trial in top_5.iterrows():
-            logger.info(
-            f"Trial {int(trial['number'])}: "
-            f"Ganancia = {trial['value']:,.0f} | "
-            f"Parámetros: {trial['params']}")
+    # # 5. Análisis adicional
+    # logger.info("=== ANÁLISIS DE RESULTADOS ===")
+    # trials_df = study.trials_dataframe()
+    # if len(trials_df) > 0:
+    #     top_5 = trials_df.nlargest(5, 'value')
+    #     logger.info("Top 5 mejores trials:")
+    #     for idx, trial in top_5.iterrows():
+    #         logger.info(
+    #         f"Trial {int(trial['number'])}: "
+    #         f"Ganancia = {trial['value']:,.0f} | "
+    #         f"Parámetros: {trial['params']}")
   
     # logger.info("=== OPTIMIZACIÓN COMPLETADA ===")
 
@@ -196,9 +196,7 @@ def main():
     #   "num_boost_round": 1062
     # }
 
-    # mejores_params = {'num_leaves': 173, 'learning_rate': 0.05341811211926391, 'min_data_in_leaf': 751, 'feature_fraction': 0.28618267208195725, 'bagging_fraction': 0.380548133981898, 'num_boost_round': 824}
-
-    mejores_params = cargar_mejores_hiperparametros()
+    mejores_params = {'num_leaves': 169, 'learning_rate': 01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
 
   
     # Evaluar en test
