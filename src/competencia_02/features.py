@@ -649,7 +649,7 @@ def feature_engineering_robust_by_month_polars(df: pl.DataFrame, columnas: list[
             (pl.col(col).quantile(0.75) - pl.col(col).quantile(0.25)).alias(f"{col}_iqr")
         )
 
-    stats = df.groupby("foto_mes").agg(med_iqr_exprs)
+    stats = df.group_by("foto_mes").agg(med_iqr_exprs)
 
     # Hacer join para tener mediana e IQR por fila
     df = df.join(stats, on="foto_mes", how="left")

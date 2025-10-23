@@ -185,6 +185,8 @@ def registrar_resultados_modelo(modelo_nombre, ganancias, csv_path="resultados/c
         Ruta al archivo CSV donde se acumulan los resultados
     """
     os.makedirs(os.path.dirname(csv_path), exist_ok=True)
+    
+    os.makedirs(f"../../../buckets/b1/Compe_02/{study_name}", exist_ok=True)
 
     resumen = {
         "modelo": modelo_nombre,
@@ -204,97 +206,8 @@ def registrar_resultados_modelo(modelo_nombre, ganancias, csv_path="resultados/c
         df_new = df_row
 
     df_new.to_csv(csv_path, index=False)
-
-
-
-# def evaluar_en_test_v2(df, mejores_params) -> dict:
-#     """
-#     Evalúa el modelo con los mejores hiperparámetros en el conjunto de test,
-#     entrenando con todas las semillas definidas en config.py y generando
-#     el gráfico de ganancia avanzada promedio.
-
-#     Args:
-#         df: DataFrame con todos los datos.
-#         mejores_params: Mejores hiperparámetros encontrados por Optuna.
-
-#     Returns:
-#         dict: Resultados consolidados (media y desvío de la ganancia, etc.)
-#     """
-#     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
-#     logger.info(f"Período de test: {MES_TEST}")
-#     logger.info(f"Usando semillas: {SEMILLA}")
-
-#     # Preparar datos
-#     if isinstance(MES_TRAIN, list):
-#         periodos_entrenamiento = MES_TRAIN + [MES_VALIDACION]
-#     else:
-#         periodos_entrenamiento = [MES_TRAIN, MES_VALIDACION]
-
-#     df_train_completo = df[df['foto_mes'].isin(periodos_entrenamiento)]
-#     df_test = df[df['foto_mes'] == MES_TEST]
-
-#     X_train = df_train_completo.drop(columns=['target'])
-#     y_train = df_train_completo['target']
-#     X_test = df_test.drop(columns=['target'])
-#     y_test = df_test['target']
-
-#     # Para guardar resultados de todas las semillas
-#     resultados_semillas = []
-#     predicciones_acumuladas = np.zeros(len(X_test))
-
-#     for i, seed in enumerate(SEMILLA):
-#         logger.info(f"Entrenando modelo con semilla {seed} ({i+1}/{len(SEMILLA)})")
-
-#         params = mejores_params.copy()
-#         params.update({
-#             'objective': 'binary',
-#             'metric': 'custom',
-#             'boosting_type': 'gbdt',
-#             'first_metric_only': True,
-#             'boost_from_average': True,
-#             'feature_pre_filter': False,
-#             'max_bin': 31,
-#             'seed': seed,
-#             'verbose': -1
-#         })
-
-#         lgb_train = lgb.Dataset(X_train, label=y_train)
-
-#         gbm = lgb.train(
-#             params,
-#             lgb_train,
-#             feval=ganancia_evaluator,
-#             callbacks=[lgb.log_evaluation(period=100)],
-#         )
-
-#         # Predicción con esta semilla
-#         y_pred_proba = gbm.predict(X_test, num_iteration=gbm.best_iteration)
-#         predicciones_acumuladas += y_pred_proba / len(SEMILLA)  # promedio de predicciones
-
-#         # Ganancia binaria individual
-#         y_pred_binaria = (y_pred_proba > UMBRAL).astype(int)
-#         ganancia = calcular_ganancia(y_test, y_pred_binaria)
-#         resultados_semillas.append(ganancia)
-#         logger.info(f"Ganancia con semilla {seed}: {ganancia:,.2f}")
-
-#     # Promedio de ganancias
-#     ganancia_media = np.mean(resultados_semillas)
-#     ganancia_std = np.std(resultados_semillas)
-
-#     logger.info(f"Ganancia media (test): {ganancia_media:,.2f} ± {ganancia_std:,.2f}")
-
-#     # Generar gráfico avanzado usando el promedio de predicciones
-#     titulo = f"Ganancia promedio ({len(SEMILLA)} semillas)"
-#     ruta_ganancia = crear_grafico_ganancia_avanzado(y_test, predicciones_acumuladas, titulo)
-
-#     resultados = {
-#         'ganancia_media': float(ganancia_media),
-#         'ganancia_std': float(ganancia_std),
-#         'ganancias_por_semilla': [float(g) for g in resultados_semillas],
-#         'grafico_ganancia': ruta_ganancia
-#     }
-
-#     return resultados
+    df_new.to_csv(f"../../../buckets/b1/Compe_02/{study_name}_curvas_modelos.csv", index=False)
+    
 
 
 def evaluar_en_test_v2(df, mejores_params) -> dict:
@@ -599,7 +512,7 @@ def comparar_semillas_en_grafico(df_fe, mejores_params, semillas, study_name="mu
     
     plt.tight_layout()
 
-    # Guardar imagen
+    # Guardar imagen en carpetas de Git
     os.makedirs("resultados/plots", exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     ruta = f"resultados/plots/{study_name}_comparativo_semillas_{timestamp}.png"
@@ -607,6 +520,16 @@ def comparar_semillas_en_grafico(df_fe, mejores_params, semillas, study_name="mu
     plt.close()
 
     logger.info(f"✅ Gráfico comparativo guardado: {ruta}")
+
+    # Guardar imagen en Bckts
+    os.makedirs(f"../../../buckets/b1/Compe_02/{study_name}", exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    ruta = f"../../../buckets/b1/Compe_02/{study_name}/{study_name}_comparativo_semillas_{timestamp}.png"
+    plt.savefig(ruta, dpi=300, bbox_inches="tight", facecolor="white")
+    plt.close()
+
+    logger.info(f"✅ Gráfico comparativo guardado: {ruta}")
+
 
     return {
         "ruta_grafico": ruta,

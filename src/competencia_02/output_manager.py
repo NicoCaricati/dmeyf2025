@@ -26,7 +26,9 @@ def guardar_predicciones_finales(resultados_dict: dict, nombre_archivo=None) -> 
 
     for tipo, df in resultados_dict.items():
         ruta = f"predict/{nombre_archivo}_{tipo}_{timestamp}.csv"
+        ruta_2 = f"../../../buckets/b1/Compe_02/{study_name}/{nombre_archivo}_{tipo}_{timestamp}.csv"
         df.to_csv(ruta, index=False)
+        df.to_csv(ruta_2, index=False)
         rutas[tipo] = ruta
 
         logger.info(f"Predicciones ({tipo}) guardadas en: {ruta}")

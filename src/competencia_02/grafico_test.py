@@ -133,18 +133,23 @@ def crear_grafico_ganancia_avanzado(y_true: np.ndarray, y_pred_proba: np.ndarray
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     os.makedirs("resultados", exist_ok=True)
     ruta_archivo = f"resultados/plots/{STUDY_NAME}_ganancia_avanzado_{timestamp}.png"
+    ruta_archivo_2 = f"../../../buckets/b1/Compe_02/{study_name}/{study_name}_ganancia_avanzado_{timestamp}.png"
   
     plt.savefig(ruta_archivo, dpi=300, bbox_inches='tight', facecolor='white')
+    plt.savefig(ruta_archivo_2, dpi=300, bbox_inches='tight', facecolor='white')
     plt.close()
   
     # Guardar datos del gráfico en CSV
     ruta_datos = f"resultados/{STUDY_NAME}_datos_ganancia_{timestamp}.csv"
+    ruta_datos_2 = f""../../../buckets/b1/Compe_02/{study_name}/{STUDY_NAME}_datos_ganancia_{timestamp}.csv"
     df_datos = pd.DataFrame({
         'posicion': range(len(ganancias_acumuladas)),
         'ganancia_acumulada': ganancias_acumuladas,
         'probabilidad_ordenada': y_pred_proba[indices_ordenados]
     })
     df_datos.to_csv(ruta_datos, index=False)
+    df_datos.to_csv(ruta_datos_2, index=False)
+    
   
     logger.info(f"Gráfico avanzado guardado: {ruta_archivo}")
     logger.info(f"Datos guardados: {ruta_datos}")
