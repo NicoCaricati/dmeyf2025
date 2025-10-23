@@ -140,7 +140,7 @@ def feature_engineering_tc_total(df: pd.DataFrame) -> pd.DataFrame:
         DataFrame con nuevas variables TC_Total_*
     """
 
-    import numpy as np
+
 
     # --- SUM ---
     sum_cols = [
@@ -440,8 +440,6 @@ def feature_engineering_cpayroll_trx_corregida(df: pd.DataFrame) -> pd.DataFrame
 
 
 
-import numpy as np
-import pandas as pd
 
 def variables_aux(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
@@ -573,83 +571,56 @@ def variables_aux(df: pd.DataFrame) -> pd.DataFrame:
 
 
 
-
 def feature_engineering_robust_by_month(df: pd.DataFrame, columnas: list[str] | None = None) -> pd.DataFrame:
     """
-    Normaliza variables de forma robusta (usando mediana e IQR) dentro de cada foto_mes.
+    Normaliza variables robustamente (mediana / IQR) por 'foto_mes'.
     Reemplaza las columnas originales, sin generar duplicados.
-    Si no se especifican columnas, se aplica automáticamente a todas las numéricas excepto 'foto_mes'.
-
-    Fórmula por mes:
-        x = (x - mediana_mes) / IQR_mes
-    Si IQR_mes = 0 o no se puede calcular, se deja el valor original.
+    Si IQR=0 o no se puede calcular, mantiene el valor original.
 
     Parameters
     ----------
     df : pd.DataFrame
-        DataFrame con los datos (debe contener 'foto_mes').
-    columnas : list[str] | None, default=None
-        Lista de columnas a normalizar. Si es None, se aplicará a todas las numéricas excepto 'foto_mes'.
+        DataFrame con columna 'foto_mes'.
+    columnas : list[str] | None
+        Columnas a normalizar. Si es None, se aplicará a todas las numéricas excepto 'foto_mes'.
 
     Returns
     -------
     pd.DataFrame
-        DataFrame con las columnas reemplazadas por sus versiones normalizadas.
+        DataFrame con las columnas normalizadas.
     """
 
-    logger.info("Iniciando normalización robusta por 'foto_mes'")
-
-    import numpy as np
-    import duckdb
-
-    if "foto_mes" not in df.columns:
-        logger.error("El DataFrame no contiene la columna 'foto_mes'.")
-        raise KeyError("El DataFrame debe contener 'foto_mes' para aplicar esta función")
-
-    # Si no se pasan columnas, aplicar a todas las numéricas excepto 'foto_mes'
     if columnas is None:
-        columnas = [
-            c for c in df.select_dtypes(include=[np.number]).columns 
-            if c != "foto_mes"
-        ]
-        logger.info(f"No se especificaron columnas: se aplicará a todas las numéricas ({len(columnas)})")
-    elif len(columnas) == 0:
-        logger.warning("La lista de columnas está vacía: no se aplica transformación")
-        return df
+        columnas = [c for c in df.select_dtypes(include=[np.number]).columns if c != "foto_mes"]
 
-    # Construcción de la consulta SQL
-    columnas_sql_parts = []
-    for col in df.columns:
-        if col in columnas:
-            columnas_sql_parts.append(f"""
-                CASE 
-                    WHEN (quantile_cont(0.75) WITHIN GROUP (ORDER BY {col}) OVER (PARTITION BY foto_mes)
-                          - quantile_cont(0.25) WITHIN GROUP (ORDER BY {col}) OVER (PARTITION BY foto_mes)) = 0
-                         OR quantile_cont(0.75) WITHIN GROUP (ORDER BY {col}) OVER (PARTITION BY foto_mes) IS NULL
-                         OR quantile_cont(0.25) WITHIN GROUP (ORDER BY {col}) OVER (PARTITION BY foto_mes) IS NULL
-                    THEN {col}
-                    ELSE 
-                        ({col} - median({col}) OVER (PARTITION BY foto_mes))
-                        / NULLIF(
-                            quantile_cont(0.75) WITHIN GROUP (ORDER BY {col}) OVER (PARTITION BY foto_mes)
-                            - quantile_cont(0.25) WITHIN GROUP (ORDER BY {col}) OVER (PARTITION BY foto_mes),
-                            0
-                        )
-                END AS {col}
-            """)
-        else:
-            columnas_sql_parts.append(col)
+    logger.info(f"Normalizando robustamente {len(columnas)} columnas por 'foto_mes' (Pandas)")
 
-    columnas_sql = ", ".join(columnas_sql_parts)
-    sql = f"SELECT {columnas_sql} FROM df"
+    # 1️⃣ Calcular mediana e IQR por mes
+    stats = df.groupby("foto_mes")[columnas].agg([
+        np.median,
+        lambda x: np.percentile(x, 75) - np.percentile(x, 25)
+    ])
+    stats.columns = [f"{col}_median" if i == 0 else f"{col}_iqr" for col in columnas for i in range(2)]
 
-    logger.debug(f"Consulta SQL robusta:\n{sql}")
+    # 2️⃣ Merge al DataFrame original
+    df = df.merge(stats, on="foto_mes", how="left")
 
-    con = duckdb.connect(database=":memory:")
-    con.register("df", df)
-    df_norm = con.execute(sql).df()
-    con.close()
+    # 3️⃣ Normalización robusta, preservando valores originales si IQR=0 o NaN
+    for col in columnas:
+        median_col = f"{col}_median"
+        iqr_col = f"{col}_iqr"
+        iqr = df[iqr_col]
 
-    logger.info(f"Normalización robusta completada. DataFrame resultante con {df_norm.shape[1]} columnas y {df_norm.shape[0]} filas.")
+        # Máscara donde se puede normalizar
+        mask = iqr.notna() & (iqr != 0)
+        df.loc[mask, col] = (df.loc[mask, col] - df.loc[mask, median_col]) / iqr[mask]
+        # Valores fuera de mask quedan iguales (preservando original)
 
-    return df_norm
+    # 4️⃣ Eliminar columnas temporales
+    tmp_cols = [c for c in df.columns if c.endswith("_median") or c.endswith("_iqr")]
+    df.drop(columns=tmp_cols, inplace=True)
+
+    logger.info("Normalización robusta completada")
+
+    return df
+
