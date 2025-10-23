@@ -210,40 +210,40 @@ def main():
     mejores_params = {'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
 
   
-    # Evaluar en test
-    resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params)
+    # # Evaluar en test
+    # resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params)
     
-    res = comparar_semillas_en_grafico(df_fe, mejores_params, SEMILLA, study_name=STUDY_NAME)
+    # res = comparar_semillas_en_grafico(df_fe, mejores_params, SEMILLA, study_name=STUDY_NAME)
 
-    # Simular distribución de ganancias
-    ganancias_sim = muestrear_ganancias(y_test, y_pred_proba)
+    # # Simular distribución de ganancias
+    # ganancias_sim = muestrear_ganancias(y_test, y_pred_proba)
   
-    # Guardar resultados de test
-    guardar_resultados_test(resultados_test)
+    # # Guardar resultados de test
+    # guardar_resultados_test(resultados_test)
   
-    # Resumen de evaluación en test
-    logger.info("=== RESUMEN DE EVALUACIÓN EN TEST ===")
-    logger.info(f"✅ Ganancia en test: {resultados_test['ganancia_test']:,.0f}")
-    logger.info(f"🎯 Predicciones positivas: {resultados_test['predicciones_positivas']:,} ({resultados_test['porcentaje_positivas']:.2f}%)")
+    # # Resumen de evaluación en test
+    # logger.info("=== RESUMEN DE EVALUACIÓN EN TEST ===")
+    # logger.info(f"✅ Ganancia en test: {resultados_test['ganancia_test']:,.0f}")
+    # logger.info(f"🎯 Predicciones positivas: {resultados_test['predicciones_positivas']:,} ({resultados_test['porcentaje_positivas']:.2f}%)")
 
  
-    logger.info("=== GRAFICO DE TEST ===")
+    # logger.info("=== GRAFICO DE TEST ===")
 
-    # Graficar y guardar
-    graficar_distribucion_ganancia(ganancias_sim, modelo_nombre= STUDY_NAME)
+    # # Graficar y guardar
+    # graficar_distribucion_ganancia(ganancias_sim, modelo_nombre= STUDY_NAME)
 
-    # Registrar resultados en CSV comparativo
-    registrar_resultados_modelo(STUDY_NAME, ganancias_sim)
+    # # Registrar resultados en CSV comparativo
+    # registrar_resultados_modelo(STUDY_NAME, ganancias_sim)
 
-    # Grafico de test
-    logger.info("=== GRAFICO DE TEST ===")
-    ruta_grafico = crear_grafico_ganancia_avanzado(y_test,y_pred_proba)
+    # # Grafico de test
+    # logger.info("=== GRAFICO DE TEST ===")
+    # ruta_grafico = crear_grafico_ganancia_avanzado(y_test,y_pred_proba)
 
 
-    #06 Entrenar modelo final
-    logger.info("=== ENTRENAMIENTO FINAL ===")
-    logger.info("Preparar datos para entrenamiento final")
-    X_train, y_train, X_predict, clientes_predict = preparar_datos_entrenamiento_final(df_fe)
+    # #06 Entrenar modelo final
+    # logger.info("=== ENTRENAMIENTO FINAL ===")
+    # logger.info("Preparar datos para entrenamiento final")
+    # X_train, y_train, X_predict, clientes_predict = preparar_datos_entrenamiento_final(df_fe)
   
     # Entrenar modelo final
     logger.info("Entrenar modelo final")
