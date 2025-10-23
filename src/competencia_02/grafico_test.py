@@ -141,7 +141,7 @@ def crear_grafico_ganancia_avanzado(y_true: np.ndarray, y_pred_proba: np.ndarray
   
     # Guardar datos del gráfico en CSV
     ruta_datos = f"resultados/{STUDY_NAME}_datos_ganancia_{timestamp}.csv"
-    ruta_datos_2 = f""../../../buckets/b1/Compe_02/{study_name}/{STUDY_NAME}_datos_ganancia_{timestamp}.csv"
+    ruta_datos_2 = f"../../../buckets/b1/Compe_02/{study_name}/{STUDY_NAME}_datos_ganancia_{timestamp}.csv"
     df_datos = pd.DataFrame({
         'posicion': range(len(ganancias_acumuladas)),
         'ganancia_acumulada': ganancias_acumuladas,
