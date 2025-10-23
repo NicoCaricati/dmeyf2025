@@ -4,6 +4,7 @@ import pandas as pd
 import duckdb
 import logging
 import numpy as np
+import polars as pl
 from itertools import combinations
 
 
@@ -571,56 +572,105 @@ def variables_aux(df: pd.DataFrame) -> pd.DataFrame:
 
 
 
-def feature_engineering_robust_by_month(df: pd.DataFrame, columnas: list[str] | None = None) -> pd.DataFrame:
+# def feature_engineering_robust_by_month(df: pd.DataFrame, columnas: list[str] | None = None) -> pd.DataFrame:
+#     """
+#     Normaliza variables robustamente (mediana / IQR) por 'foto_mes'.
+#     Reemplaza las columnas originales, sin generar duplicados.
+#     Si IQR=0 o no se puede calcular, mantiene el valor original.
+
+#     Parameters
+#     ----------
+#     df : pd.DataFrame
+#         DataFrame con columna 'foto_mes'.
+#     columnas : list[str] | None
+#         Columnas a normalizar. Si es None, se aplicará a todas las numéricas excepto 'foto_mes'.
+
+#     Returns
+#     -------
+#     pd.DataFrame
+#         DataFrame con las columnas normalizadas.
+#     """
+
+#     if columnas is None:
+#         columnas = [c for c in df.select_dtypes(include=[np.number]).columns if c != "foto_mes"]
+
+#     logger.info(f"Normalizando robustamente {len(columnas)} columnas por 'foto_mes' (Pandas)")
+
+#     # 1️⃣ Calcular mediana e IQR por mes
+#     stats = df.groupby("foto_mes")[columnas].agg([
+#         np.median,
+#         lambda x: np.percentile(x, 75) - np.percentile(x, 25)
+#     ])
+#     stats.columns = [f"{col}_median" if i == 0 else f"{col}_iqr" for col in columnas for i in range(2)]
+
+#     # 2️⃣ Merge al DataFrame original
+#     df = df.merge(stats, on="foto_mes", how="left")
+
+#     # 3️⃣ Normalización robusta, preservando valores originales si IQR=0 o NaN
+#     for col in columnas:
+#         median_col = f"{col}_median"
+#         iqr_col = f"{col}_iqr"
+#         iqr = df[iqr_col]
+
+#         # Máscara donde se puede normalizar
+#         mask = iqr.notna() & (iqr != 0)
+#         df.loc[mask, col] = (df.loc[mask, col] - df.loc[mask, median_col]) / iqr[mask]
+#         # Valores fuera de mask quedan iguales (preservando original)
+
+#     # 4️⃣ Eliminar columnas temporales
+#     tmp_cols = [c for c in df.columns if c.endswith("_median") or c.endswith("_iqr")]
+#     df.drop(columns=tmp_cols, inplace=True)
+
+#     logger.info("Normalización robusta completada")
+
+#     return df
+
+
+logger = logging.getLogger(__name__)
+
+def feature_engineering_robust_by_month_polars(df: pl.DataFrame, columnas: list[str] | None = None) -> pl.DataFrame:
     """
-    Normaliza variables robustamente (mediana / IQR) por 'foto_mes'.
-    Reemplaza las columnas originales, sin generar duplicados.
-    Si IQR=0 o no se puede calcular, mantiene el valor original.
-
-    Parameters
-    ----------
-    df : pd.DataFrame
-        DataFrame con columna 'foto_mes'.
-    columnas : list[str] | None
-        Columnas a normalizar. Si es None, se aplicará a todas las numéricas excepto 'foto_mes'.
-
-    Returns
-    -------
-    pd.DataFrame
-        DataFrame con las columnas normalizadas.
+    Normaliza variables robustamente (mediana / IQR) por 'foto_mes' usando Polars.
+    Reemplaza las columnas originales.
+    Si no se especifican columnas, aplica a todas las numéricas excepto 'foto_mes'.
     """
-
     if columnas is None:
-        columnas = [c for c in df.select_dtypes(include=[np.number]).columns if c != "foto_mes"]
+        columnas = [c for c, dtype in zip(df.columns, df.dtypes) if dtype in [pl.Float64, pl.Float32, pl.Int64, pl.Int32] and c != "foto_mes"]
 
-    logger.info(f"Normalizando robustamente {len(columnas)} columnas por 'foto_mes' (Pandas)")
+    logger.info(f"Normalizando robustamente {len(columnas)} columnas por 'foto_mes' usando Polars")
 
-    # 1️⃣ Calcular mediana e IQR por mes
-    stats = df.groupby("foto_mes")[columnas].agg([
-        np.median,
-        lambda x: np.percentile(x, 75) - np.percentile(x, 25)
-    ])
-    stats.columns = [f"{col}_median" if i == 0 else f"{col}_iqr" for col in columnas for i in range(2)]
+    # Calcular mediana e IQR por foto_mes
+    med_iqr_exprs = []
+    for col in columnas:
+        med_iqr_exprs.append(
+            pl.col(col).median().alias(f"{col}_median")
+        )
+        med_iqr_exprs.append(
+            (pl.col(col).quantile(0.75) - pl.col(col).quantile(0.25)).alias(f"{col}_iqr")
+        )
 
-    # 2️⃣ Merge al DataFrame original
-    df = df.merge(stats, on="foto_mes", how="left")
+    stats = df.groupby("foto_mes").agg(med_iqr_exprs)
 
-    # 3️⃣ Normalización robusta, preservando valores originales si IQR=0 o NaN
+    # Hacer join para tener mediana e IQR por fila
+    df = df.join(stats, on="foto_mes", how="left")
+
+    # Normalizar robustamente
     for col in columnas:
         median_col = f"{col}_median"
         iqr_col = f"{col}_iqr"
-        iqr = df[iqr_col]
+        # Evitar división por 0 → reemplaza 0 con NaN
+        df = df.with_columns(
+            ((pl.col(col) - pl.col(median_col)) / pl.when(pl.col(iqr_col) == 0).then(None).otherwise(pl.col(iqr_col)))
+            .fill_null(pl.col(col))  # si IQR=0 → deja valor original
+            .alias(col)
+        )
 
-        # Máscara donde se puede normalizar
-        mask = iqr.notna() & (iqr != 0)
-        df.loc[mask, col] = (df.loc[mask, col] - df.loc[mask, median_col]) / iqr[mask]
-        # Valores fuera de mask quedan iguales (preservando original)
-
-    # 4️⃣ Eliminar columnas temporales
+    # Eliminar columnas temporales
     tmp_cols = [c for c in df.columns if c.endswith("_median") or c.endswith("_iqr")]
-    df.drop(columns=tmp_cols, inplace=True)
+    df = df.drop(tmp_cols)
 
-    logger.info("Normalización robusta completada")
+    logger.info("Normalización robusta completada en Polars")
 
     return df
+
 

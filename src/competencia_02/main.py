@@ -4,6 +4,7 @@ from datetime import datetime
 import os
 import pandas as pd
 import numpy as np
+import polars as pl
 from features import feature_engineering_lag, feature_engineering_delta, feature_engineering_regr_slope_window, feature_engineering_ratio, feature_engineering_tc_total, generar_ctrx_features, feature_engineering_cpayroll_trx_corregida, feature_engineering_mpayroll_corregida, variables_aux,feature_engineering_robust_by_month
 from loader import cargar_datos, convertir_clase_ternaria_a_target
 from optimization import *
@@ -132,8 +133,15 @@ def main():
     
     
         df_fe = df_fe.drop(columns=variables_con_drfting, errors='ignore')
+        
+        # Suponiendo que ya tenés un DataFrame Polars
+        df_polars = pl.from_pandas(df_fe)  # si tu df original era Pandas
+        
+        df_polars = feature_engineering_robust_by_month_polars(df_polars)
+        
+        # Si querés volver a Pandas
+        df_fe = df_polars.to_pandas()
 
-        df_fe = feature_engineering_robust_by_month(df_fe)
     
     
     
