@@ -1,0 +1,32 @@
+2025-10-23 00:04:47,072 - INFO - __main__ 33 - Iniciando programa de optimización con log fechado
+2025-10-23 00:04:47,072 - INFO - __main__ 36 - Configuración cargada desde YAML
+2025-10-23 00:04:47,072 - INFO - __main__ 37 - STUDY_NAME: TEST 1 - Modelo Final  - Reoptimizando con Mejores Parametros
+2025-10-23 00:04:47,072 - INFO - __main__ 38 - DATA_PATH: ../../../data/competencia_03.csv
+2025-10-23 00:04:47,072 - INFO - __main__ 39 - SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
+2025-10-23 00:04:47,072 - INFO - __main__ 40 - MES_TRAIN: [2021, 202102]
+2025-10-23 00:04:47,073 - INFO - __main__ 41 - MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
+2025-10-23 00:04:47,073 - INFO - __main__ 42 - MES_VALIDACION: 202103
+2025-10-23 00:04:47,073 - INFO - __main__ 43 - MES_TEST: 202104
+2025-10-23 00:04:47,073 - INFO - __main__ 44 - FINAL_TRAIN: [202101, 202102, 202103, 202104]
+2025-10-23 00:04:47,073 - INFO - __main__ 45 - FINAL_PREDIC: 202106
+2025-10-23 00:04:47,073 - INFO - __main__ 46 - GANANCIA_ACIERTO: 780000
+2025-10-23 00:04:47,073 - INFO - __main__ 47 - COSTO_ESTIMULO: 20000
+2025-10-23 00:04:47,073 - INFO - __main__ 48 - UMBRAL: 0.015
+2025-10-23 00:04:47,073 - INFO - __main__ 49 - HIPERPARAMETROS: {'num_leaves': {'min': 20, 'max': 300, 'type': 'int'}, 'learning_rate': {'min': 0.005, 'max': 0.06, 'type': 'float'}, 'min_data_in_leaf': {'min': 10, 'max': 1000, 'type': 'int'}, 'feature_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'bagging_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'num_boost_round': {'min': 300, 'max': 1200, 'type': 'int'}}
+2025-10-23 00:04:47,073 - INFO - __main__ 55 - === INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===
+2025-10-23 00:04:47,978 - INFO - __main__ 61 - ❌ df_fe.csv no encontrado
+2025-10-23 00:04:47,979 - INFO - loader 88 - Cargando dataset desde ../../../datasets/competencia_01_crudo.csv
+2025-10-23 00:05:02,624 - INFO - loader 137 - Dataset cargado con 978439 filas y 155 columnas
+2025-10-23 00:05:03,379 - INFO - __main__ 68 - Datos cargados: (978439, 155)
+2025-10-23 00:05:03,813 - INFO - __name__ 169 - Variables TC_Total generadas. DataFrame resultante con 177 columnas
+2025-10-23 00:05:14,983 - INFO - __name__ 29 - Realizando feature engineering con 1 lags para 213 atributos
+2025-10-23 00:05:40,523 - INFO - __name__ 60 - Feature engineering completado. DataFrame resultante con 430 columnas
+2025-10-23 00:05:40,541 - INFO - __name__ 29 - Realizando feature engineering con 2 lags para 213 atributos
+2025-10-23 00:06:34,923 - INFO - __name__ 60 - Feature engineering completado. DataFrame resultante con 856 columnas
+2025-10-23 00:06:34,963 - INFO - __name__ 85 - Realizando feature engineering con 1 deltas para 213 atributos
+2025-10-23 00:07:24,269 - INFO - __name__ 116 - Feature engineering completado. DataFrame resultante con 1069 columnas
+2025-10-23 00:07:24,303 - INFO - __name__ 85 - Realizando feature engineering con 2 deltas para 213 atributos
+2025-10-23 00:08:16,445 - INFO - __name__ 116 - Feature engineering completado. DataFrame resultante con 1495 columnas
+2025-10-23 00:08:16,487 - INFO - features 194 - Calculando slope con ventana móvil de 2 meses para 213 atributos
+2025-10-23 00:10:01,019 - INFO - features 260 - Slope con ventana móvil calculado. DataFrame resultante con 1708 columnas
+2025-10-23 00:10:01,075 - INFO - features 194 - Calculando slope con ventana móvil de 3 meses para 213 atributos

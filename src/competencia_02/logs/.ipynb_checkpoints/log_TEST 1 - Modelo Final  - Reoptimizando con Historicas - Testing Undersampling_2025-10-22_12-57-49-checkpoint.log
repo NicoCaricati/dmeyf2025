@@ -1,0 +1,59 @@
+2025-10-22 12:57:49,896 - INFO - __main__ 33 - Iniciando programa de optimización con log fechado
+2025-10-22 12:57:49,896 - INFO - __main__ 36 - Configuración cargada desde YAML
+2025-10-22 12:57:49,896 - INFO - __main__ 37 - STUDY_NAME: TEST 1 - Modelo Final  - Reoptimizando con Historicas - Testing Undersampling
+2025-10-22 12:57:49,896 - INFO - __main__ 38 - DATA_PATH: ../../../data/competencia_03.csv
+2025-10-22 12:57:49,896 - INFO - __main__ 39 - SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
+2025-10-22 12:57:49,896 - INFO - __main__ 40 - MES_TRAIN: [2021, 202102]
+2025-10-22 12:57:49,897 - INFO - __main__ 41 - MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
+2025-10-22 12:57:49,897 - INFO - __main__ 42 - MES_VALIDACION: 202103
+2025-10-22 12:57:49,897 - INFO - __main__ 43 - MES_TEST: 202104
+2025-10-22 12:57:49,897 - INFO - __main__ 44 - FINAL_TRAIN: [202101, 202102, 202103, 202104]
+2025-10-22 12:57:49,897 - INFO - __main__ 45 - FINAL_PREDIC: 202106
+2025-10-22 12:57:49,897 - INFO - __main__ 46 - GANANCIA_ACIERTO: 780000
+2025-10-22 12:57:49,897 - INFO - __main__ 47 - COSTO_ESTIMULO: 20000
+2025-10-22 12:57:49,897 - INFO - __main__ 48 - UMBRAL: 0.015
+2025-10-22 12:57:49,897 - INFO - __main__ 49 - HIPERPARAMETROS: {'num_leaves': {'min': 20, 'max': 300, 'type': 'int'}, 'learning_rate': {'min': 0.005, 'max': 0.06, 'type': 'float'}, 'min_data_in_leaf': {'min': 10, 'max': 1000, 'type': 'int'}, 'feature_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'bagging_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'num_boost_round': {'min': 300, 'max': 1200, 'type': 'int'}}
+2025-10-22 12:57:49,897 - INFO - __main__ 55 - === INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===
+2025-10-22 12:57:50,891 - INFO - __main__ 61 - ❌ df_fe.csv no encontrado
+2025-10-22 12:57:50,891 - INFO - loader 88 - Cargando dataset desde ../../../datasets/competencia_01_crudo.csv
+2025-10-22 12:58:12,674 - INFO - loader 137 - Dataset cargado con 978439 filas y 155 columnas
+2025-10-22 12:58:13,169 - INFO - __main__ 68 - Datos cargados: (978439, 155)
+2025-10-22 12:58:13,510 - INFO - __name__ 169 - Variables TC_Total generadas. DataFrame resultante con 177 columnas
+2025-10-22 12:58:25,417 - INFO - __name__ 29 - Realizando feature engineering con 1 lags para 213 atributos
+2025-10-22 12:58:54,572 - INFO - __name__ 60 - Feature engineering completado. DataFrame resultante con 430 columnas
+2025-10-22 12:58:54,608 - INFO - __name__ 29 - Realizando feature engineering con 2 lags para 213 atributos
+2025-10-22 12:59:43,936 - INFO - __name__ 60 - Feature engineering completado. DataFrame resultante con 856 columnas
+2025-10-22 12:59:43,980 - INFO - __name__ 85 - Realizando feature engineering con 1 deltas para 213 atributos
+2025-10-22 13:00:31,937 - INFO - __name__ 116 - Feature engineering completado. DataFrame resultante con 1069 columnas
+2025-10-22 13:00:31,971 - INFO - __name__ 85 - Realizando feature engineering con 2 deltas para 213 atributos
+2025-10-22 13:01:25,525 - INFO - __name__ 116 - Feature engineering completado. DataFrame resultante con 1495 columnas
+2025-10-22 13:01:25,571 - INFO - features 194 - Calculando slope con ventana móvil de 2 meses para 213 atributos
+2025-10-22 13:03:09,142 - INFO - features 260 - Slope con ventana móvil calculado. DataFrame resultante con 1708 columnas
+2025-10-22 13:03:09,201 - INFO - features 194 - Calculando slope con ventana móvil de 3 meses para 213 atributos
+2025-10-22 13:06:50,947 - INFO - features 260 - Slope con ventana móvil calculado. DataFrame resultante con 1921 columnas
+2025-10-22 13:08:37,809 - INFO - __main__ 150 - Feature Engineering completado: (978439, 1915)
+2025-10-22 13:09:26,302 - INFO - loader 188 - Conversión completada:
+2025-10-22 13:09:26,303 - INFO - loader 189 -   Mapeo utilizado: CONTINUA -> 0, BAJA+1 -> 1, BAJA+2 -> 1
+2025-10-22 13:09:26,303 - INFO - loader 190 -   Original - CONTINUA: 642840, BAJA+1: 3434, BAJA+2: 3935
+2025-10-22 13:09:26,303 - INFO - loader 191 -   Binario - 0: 642840, 1: 7369
+2025-10-22 13:09:26,303 - INFO - loader 192 -   Distribución: 1.13% casos positivos
+2025-10-22 13:55:59,931 - INFO - __main__ 165 - ⏳ CSV cargado o creado, ahora ejecutando optimización...
+2025-10-22 13:55:59,932 - INFO - optimization 192 - Iniciando optimización con 100 trials
+2025-10-22 13:55:59,932 - INFO - optimization 193 - Configuración: TRAIN=[2021, 202102], VALID=202103, SEMILLA=[555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
+2025-10-22 13:56:00,837 - INFO - optimization 254 - 📁 Usando storage: sqlite:///../../../buckets/b1/Compe_02/optuna_db/TEST 1 - Modelo Final  - Reoptimizando con Historicas - Testing Undersampling.db
+2025-10-22 13:57:18,355 - INFO - optimization 269 - ⚠️ No hay trials válidos aún para mostrar mejor valor
+2025-10-22 13:57:19,584 - INFO - optimization 215 - 🆕 Nueva optimización: 100 trials
+2025-10-22 14:08:04,505 - INFO - optimization 324 - Iteración 0 guardada en resultados/TEST 1 - Modelo Final  - Reoptimizando con Historicas - Testing Undersampling_iteraciones.json
+2025-10-22 14:08:04,512 - INFO - optimization 325 - Ganancia: 2,147,433,357---Parámetros: {params}
+2025-10-22 14:16:28,931 - INFO - optimization 324 - Iteración 1 guardada en resultados/TEST 1 - Modelo Final  - Reoptimizando con Historicas - Testing Undersampling_iteraciones.json
+2025-10-22 14:16:28,931 - INFO - optimization 325 - Ganancia: 2,147,450,438---Parámetros: {params}
+2025-10-22 14:28:40,701 - INFO - optimization 324 - Iteración 2 guardada en resultados/TEST 1 - Modelo Final  - Reoptimizando con Historicas - Testing Undersampling_iteraciones.json
+2025-10-22 14:28:40,701 - INFO - optimization 325 - Ganancia: 2,147,465,520---Parámetros: {params}
+2025-10-22 14:37:11,116 - INFO - optimization 324 - Iteración 3 guardada en resultados/TEST 1 - Modelo Final  - Reoptimizando con Historicas - Testing Undersampling_iteraciones.json
+2025-10-22 14:37:11,116 - INFO - optimization 325 - Ganancia: 2,147,439,494---Parámetros: {params}
+2025-10-22 14:46:58,725 - INFO - optimization 324 - Iteración 4 guardada en resultados/TEST 1 - Modelo Final  - Reoptimizando con Historicas - Testing Undersampling_iteraciones.json
+2025-10-22 14:46:58,725 - INFO - optimization 325 - Ganancia: 2,147,442,627---Parámetros: {params}
+2025-10-22 14:53:45,399 - INFO - optimization 324 - Iteración 5 guardada en resultados/TEST 1 - Modelo Final  - Reoptimizando con Historicas - Testing Undersampling_iteraciones.json
+2025-10-22 14:53:45,399 - INFO - optimization 325 - Ganancia: 2,147,434,602---Parámetros: {params}
+2025-10-22 15:01:20,886 - INFO - optimization 324 - Iteración 6 guardada en resultados/TEST 1 - Modelo Final  - Reoptimizando con Historicas - Testing Undersampling_iteraciones.json
+2025-10-22 15:01:20,886 - INFO - optimization 325 - Ganancia: 2,147,441,142---Parámetros: {params}
