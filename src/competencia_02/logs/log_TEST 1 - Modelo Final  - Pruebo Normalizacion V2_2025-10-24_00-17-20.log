@@ -1,0 +1,41 @@
+2025-10-24 00:17:20,142 - INFO - __main__ 35 - Iniciando programa de optimización con log fechado
+2025-10-24 00:17:20,142 - INFO - __main__ 38 - Configuración cargada desde YAML
+2025-10-24 00:17:20,142 - INFO - __main__ 39 - STUDY_NAME: TEST 1 - Modelo Final  - Pruebo Normalizacion V2
+2025-10-24 00:17:20,142 - INFO - __main__ 40 - DATA_PATH: ../../../data/competencia_03.csv
+2025-10-24 00:17:20,142 - INFO - __main__ 41 - SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
+2025-10-24 00:17:20,142 - INFO - __main__ 42 - MES_TRAIN: [2021, 202102]
+2025-10-24 00:17:20,142 - INFO - __main__ 43 - MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
+2025-10-24 00:17:20,142 - INFO - __main__ 44 - MES_VALIDACION: 202103
+2025-10-24 00:17:20,142 - INFO - __main__ 45 - MES_TEST: 202104
+2025-10-24 00:17:20,143 - INFO - __main__ 46 - FINAL_TRAIN: [202101, 202102, 202103, 202104]
+2025-10-24 00:17:20,143 - INFO - __main__ 47 - FINAL_PREDIC: 202106
+2025-10-24 00:17:20,143 - INFO - __main__ 48 - GANANCIA_ACIERTO: 780000
+2025-10-24 00:17:20,143 - INFO - __main__ 49 - COSTO_ESTIMULO: 20000
+2025-10-24 00:17:20,143 - INFO - __main__ 50 - UMBRAL: 0.015
+2025-10-24 00:17:20,143 - INFO - __main__ 51 - HIPERPARAMETROS: {'num_leaves': {'min': 20, 'max': 300, 'type': 'int'}, 'learning_rate': {'min': 0.005, 'max': 0.06, 'type': 'float'}, 'min_data_in_leaf': {'min': 10, 'max': 1000, 'type': 'int'}, 'feature_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'bagging_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'num_boost_round': {'min': 300, 'max': 1200, 'type': 'int'}}
+2025-10-24 00:17:20,143 - INFO - __main__ 57 - === INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===
+2025-10-24 00:17:21,475 - INFO - __main__ 60 - ✅ df_fe.csv encontrado
+2025-10-24 00:31:23,717 - INFO - __main__ 178 - ⏳ CSV cargado o creado, ahora ejecutando optimización...
+2025-10-24 00:31:24,230 - INFO - __main__ 197 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-24 00:31:24,235 - INFO - __main__ 244 - === ENTRENAMIENTO FINAL ===
+2025-10-24 00:31:24,235 - INFO - __main__ 245 - Preparar datos para entrenamiento final
+2025-10-24 00:31:24,250 - INFO - final_training 23 - Preparando datos para entrenamiento final
+2025-10-24 00:31:24,269 - INFO - final_training 24 - Períodos de entrenamiento: [202101, 202102, 202103, 202104]
+2025-10-24 00:31:24,271 - INFO - final_training 25 - Período de predicción: 202106
+2025-10-24 00:31:35,216 - INFO - final_training 50 - Features utilizadas: 1914
+2025-10-24 00:31:35,351 - INFO - final_training 51 - Distribución del target - 0: 642,840, 1: 7,369
+2025-10-24 00:31:35,351 - INFO - __main__ 249 - Entrenar modelo final
+2025-10-24 00:31:35,355 - INFO - final_training 67 - Iniciando entrenamiento del modelo final
+2025-10-24 00:31:35,393 - INFO - final_training 79 - Parámetros del modelo: {'objective': 'binary', 'metric': 'None', 'random_state': 555557, 'verbose': -1, 'extra_trees': False, 'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
+2025-10-24 00:42:46,527 - INFO - __main__ 253 - Generar predicciones finales
+2025-10-24 00:42:46,617 - INFO - final_training 159 - Generando predicciones finales
+2025-10-24 00:42:53,588 - INFO - final_training 232 - Importancia de las primeras 1000 variables guardada en 'feature_importance/feature_importance_TEST 1 - Modelo Final  - Pruebo Normalizacion V2.csv'
+2025-10-24 00:42:53,588 - INFO - final_training 180 - Predicciones con umbral generadas:
+2025-10-24 00:42:53,589 - INFO - final_training 181 -   Total clientes: 164,313
+2025-10-24 00:42:53,590 - INFO - final_training 182 -   Positivas: 14,507 (8.83%)
+2025-10-24 00:42:53,590 - INFO - final_training 183 -   Umbral utilizado: 0.015
+2025-10-24 00:42:53,621 - INFO - final_training 189 - Generando predicciones con top_k=11,750
+2025-10-24 00:42:53,778 - INFO - final_training 201 -   Predicciones top_k generadas (K=11,750)
+2025-10-24 00:42:53,778 - INFO - final_training 202 -   Máxima probabilidad: 0.9736
+2025-10-24 00:42:53,779 - INFO - final_training 203 -   Mínima probabilidad dentro del top_k: 0.0207
+2025-10-24 00:42:53,779 - INFO - __main__ 257 - Guardar predicciones

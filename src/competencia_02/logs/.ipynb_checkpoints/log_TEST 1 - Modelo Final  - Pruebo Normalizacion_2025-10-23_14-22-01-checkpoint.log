@@ -1,0 +1,169 @@
+2025-10-23 14:22:01,308 - INFO - __main__ 35 - Iniciando programa de optimización con log fechado
+2025-10-23 14:22:01,309 - INFO - __main__ 38 - Configuración cargada desde YAML
+2025-10-23 14:22:01,309 - INFO - __main__ 39 - STUDY_NAME: TEST 1 - Modelo Final  - Pruebo Normalizacion
+2025-10-23 14:22:01,309 - INFO - __main__ 40 - DATA_PATH: ../../../data/competencia_03.csv
+2025-10-23 14:22:01,309 - INFO - __main__ 41 - SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
+2025-10-23 14:22:01,309 - INFO - __main__ 42 - MES_TRAIN: [2021, 202102]
+2025-10-23 14:22:01,309 - INFO - __main__ 43 - MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
+2025-10-23 14:22:01,309 - INFO - __main__ 44 - MES_VALIDACION: 202103
+2025-10-23 14:22:01,309 - INFO - __main__ 45 - MES_TEST: 202104
+2025-10-23 14:22:01,309 - INFO - __main__ 46 - FINAL_TRAIN: [202101, 202102, 202103, 202104]
+2025-10-23 14:22:01,309 - INFO - __main__ 47 - FINAL_PREDIC: 202106
+2025-10-23 14:22:01,309 - INFO - __main__ 48 - GANANCIA_ACIERTO: 780000
+2025-10-23 14:22:01,309 - INFO - __main__ 49 - COSTO_ESTIMULO: 20000
+2025-10-23 14:22:01,309 - INFO - __main__ 50 - UMBRAL: 0.015
+2025-10-23 14:22:01,309 - INFO - __main__ 51 - HIPERPARAMETROS: {'num_leaves': {'min': 20, 'max': 300, 'type': 'int'}, 'learning_rate': {'min': 0.005, 'max': 0.06, 'type': 'float'}, 'min_data_in_leaf': {'min': 10, 'max': 1000, 'type': 'int'}, 'feature_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'bagging_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'num_boost_round': {'min': 300, 'max': 1200, 'type': 'int'}}
+2025-10-23 14:22:01,309 - INFO - __main__ 57 - === INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===
+2025-10-23 14:22:03,525 - INFO - __main__ 63 - ❌ df_fe.csv no encontrado
+2025-10-23 14:22:03,525 - INFO - loader 88 - Cargando dataset desde ../../../datasets/competencia_01_crudo.csv
+2025-10-23 14:22:18,622 - INFO - loader 137 - Dataset cargado con 978439 filas y 155 columnas
+2025-10-23 14:22:19,049 - INFO - __main__ 70 - Datos cargados: (978439, 155)
+2025-10-23 14:22:19,594 - INFO - features 172 - Variables TC_Total generadas. DataFrame resultante con 177 columnas
+2025-10-23 14:22:25,256 - INFO - features 32 - Realizando feature engineering con 1 lags para 213 atributos
+2025-10-23 14:22:39,467 - INFO - features 63 - Feature engineering completado. DataFrame resultante con 430 columnas
+2025-10-23 14:22:39,494 - INFO - features 32 - Realizando feature engineering con 2 lags para 213 atributos
+2025-10-23 14:23:07,460 - INFO - features 63 - Feature engineering completado. DataFrame resultante con 856 columnas
+2025-10-23 14:23:07,485 - INFO - features 88 - Realizando feature engineering con 1 deltas para 213 atributos
+2025-10-23 14:23:40,468 - INFO - features 119 - Feature engineering completado. DataFrame resultante con 1069 columnas
+2025-10-23 14:23:40,503 - INFO - features 88 - Realizando feature engineering con 2 deltas para 213 atributos
+2025-10-23 14:24:33,361 - INFO - features 119 - Feature engineering completado. DataFrame resultante con 1495 columnas
+2025-10-23 14:24:33,402 - INFO - features 197 - Calculando slope con ventana móvil de 2 meses para 213 atributos
+2025-10-23 14:26:09,123 - INFO - features 263 - Slope con ventana móvil calculado. DataFrame resultante con 1708 columnas
+2025-10-23 14:26:09,186 - INFO - features 197 - Calculando slope con ventana móvil de 3 meses para 213 atributos
+2025-10-23 14:29:05,066 - INFO - features 263 - Slope con ventana móvil calculado. DataFrame resultante con 1921 columnas
+2025-10-23 14:30:15,887 - INFO - features 640 - Normalizando robustamente 1913 columnas por 'foto_mes' usando Polars
+2025-10-23 14:30:53,972 - INFO - features 672 - Normalización robusta completada en Polars
+2025-10-23 14:31:00,288 - INFO - __main__ 163 - Feature Engineering completado: (978439, 1915)
+2025-10-23 14:31:11,415 - INFO - loader 188 - Conversión completada:
+2025-10-23 14:31:11,415 - INFO - loader 189 -   Mapeo utilizado: CONTINUA -> 0, BAJA+1 -> 1, BAJA+2 -> 1
+2025-10-23 14:31:11,415 - INFO - loader 190 -   Original - CONTINUA: 642840, BAJA+1: 3434, BAJA+2: 3935
+2025-10-23 14:31:11,415 - INFO - loader 191 -   Binario - 0: 642840, 1: 7369
+2025-10-23 14:31:11,415 - INFO - loader 192 -   Distribución: 1.13% casos positivos
+2025-10-23 15:15:16,791 - INFO - __main__ 178 - ⏳ CSV cargado o creado, ahora ejecutando optimización...
+2025-10-23 15:15:16,817 - INFO - __main__ 197 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-23 15:15:16,818 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-23 15:15:16,818 - INFO - config 30 - Período de test: 202104
+2025-10-23 15:21:24,597 - INFO - config 520 - === Comparando 10 semillas ===
+2025-10-23 15:21:24,598 - INFO - config 527 - 🔁 Semilla: 555557
+2025-10-23 15:21:24,601 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-23 15:21:24,601 - INFO - config 30 - Período de test: 202104
+2025-10-23 15:25:32,527 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-23 15:25:32,650 - INFO - grafico_test 40 - Ganancia máxima: 367,120,000 en posición 9323
+2025-10-23 15:25:32,650 - INFO - grafico_test 41 - Umbral óptimo: 0.025063
+2025-10-23 15:25:32,669 - INFO - config 527 - 🔁 Semilla: 555871
+2025-10-23 15:25:32,669 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-23 15:25:32,669 - INFO - config 30 - Período de test: 202104
+2025-10-23 15:29:40,502 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-23 15:29:40,510 - INFO - grafico_test 40 - Ganancia máxima: 375,320,000 en posición 9793
+2025-10-23 15:29:40,510 - INFO - grafico_test 41 - Umbral óptimo: 0.023774
+2025-10-23 15:29:40,510 - INFO - config 527 - 🔁 Semilla: 556219
+2025-10-23 15:29:40,510 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-23 15:29:40,511 - INFO - config 30 - Período de test: 202104
+2025-10-23 15:33:51,587 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-23 15:33:51,595 - INFO - grafico_test 40 - Ganancia máxima: 372,960,000 en posición 9631
+2025-10-23 15:33:51,595 - INFO - grafico_test 41 - Umbral óptimo: 0.022237
+2025-10-23 15:33:51,595 - INFO - config 527 - 🔁 Semilla: 556459
+2025-10-23 15:33:51,595 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-23 15:33:51,595 - INFO - config 30 - Período de test: 202104
+2025-10-23 15:38:00,890 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-23 15:38:00,899 - INFO - grafico_test 40 - Ganancia máxima: 369,840,000 en posición 9867
+2025-10-23 15:38:00,899 - INFO - grafico_test 41 - Umbral óptimo: 0.023740
+2025-10-23 15:38:00,899 - INFO - config 527 - 🔁 Semilla: 556691
+2025-10-23 15:38:00,899 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-23 15:38:00,899 - INFO - config 30 - Período de test: 202104
+2025-10-23 15:42:12,550 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-23 15:42:12,559 - INFO - grafico_test 40 - Ganancia máxima: 374,440,000 en posición 8877
+2025-10-23 15:42:12,559 - INFO - grafico_test 41 - Umbral óptimo: 0.026309
+2025-10-23 15:42:12,559 - INFO - config 527 - 🔁 Semilla: 556903
+2025-10-23 15:42:12,560 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-23 15:42:12,560 - INFO - config 30 - Período de test: 202104
+2025-10-23 15:46:17,950 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-23 15:46:17,958 - INFO - grafico_test 40 - Ganancia máxima: 371,800,000 en posición 9169
+2025-10-23 15:46:17,958 - INFO - grafico_test 41 - Umbral óptimo: 0.026208
+2025-10-23 15:46:17,958 - INFO - config 527 - 🔁 Semilla: 557159
+2025-10-23 15:46:17,958 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-23 15:46:17,958 - INFO - config 30 - Período de test: 202104
+2025-10-23 15:50:25,545 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-23 15:50:25,552 - INFO - grafico_test 40 - Ganancia máxima: 369,860,000 en posición 8706
+2025-10-23 15:50:25,552 - INFO - grafico_test 41 - Umbral óptimo: 0.027505
+2025-10-23 15:50:25,552 - INFO - config 527 - 🔁 Semilla: 557399
+2025-10-23 15:50:25,552 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-23 15:50:25,552 - INFO - config 30 - Período de test: 202104
+2025-10-23 15:54:25,067 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-23 15:54:25,075 - INFO - grafico_test 40 - Ganancia máxima: 373,500,000 en posición 9204
+2025-10-23 15:54:25,075 - INFO - grafico_test 41 - Umbral óptimo: 0.026389
+2025-10-23 15:54:25,075 - INFO - config 527 - 🔁 Semilla: 557597
+2025-10-23 15:54:25,076 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-23 15:54:25,076 - INFO - config 30 - Período de test: 202104
+2025-10-23 15:58:31,671 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-23 15:58:31,679 - INFO - grafico_test 40 - Ganancia máxima: 369,180,000 en posición 7620
+2025-10-23 15:58:31,679 - INFO - grafico_test 41 - Umbral óptimo: 0.034483
+2025-10-23 15:58:31,679 - INFO - config 527 - 🔁 Semilla: 557861
+2025-10-23 15:58:31,679 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-23 15:58:31,679 - INFO - config 30 - Período de test: 202104
+2025-10-23 16:02:35,707 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-23 16:02:35,714 - INFO - grafico_test 40 - Ganancia máxima: 367,400,000 en posición 7589
+2025-10-23 16:02:35,714 - INFO - grafico_test 41 - Umbral óptimo: 0.035069
+2025-10-23 16:02:40,097 - INFO - config 609 - ✅ Gráfico comparativo guardado: resultados/plots/TEST 1 - Modelo Final  - Pruebo Normalizacion_comparativo_semillas_20251023_160238.png
+2025-10-23 16:02:50,131 - INFO - config 104 - Resultados de test guardados en resultados/TEST 1 - Modelo Final  - Pruebo Normalizacion_test_results.json
+2025-10-23 16:02:50,131 - INFO - __main__ 227 - === RESUMEN DE EVALUACIÓN EN TEST ===
+2025-10-23 16:02:50,131 - INFO - __main__ 228 - ✅ Ganancia en test: 2,147,472,704
+2025-10-23 16:02:50,132 - INFO - __main__ 229 - 🎯 Predicciones positivas: 12,834 (7.85%)
+2025-10-23 16:02:50,132 - INFO - __main__ 232 - === GRAFICO DE TEST ===
+2025-10-23 16:02:51,642 - INFO - __main__ 241 - === GRAFICO DE TEST ===
+2025-10-23 16:02:51,642 - INFO - grafico_test 58 - Generando gráfico de ganancia avanzado...
+2025-10-23 16:02:51,643 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-23 16:02:51,651 - INFO - grafico_test 40 - Ganancia máxima: 367,120,000 en posición 9323
+2025-10-23 16:02:51,651 - INFO - grafico_test 41 - Umbral óptimo: 0.025063
+2025-10-23 16:02:53,471 - INFO - grafico_test 149 - Gráfico avanzado guardado: resultados/plots/TEST 1 - Modelo Final  - Pruebo Normalizacion_ganancia_avanzado_20251023_160251.png
+2025-10-23 16:02:53,472 - INFO - grafico_test 150 - Datos guardados: resultados/TEST 1 - Modelo Final  - Pruebo Normalizacion_datos_ganancia_20251023_160251.csv
+2025-10-23 16:02:53,472 - INFO - __main__ 246 - === ENTRENAMIENTO FINAL ===
+2025-10-23 16:02:53,472 - INFO - __main__ 247 - Preparar datos para entrenamiento final
+2025-10-23 16:02:53,472 - INFO - final_training 23 - Preparando datos para entrenamiento final
+2025-10-23 16:02:53,472 - INFO - final_training 24 - Períodos de entrenamiento: [202101, 202102, 202103, 202104]
+2025-10-23 16:02:53,472 - INFO - final_training 25 - Período de predicción: 202106
+2025-10-23 16:03:04,948 - INFO - final_training 50 - Features utilizadas: 1914
+2025-10-23 16:03:04,950 - INFO - final_training 51 - Distribución del target - 0: 642,840, 1: 7,369
+2025-10-23 16:03:04,950 - INFO - __main__ 251 - Entrenar modelo final
+2025-10-23 16:03:04,950 - INFO - final_training 67 - Iniciando entrenamiento del modelo final
+2025-10-23 16:03:04,950 - INFO - final_training 79 - Parámetros del modelo: {'objective': 'binary', 'metric': 'None', 'random_state': 555557, 'verbose': -1, 'extra_trees': False, 'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
+2025-10-23 16:15:35,299 - INFO - __main__ 255 - Generar predicciones finales
+2025-10-23 16:15:35,576 - INFO - final_training 159 - Generando predicciones finales
+2025-10-23 16:15:43,863 - INFO - final_training 232 - Importancia de las primeras 1000 variables guardada en 'feature_importance/feature_importance_TEST 1 - Modelo Final  - Pruebo Normalizacion.csv'
+2025-10-23 16:15:43,864 - INFO - final_training 180 - Predicciones con umbral generadas:
+2025-10-23 16:15:43,864 - INFO - final_training 181 -   Total clientes: 164,313
+2025-10-23 16:15:43,879 - INFO - final_training 182 -   Positivas: 14,555 (8.86%)
+2025-10-23 16:15:43,879 - INFO - final_training 183 -   Umbral utilizado: 0.015
+2025-10-23 16:15:44,055 - INFO - final_training 189 - Generando predicciones con top_k=11,750
+2025-10-23 16:15:44,323 - INFO - final_training 201 -   Predicciones top_k generadas (K=11,750)
+2025-10-23 16:15:44,323 - INFO - final_training 202 -   Máxima probabilidad: 0.9580
+2025-10-23 16:15:44,323 - INFO - final_training 203 -   Mínima probabilidad dentro del top_k: 0.0207
+2025-10-23 16:15:44,323 - INFO - __main__ 259 - Guardar predicciones
+2025-10-23 16:15:45,189 - INFO - output_manager 32 - Predicciones (umbral) guardadas en: predict/TEST 1 - Modelo Final  - Pruebo Normalizacion_umbral_20251023_161544.csv
+2025-10-23 16:15:45,192 - INFO - output_manager 33 -   Columnas: ['numero_de_cliente', 'predict']
+2025-10-23 16:15:45,192 - INFO - output_manager 34 -   Registros: 164,313
+2025-10-23 16:15:45,512 - INFO - output_manager 35 -   Primeras filas:
+   numero_de_cliente  predict
+0          -1.015288        0
+1          -1.015119        0
+2          -1.014842        0
+3          -1.014779        0
+4          -1.014572        1
+2025-10-23 16:15:45,810 - INFO - output_manager 32 - Predicciones (top_k) guardadas en: predict/TEST 1 - Modelo Final  - Pruebo Normalizacion_top_k_20251023_161544.csv
+2025-10-23 16:15:45,811 - INFO - output_manager 33 -   Columnas: ['numero_de_cliente', 'predict']
+2025-10-23 16:15:45,811 - INFO - output_manager 34 -   Registros: 164,313
+2025-10-23 16:15:45,818 - INFO - output_manager 35 -   Primeras filas:
+        numero_de_cliente  predict
+118137          -0.479181        1
+159554           0.796599        1
+6395             0.540935        1
+64694            1.516925        1
+130907           0.621608        1
+2025-10-23 16:15:45,818 - INFO - __main__ 263 - === RESUMEN FINAL ===
+2025-10-23 16:15:45,818 - INFO - __main__ 264 - Entrenamiento final completado exitosamente
+2025-10-23 16:15:45,819 - INFO - __main__ 265 - Mejores hiperparámetros utilizados: {'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
+2025-10-23 16:15:45,822 - INFO - __main__ 266 - Períodos de entrenamiento: [202101, 202102, 202103, 202104]
+2025-10-23 16:15:45,822 - INFO - __main__ 267 - Período de predicción: 202106
+2025-10-23 16:15:45,822 - INFO - __main__ 268 - Archivo de salida: {'umbral': 'predict/TEST 1 - Modelo Final  - Pruebo Normalizacion_umbral_20251023_161544.csv', 'top_k': 'predict/TEST 1 - Modelo Final  - Pruebo Normalizacion_top_k_20251023_161544.csv'}
+2025-10-23 16:15:45,822 - INFO - __main__ 269 - Log detallado: logs/log_TEST 1 - Modelo Final  - Pruebo Normalizacion_2025-10-23_14-22-01.log
+2025-10-23 16:15:45,822 - INFO - __main__ 272 - >>> Ejecución finalizada. Revisar logs para mas detalles.
