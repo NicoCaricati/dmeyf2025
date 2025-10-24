@@ -136,8 +136,11 @@ def main():
         
         # Suponiendo que ya tenés un DataFrame Polars
         df_polars = pl.from_pandas(df_fe)  # si tu df original era Pandas
-        
-        df_polars = feature_engineering_robust_by_month_polars(df_polars)
+
+        excluir = ["numero_de_cliente", "target", "foto_mes", "target_to_calculate_gan"]
+        columnas_a_normalizar = [c for c in df_polars.columns if c not in excluir and df_polars[c].dtype in [pl.Float64, pl.Float32, pl.Int64, pl.Int32]]
+
+        df_polars = feature_engineering_robust_by_month_polars(df_polars, columnas=columnas_a_normalizar)
         
         # Si querés volver a Pandas
         df_fe = df_polars.to_pandas()
