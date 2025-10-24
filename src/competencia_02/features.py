@@ -674,3 +674,51 @@ def feature_engineering_robust_by_month_polars(df: pl.DataFrame, columnas: list[
     return df
 
 
+def ajustar_por_ipc(df: pd.DataFrame, columnas: list[str], columna_mes: str = 'foto_mes') -> pd.DataFrame:
+    """
+    Ajusta las columnas especificadas del DataFrame dividiéndolas por el IPC correspondiente
+    al mes indicado en 'columna_mes'. Reemplaza los valores originales por los ajustados.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        DataFrame con los datos originales (debe contener una columna con el mes, ej. 'foto_mes')
+    columnas : list[str]
+        Lista de columnas a ajustar por IPC (ejemplo: ['mcuentas_saldo', 'mpayroll'])
+    columna_mes : str, default='foto_mes'
+        Nombre de la columna en df que indica el mes a usar para ajustar por IPC.
+
+    Returns
+    -------
+    pd.DataFrame
+        DataFrame con las columnas especificadas ajustadas por IPC.
+    """
+
+    logger = logging.getLogger(__name__)
+    logger.info("Comenzando ajuste por IPC")
+
+    # Cargar IPC nacional
+    ipc_df = pd.read_csv("../../../buckets/b1/Compe_02/data/ipc_nacional_fotomes_completado.csv")
+
+    # Merge para asociar el IPC correspondiente a cada fila
+    df = df.merge(
+        ipc_df[['foto_mes', 'Nivel general']],
+        how='left',
+        left_on=columna_mes,
+        right_on='foto_mes',
+        suffixes=('', '_ipc')
+    )
+
+    # Ajustar las columnas especificadas (dividir por IPC)
+    for col in columnas:
+        if col in df.columns:
+            df[col] = df[col] / df['Nivel general']
+        else:
+            logger.warning(f"La columna {col} no existe en el DataFrame y será omitida.")
+
+    logger.info(f"Ajuste por IPC completado. Se ajustaron {len(columnas)} columnas numéricas.")
+
+    # Eliminar columnas auxiliares del merge
+    df = df.drop(columns=['foto_mes_ipc', 'Nivel general'], errors='ignore')
+
+    return df

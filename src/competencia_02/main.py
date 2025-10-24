@@ -5,7 +5,7 @@ import os
 import pandas as pd
 import numpy as np
 import polars as pl
-from features import feature_engineering_lag, feature_engineering_delta, feature_engineering_regr_slope_window, feature_engineering_ratio, feature_engineering_tc_total, generar_ctrx_features, feature_engineering_cpayroll_trx_corregida, feature_engineering_mpayroll_corregida, variables_aux,feature_engineering_robust_by_month_polars
+from features import feature_engineering_lag, feature_engineering_delta, feature_engineering_regr_slope_window, feature_engineering_ratio, feature_engineering_tc_total, generar_ctrx_features, feature_engineering_cpayroll_trx_corregida, feature_engineering_mpayroll_corregida, variables_aux,feature_engineering_robust_by_month_polars,ajustar_por_ipc
 from loader import cargar_datos, convertir_clase_ternaria_a_target
 from optimization import *
 from best_params import cargar_mejores_hiperparametros
@@ -100,10 +100,9 @@ def main():
     
         # 2. Feature Engineering
         # Excluyo las variables no corregidas
-    
-        # df_fe = feature_engineering_cpayroll_trx_corregida(df)
-        # df_fe = feature_engineering_mpayroll_corregida(df_fe)
-        df_fe = feature_engineering_tc_total(df)
+        cols_ajustar = [c for c in df.columns if c.startswith(('m', 'Visa_m', 'Master_m'))]
+        df_fe = ajustar_por_ipc(df, cols_ajustar, columna_mes='foto_mes')
+        df_fe = feature_engineering_tc_total(df_fe)
         df_fe = generar_ctrx_features(df_fe)
         df_fe = variables_aux(df_fe)
         columnas_base = df_fe.columns.tolist()
@@ -123,18 +122,14 @@ def main():
         for i in (2,3):
             df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
     
-        # montos_vars = ["matm", "matm_other", "mautoservicio", "mcaja_ahorro", "mcaja_ahorro_adicional", "mcaja_ahorro_dolares", "mcajeros_propios_descuentos", "mcheques_depositados", "mcheques_depositados_rechazados", "mcheques_emitidos", "mcheques_emitidos_rechazados", "mcomisiones", "mcomisiones_mantenimiento", "mcomisiones_otras", "mcuenta_corriente", "mcuenta_corriente_adicional", "mcuenta_debitos_automaticos", "mcuentas_saldo", "mextraccion_autoservicio", "mforex_buy", "mforex_sell", "minversion1_dolares", "minversion1_pesos", "minversion2", "mora_total", "mpagodeservicios", "mpagomiscuentas", "mpasivos_margen", "mpayroll", "mpayroll_corregida", "mpayroll2", "mplazo_fijo_dolares", "mplazo_fijo_pesos", "mprestamos_hipotecarios", "mprestamos_personales", "mprestamos_prendarios", "mrentabilidad", "mrentabilidad_annual", "mtarjeta_master_consumo", "mtarjeta_master_descuentos", "mtarjeta_visa_consumo", "mtarjeta_visa_descuentos", "mtransferencias_emitidas", "mtransferencias_recibidas", "mttarjeta_master_debitos_automaticos", "mttarjeta_visa_debitos_automaticos", "mactivos_margen", "margen_por_cuenta", "margen_por_producto", "margen_total", "Master_madelantodolares", "Master_madelantopesos", "Master_mconsumosdolares", "Master_mconsumospesos", "Master_mconsumototal", "Master_mfinanciacion_limite", "Master_mlimitecompra", "Master_mpagado", "Master_mpagominimo", "Master_mpagosdolares", "Master_mpagospesos", "Master_msaldodolares", "Master_msaldopesos", "Master_msaldototal", "Visa_madelantodolares", "Visa_madelantopesos", "Visa_mconsumosdolares", "Visa_mconsumospesos", "Visa_mconsumototal", "Visa_mfinanciacion_limite", "Visa_mlimitecompra", "Visa_mpagado", "Visa_mpagominimo", "Visa_mpagosdolares", "Visa_mpagospesos", "Visa_msaldodolares", "Visa_msaldopesos", "Visa_msaldototal", "TC_Total_madelantodolares", "TC_Total_madelantopesos", "TC_Total_mconsumosdolares", "TC_Total_mconsumospesos", "TC_Total_mconsumototal", "TC_Total_mfinanciacion_limite", "TC_Total_mlimitecompra", "TC_Total_mpagado", "TC_Total_mpagominimo", "TC_Total_mpagosdolares", "TC_Total_mpagospesos", "TC_Total_msaldodolares", "TC_Total_msaldopesos", "TC_Total_msaldototal"]
-    
     
     
         # df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = 2)
     
         variables_con_drfting =["Visa_Finiciomora","Master_fultimo_cierre","Visa_fultimo_cierre","Master_Finiciomora","cpayroll_trx","mpayroll"]
     
-    
         df_fe = df_fe.drop(columns=variables_con_drfting, errors='ignore')
         
-        # # Suponiendo que ya tenés un DataFrame Polars
         # df_polars = pl.from_pandas(df_fe)  # si tu df original era Pandas
 
         # excluir = ["numero_de_cliente", "target", "foto_mes", "target_to_calculate_gan"]
@@ -145,8 +140,6 @@ def main():
         # # Si querés volver a Pandas
         # df_fe = df_polars.to_pandas()
 
-    
-    
     
         # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
         # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'_delta_\d+_delta_', c)]]
@@ -217,9 +210,9 @@ def main():
 
     # mejores_params = cargar_mejores_hiperparametros()
 
-    # mejores_params = {'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
+    mejores_params = {'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
 
-    mejores_params = {'num_leaves': 23, 'lr_init': 0.14053552566659705, 'min_data_in_leaf': 223, 'feature_fraction': 0.6616669584635271, 'bagging_fraction': 0.23994377622330532, 'num_boost_round': 439, 'lr_decay': 0.9124750514032693}
+    # mejores_params = {'num_leaves': 23, 'lr_init': 0.14053552566659705, 'min_data_in_leaf': 223, 'feature_fraction': 0.6616669584635271, 'bagging_fraction': 0.23994377622330532, 'num_boost_round': 439, 'lr_decay': 0.9124750514032693}
 
   
     # Evaluar en test
