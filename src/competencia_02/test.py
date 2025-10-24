@@ -43,6 +43,10 @@ def evaluar_en_test(df, mejores_params, seed = SEMILLA[0]) -> dict:
     X_train = df_train_completo.drop(columns=['target', 'target_to_calculate_gan'])
     y_train = df_train_completo['target']
 
+    def lr_schedule(iteration):
+        return params_base["lr_init"] * (params_base["lr_decay"] ** iteration)
+
+
     # Defino el modelo con los mejores hiperparametros para evaluar en test
     params = mejores_params.copy()
     params.update({
@@ -64,6 +68,7 @@ def evaluar_en_test(df, mejores_params, seed = SEMILLA[0]) -> dict:
         lgb_train,
         feval=ganancia_evaluator,
         callbacks=[
+            lgb.reset_parameter(learning_rate=lr_schedule),
             lgb.log_evaluation(period=50)
         ],
     )

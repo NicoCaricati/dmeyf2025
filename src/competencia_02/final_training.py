@@ -67,6 +67,10 @@ def entrenar_modelo_final(X_train: pd.DataFrame, y_train: pd.Series, mejores_par
     logger.info("Iniciando entrenamiento del modelo final")
   
     # Configurar parámetros del modelo
+
+    def lr_schedule(iteration):
+        return params_base["lr_init"] * (params_base["lr_decay"] ** iteration)
+        
     params = {
         'objective': 'binary',
         'metric': 'None',  # Usamos nuestra métrica personalizada
@@ -88,6 +92,7 @@ def entrenar_modelo_final(X_train: pd.DataFrame, y_train: pd.Series, mejores_par
         lgb_train,
         valid_sets=[lgb_train],
         callbacks=[
+        lgb.reset_parameter(learning_rate=lr_schedule),
         lgb.early_stopping(stopping_rounds=100),
         lgb.log_evaluation(period=100)], 
         feval=ganancia_evaluator
