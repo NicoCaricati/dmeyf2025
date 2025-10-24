@@ -92,11 +92,13 @@ def objetivo_ganancia(trial, df, undersampling=0.2) -> float:
     # Rango por defecto de hiperparámetros
     DEFAULT_HYPERPARAMS = {
         "num_leaves":      {"min": 5, "max": 50, "type": "int"},
-        "learning_rate":   {"min": 0.005, "max": 0.10, "type": "float"},
+        # "learning_rate":   {"min": 0.005, "max": 0.10, "type": "float"},
         "min_data_in_leaf":{"min": 300, "max": 800, "type": "int"},
         "feature_fraction":{"min": 0.1, "max": 0.8, "type": "float"},
         "bagging_fraction":{"min": 0.2, "max": 0.8, "type": "float"},
     }
+
+
 
     # Merge entre YAML y defaults
     PARAM_RANGES = {**DEFAULT_HYPERPARAMS, **HYPERPARAM_RANGES}
@@ -121,6 +123,9 @@ def objetivo_ganancia(trial, df, undersampling=0.2) -> float:
         else:
             raise ValueError(f"Tipo de hiperparámetro no soportado: {cfg['type']}")
 
+    def lr_schedule(iteration):
+        return params_base["lr_init"] * (params_base["lr_decay"] ** iteration)
+
     # --- ENTRENAMIENTO MULTISEMILLA ---
     ganancias = []
 
@@ -141,6 +146,7 @@ def objetivo_ganancia(trial, df, undersampling=0.2) -> float:
             feval=ganancia_evaluator,
             num_boost_round=1000,
             callbacks=[
+                lgb.reset_parameter(learning_rate=lr_schedule),
                 lgb.early_stopping(stopping_rounds=50),
                 lgb.log_evaluation(period=50),
             ],

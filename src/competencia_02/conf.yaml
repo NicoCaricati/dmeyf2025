@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "TEST 1 - Modelo Final  - Pruebo Normalizacion V3"
+STUDY_NAME : "TEST 1 - Modelo Final  - Pruebo Learning Rate con funcionamiento variable"
 
 competencia01:
     DATA_PATH: "../../../data/competencia_03.csv"
@@ -21,10 +21,10 @@ competencia01:
             min: 20
             max: 300
             type: int
-        learning_rate:
-            min: 0.005
-            max: 0.06
-            type: float
+        # learning_rate:
+        #     min: 0.005
+        #     max: 0.06
+        #     type: float
         min_data_in_leaf:
             min: 10
             max: 1000
@@ -37,11 +37,19 @@ competencia01:
             min: 0.15
             max: 0.8
             type: float
-            type: float
         num_boost_round:
             min: 300
             max: 1200
             type: int
+        lr_init:
+            min: 0.05
+            max: 0.2
+            type: float
+        lr_decay:
+            min: 0.90
+            max: 0.999
+            type: float
+    
 
 
 

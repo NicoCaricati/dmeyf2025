@@ -134,16 +134,16 @@ def main():
     
         df_fe = df_fe.drop(columns=variables_con_drfting, errors='ignore')
         
-        # Suponiendo que ya tenés un DataFrame Polars
-        df_polars = pl.from_pandas(df_fe)  # si tu df original era Pandas
+        # # Suponiendo que ya tenés un DataFrame Polars
+        # df_polars = pl.from_pandas(df_fe)  # si tu df original era Pandas
 
-        excluir = ["numero_de_cliente", "target", "foto_mes", "target_to_calculate_gan"]
-        columnas_a_normalizar = [c for c in df_polars.columns if c not in excluir and df_polars[c].dtype in [pl.Float64, pl.Float32, pl.Int64, pl.Int32]]
+        # excluir = ["numero_de_cliente", "target", "foto_mes", "target_to_calculate_gan"]
+        # columnas_a_normalizar = [c for c in df_polars.columns if c not in excluir and df_polars[c].dtype in [pl.Float64, pl.Float32, pl.Int64, pl.Int32]]
 
-        df_polars = feature_engineering_robust_by_month_polars(df_polars, columnas=columnas_a_normalizar)
+        # df_polars = feature_engineering_robust_by_month_polars(df_polars, columnas=columnas_a_normalizar)
         
-        # Si querés volver a Pandas
-        df_fe = df_polars.to_pandas()
+        # # Si querés volver a Pandas
+        # df_fe = df_polars.to_pandas()
 
     
     
@@ -180,67 +180,60 @@ def main():
     
     logger.info("⏳ CSV cargado o creado, ahora ejecutando optimización...")
     
-    # study = optimizar(df_fe, n_trials=100,study_name = STUDY_NAME ,undersampling = 0.2)
+    study = optimizar(df_fe, n_trials=50,study_name = STUDY_NAME ,undersampling = 0.2)
   
-    # # 5. Análisis adicional
-    # logger.info("=== ANÁLISIS DE RESULTADOS ===")
-    # trials_df = study.trials_dataframe()
-    # if len(trials_df) > 0:
-    #     top_5 = trials_df.nlargest(5, 'value')
-    #     logger.info("Top 5 mejores trials:")
-    #     for idx, trial in top_5.iterrows():
-    #         logger.info(
-    #         f"Trial {int(trial['number'])}: "
-    #         f"Ganancia = {trial['value']:,.0f} | "
-    #         f"Parámetros: {trial['params']}")
+    # 5. Análisis adicional
+    logger.info("=== ANÁLISIS DE RESULTADOS ===")
+    trials_df = study.trials_dataframe()
+    if len(trials_df) > 0:
+        top_5 = trials_df.nlargest(5, 'value')
+        logger.info("Top 5 mejores trials:")
+        for idx, trial in top_5.iterrows():
+            logger.info(
+            f"Trial {int(trial['number'])}: "
+            f"Ganancia = {trial['value']:,.0f} | "
+            f"Parámetros: {trial['params']}")
   
-    # logger.info("=== OPTIMIZACIÓN COMPLETADA ===")
+    logger.info("=== OPTIMIZACIÓN COMPLETADA ===")
 
      #05 Test en mes desconocido
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
+    
     # Cargar mejores hiperparámetros
 
-    # mejores_params = {
-    #   "num_leaves": 480,
-    #   "learning_rate": 0.0317163548889023,
-    #   "min_data_in_leaf": 177,
-    #   "feature_fraction": 0.5662761244610663,
-    #   "bagging_fraction": 0.21270355026382087,
-    #   "min_gain_to_split": 0.038636072006724934,
-    #   "num_boost_round": 1062
-    # }
+    mejores_params = cargar_mejores_hiperparametros()
 
-    mejores_params = {'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
+    # mejores_params = {'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
 
   
-    # # Evaluar en test
-    # resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params)
+    # Evaluar en test
+    resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params)
     
-    # res = comparar_semillas_en_grafico(df_fe, mejores_params, SEMILLA, study_name=STUDY_NAME)
+    res = comparar_semillas_en_grafico(df_fe, mejores_params, SEMILLA, study_name=STUDY_NAME)
 
-    # # Simular distribución de ganancias
-    # ganancias_sim = muestrear_ganancias(y_test, y_pred_proba)
+    # Simular distribución de ganancias
+    ganancias_sim = muestrear_ganancias(y_test, y_pred_proba)
   
-    # # Guardar resultados de test
-    # guardar_resultados_test(resultados_test)
+    # Guardar resultados de test
+    guardar_resultados_test(resultados_test)
   
-    # # Resumen de evaluación en test
-    # logger.info("=== RESUMEN DE EVALUACIÓN EN TEST ===")
-    # logger.info(f"✅ Ganancia en test: {resultados_test['ganancia_test']:,.0f}")
-    # logger.info(f"🎯 Predicciones positivas: {resultados_test['predicciones_positivas']:,} ({resultados_test['porcentaje_positivas']:.2f}%)")
+    # Resumen de evaluación en test
+    logger.info("=== RESUMEN DE EVALUACIÓN EN TEST ===")
+    logger.info(f"✅ Ganancia en test: {resultados_test['ganancia_test']:,.0f}")
+    logger.info(f"🎯 Predicciones positivas: {resultados_test['predicciones_positivas']:,} ({resultados_test['porcentaje_positivas']:.2f}%)")
 
  
-    # logger.info("=== GRAFICO DE TEST ===")
+    logger.info("=== GRAFICO DE TEST ===")
 
-    # # Graficar y guardar
-    # graficar_distribucion_ganancia(ganancias_sim, modelo_nombre= STUDY_NAME)
+    # Graficar y guardar
+    graficar_distribucion_ganancia(ganancias_sim, modelo_nombre= STUDY_NAME)
 
-    # # Registrar resultados en CSV comparativo
-    # registrar_resultados_modelo(STUDY_NAME, ganancias_sim)
+    # Registrar resultados en CSV comparativo
+    registrar_resultados_modelo(STUDY_NAME, ganancias_sim)
 
-    # # Grafico de test
-    # logger.info("=== GRAFICO DE TEST ===")
-    # ruta_grafico = crear_grafico_ganancia_avanzado(y_test,y_pred_proba)
+    # Grafico de test
+    logger.info("=== GRAFICO DE TEST ===")
+    ruta_grafico = crear_grafico_ganancia_avanzado(y_test,y_pred_proba)
 
 
     #06 Entrenar modelo final
