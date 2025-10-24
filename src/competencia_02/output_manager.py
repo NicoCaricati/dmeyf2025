@@ -18,11 +18,15 @@ def guardar_predicciones_finales(resultados_dict: dict, nombre_archivo=None) -> 
         dict: {'umbral': ruta_csv, 'top_k': ruta_csv (si aplica)}
     """
     os.makedirs("predict", exist_ok=True)
+    os.makedirs(f"../../../buckets/b1/Compe_02/{study_name}", exist_ok=True)
+
     if nombre_archivo is None:
         nombre_archivo = STUDY_NAME
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     rutas = {}
+
+    study_name = STUDY_NAME
 
     for tipo, df in resultados_dict.items():
         ruta = f"predict/{nombre_archivo}_{tipo}_{timestamp}.csv"
