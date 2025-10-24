@@ -293,6 +293,7 @@ def guardar_iteracion(trial, ganancia, archivo_base=None):
   
     # Nombre del archivo único para todas las iteraciones
     archivo = f"resultados/{archivo_base}_iteraciones.json"
+    archivo_2 = 
   
     # Datos de esta iteración
     iteracion_data = {
