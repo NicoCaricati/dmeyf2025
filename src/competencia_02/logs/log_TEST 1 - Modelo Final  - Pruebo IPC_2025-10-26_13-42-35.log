@@ -1,0 +1,17 @@
+2025-10-26 13:42:35,650 - INFO - __main__ 35 - Iniciando programa de optimización con log fechado
+2025-10-26 13:42:35,650 - INFO - __main__ 38 - Configuración cargada desde YAML
+2025-10-26 13:42:35,650 - INFO - __main__ 39 - STUDY_NAME: TEST 1 - Modelo Final  - Pruebo IPC
+2025-10-26 13:42:35,650 - INFO - __main__ 40 - DATA_PATH: ../../../data/competencia_03.csv
+2025-10-26 13:42:35,650 - INFO - __main__ 41 - SEMILLA: [555557, 555871, 556219, 556459, 556691]
+2025-10-26 13:42:35,650 - INFO - __main__ 42 - MES_TRAIN: [2021, 202102]
+2025-10-26 13:42:35,650 - INFO - __main__ 43 - MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
+2025-10-26 13:42:35,650 - INFO - __main__ 44 - MES_VALIDACION: 202103
+2025-10-26 13:42:35,650 - INFO - __main__ 45 - MES_TEST: 202104
+2025-10-26 13:42:35,650 - INFO - __main__ 46 - FINAL_TRAIN: [202101, 202102, 202103, 202104]
+2025-10-26 13:42:35,650 - INFO - __main__ 47 - FINAL_PREDIC: 202106
+2025-10-26 13:42:35,650 - INFO - __main__ 48 - GANANCIA_ACIERTO: 780000
+2025-10-26 13:42:35,650 - INFO - __main__ 49 - COSTO_ESTIMULO: 20000
+2025-10-26 13:42:35,651 - INFO - __main__ 50 - UMBRAL: 0.015
+2025-10-26 13:42:35,651 - INFO - __main__ 51 - HIPERPARAMETROS: {'num_leaves': {'min': 20, 'max': 300, 'type': 'int'}, 'min_data_in_leaf': {'min': 10, 'max': 1000, 'type': 'int'}, 'feature_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'bagging_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'num_boost_round': {'min': 300, 'max': 1200, 'type': 'int'}, 'lr_init': {'min': 0.05, 'max': 0.2, 'type': 'float'}, 'lr_decay': {'min': 0.9, 'max': 0.999, 'type': 'float'}}
+2025-10-26 13:42:35,651 - INFO - __main__ 57 - === INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===
+2025-10-26 13:42:37,615 - INFO - __main__ 68 - ✅ df_fe.csv.gz encontrado

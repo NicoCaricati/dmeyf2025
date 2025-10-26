@@ -1,0 +1,93 @@
+2025-10-26 14:26:49,595 - INFO - __main__ 35 - Iniciando programa de optimización con log fechado
+2025-10-26 14:26:49,595 - INFO - __main__ 38 - Configuración cargada desde YAML
+2025-10-26 14:26:49,595 - INFO - __main__ 39 - STUDY_NAME: TEST 1 - Modelo Final  - Pruebo IPC V2
+2025-10-26 14:26:49,595 - INFO - __main__ 40 - DATA_PATH: ../../../data/competencia_03.csv
+2025-10-26 14:26:49,595 - INFO - __main__ 41 - SEMILLA: [555557, 555871, 556219, 556459, 556691]
+2025-10-26 14:26:49,595 - INFO - __main__ 42 - MES_TRAIN: [2021, 202102]
+2025-10-26 14:26:49,595 - INFO - __main__ 43 - MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
+2025-10-26 14:26:49,595 - INFO - __main__ 44 - MES_VALIDACION: 202103
+2025-10-26 14:26:49,595 - INFO - __main__ 45 - MES_TEST: 202104
+2025-10-26 14:26:49,595 - INFO - __main__ 46 - FINAL_TRAIN: [202101, 202102, 202103, 202104]
+2025-10-26 14:26:49,595 - INFO - __main__ 47 - FINAL_PREDIC: 202106
+2025-10-26 14:26:49,595 - INFO - __main__ 48 - GANANCIA_ACIERTO: 780000
+2025-10-26 14:26:49,595 - INFO - __main__ 49 - COSTO_ESTIMULO: 20000
+2025-10-26 14:26:49,595 - INFO - __main__ 50 - UMBRAL: 0.015
+2025-10-26 14:26:49,595 - INFO - __main__ 51 - HIPERPARAMETROS: {'num_leaves': {'min': 20, 'max': 300, 'type': 'int'}, 'min_data_in_leaf': {'min': 10, 'max': 1000, 'type': 'int'}, 'feature_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'bagging_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'num_boost_round': {'min': 300, 'max': 1200, 'type': 'int'}, 'lr_init': {'min': 0.05, 'max': 0.2, 'type': 'float'}, 'lr_decay': {'min': 0.9, 'max': 0.999, 'type': 'float'}}
+2025-10-26 14:26:49,595 - INFO - __main__ 57 - === INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===
+2025-10-26 14:26:51,183 - INFO - __main__ 71 - ❌ df_fe.csv.gz no encontrado
+2025-10-26 14:26:51,183 - INFO - loader 88 - Cargando dataset desde ../../../datasets/competencia_01_crudo.csv
+2025-10-26 14:27:15,708 - INFO - loader 137 - Dataset cargado con 978439 filas y 155 columnas
+2025-10-26 14:27:16,403 - INFO - __main__ 78 - Datos cargados: (978439, 155)
+2025-10-26 14:27:16,404 - INFO - features 698 - Comenzando ajuste por IPC
+2025-10-26 14:27:18,727 - INFO - features 719 - Ajuste por IPC completado. Se ajustaron 73 columnas numéricas.
+2025-10-26 14:27:20,296 - INFO - features 172 - Variables TC_Total generadas. DataFrame resultante con 177 columnas
+2025-10-26 14:27:30,312 - INFO - features 32 - Realizando feature engineering con 1 lags para 213 atributos
+2025-10-26 14:27:51,839 - INFO - features 63 - Feature engineering completado. DataFrame resultante con 430 columnas
+2025-10-26 14:27:51,864 - INFO - features 32 - Realizando feature engineering con 2 lags para 213 atributos
+2025-10-26 14:28:33,260 - INFO - features 63 - Feature engineering completado. DataFrame resultante con 856 columnas
+2025-10-26 14:28:33,284 - INFO - features 88 - Realizando feature engineering con 1 deltas para 213 atributos
+2025-10-26 14:29:14,291 - INFO - features 119 - Feature engineering completado. DataFrame resultante con 1069 columnas
+2025-10-26 14:29:14,327 - INFO - features 88 - Realizando feature engineering con 2 deltas para 213 atributos
+2025-10-26 14:30:10,457 - INFO - features 119 - Feature engineering completado. DataFrame resultante con 1495 columnas
+2025-10-26 14:30:10,497 - INFO - features 197 - Calculando slope con ventana móvil de 2 meses para 213 atributos
+2025-10-26 14:31:38,654 - INFO - features 263 - Slope con ventana móvil calculado. DataFrame resultante con 1708 columnas
+2025-10-26 14:31:38,708 - INFO - features 197 - Calculando slope con ventana móvil de 3 meses para 213 atributos
+2025-10-26 14:34:06,095 - INFO - features 263 - Slope con ventana móvil calculado. DataFrame resultante con 1921 columnas
+2025-10-26 14:34:24,473 - INFO - __main__ 167 - Feature Engineering completado: (978439, 1915)
+2025-10-26 14:35:36,716 - INFO - loader 188 - Conversión completada:
+2025-10-26 14:35:36,716 - INFO - loader 189 -   Mapeo utilizado: CONTINUA -> 0, BAJA+1 -> 1, BAJA+2 -> 1
+2025-10-26 14:35:36,716 - INFO - loader 190 -   Original - CONTINUA: 642840, BAJA+1: 3434, BAJA+2: 3935
+2025-10-26 14:35:36,717 - INFO - loader 191 -   Binario - 0: 642840, 1: 7369
+2025-10-26 14:35:36,717 - INFO - loader 192 -   Distribución: 1.13% casos positivos
+2025-10-26 14:35:36,850 - INFO - __main__ 190 - ⏳ CSV cargado o creado, ahora ejecutando optimización...
+2025-10-26 14:35:36,851 - INFO - __main__ 223 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-26 14:35:36,851 - INFO - __main__ 265 - === ENTRENAMIENTO FINAL ===
+2025-10-26 14:35:36,851 - INFO - __main__ 266 - Preparar datos para entrenamiento final
+2025-10-26 14:35:36,851 - INFO - final_training 23 - Preparando datos para entrenamiento final
+2025-10-26 14:35:36,851 - INFO - final_training 24 - Períodos de entrenamiento: [202101, 202102, 202103, 202104]
+2025-10-26 14:35:36,851 - INFO - final_training 25 - Período de predicción: 202106
+2025-10-26 14:35:45,406 - INFO - final_training 50 - Features utilizadas: 1914
+2025-10-26 14:35:45,423 - INFO - final_training 51 - Distribución del target - 0: 642,840, 1: 7,369
+2025-10-26 14:35:45,450 - INFO - __main__ 270 - Entrenar modelo final
+2025-10-26 14:35:45,450 - INFO - final_training 67 - Iniciando entrenamiento del modelo final
+2025-10-26 14:35:45,474 - INFO - final_training 83 - Parámetros del modelo: {'objective': 'binary', 'metric': 'None', 'random_state': 555557, 'verbose': -1, 'extra_trees': False, 'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
+2025-10-26 14:42:45,134 - INFO - __main__ 274 - Generar predicciones finales
+2025-10-26 14:42:45,136 - INFO - final_training 164 - Generando predicciones finales
+2025-10-26 14:42:54,010 - INFO - final_training 237 - Importancia de las primeras 1000 variables guardada en 'feature_importance/feature_importance_TEST 1 - Modelo Final  - Pruebo IPC V2.csv'
+2025-10-26 14:42:54,010 - INFO - final_training 185 - Predicciones con umbral generadas:
+2025-10-26 14:42:54,011 - INFO - final_training 186 -   Total clientes: 164,313
+2025-10-26 14:42:54,011 - INFO - final_training 187 -   Positivas: 13,324 (8.11%)
+2025-10-26 14:42:54,011 - INFO - final_training 188 -   Umbral utilizado: 0.015
+2025-10-26 14:42:54,012 - INFO - final_training 194 - Generando predicciones con top_k=11,750
+2025-10-26 14:42:54,029 - INFO - final_training 206 -   Predicciones top_k generadas (K=11,750)
+2025-10-26 14:42:54,030 - INFO - final_training 207 -   Máxima probabilidad: 0.9719
+2025-10-26 14:42:54,030 - INFO - final_training 208 -   Mínima probabilidad dentro del top_k: 0.0180
+2025-10-26 14:42:54,030 - INFO - __main__ 278 - Guardar predicciones
+2025-10-26 14:42:58,949 - INFO - output_manager 39 - Predicciones (umbral) guardadas en: predict/TEST 1 - Modelo Final  - Pruebo IPC V2_umbral_20251026_144256.csv
+2025-10-26 14:42:58,950 - INFO - output_manager 40 -   Columnas: ['numero_de_cliente', 'predict']
+2025-10-26 14:42:58,950 - INFO - output_manager 41 -   Registros: 164,313
+2025-10-26 14:42:59,031 - INFO - output_manager 42 -   Primeras filas:
+   numero_de_cliente  predict
+0          249350768        0
+1          249432306        0
+2          249565688        0
+3          249596175        0
+4          249695645        0
+2025-10-26 14:43:01,016 - INFO - output_manager 39 - Predicciones (top_k) guardadas en: predict/TEST 1 - Modelo Final  - Pruebo IPC V2_top_k_20251026_144256.csv
+2025-10-26 14:43:01,016 - INFO - output_manager 40 -   Columnas: ['numero_de_cliente', 'predict']
+2025-10-26 14:43:01,016 - INFO - output_manager 41 -   Registros: 164,313
+2025-10-26 14:43:01,019 - INFO - output_manager 42 -   Primeras filas:
+        numero_de_cliente  predict
+115725          507653834        1
+70673           971108609        1
+6040            999158844        1
+63676          1469402972        1
+130212         1038027871        1
+2025-10-26 14:43:01,019 - INFO - __main__ 282 - === RESUMEN FINAL ===
+2025-10-26 14:43:01,020 - INFO - __main__ 283 - Entrenamiento final completado exitosamente
+2025-10-26 14:43:01,020 - INFO - __main__ 284 - Mejores hiperparámetros utilizados: {'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
+2025-10-26 14:43:01,020 - INFO - __main__ 285 - Períodos de entrenamiento: [202101, 202102, 202103, 202104]
+2025-10-26 14:43:01,020 - INFO - __main__ 286 - Período de predicción: 202106
+2025-10-26 14:43:01,020 - INFO - __main__ 287 - Archivo de salida: {'umbral': 'predict/TEST 1 - Modelo Final  - Pruebo IPC V2_umbral_20251026_144256.csv', 'top_k': 'predict/TEST 1 - Modelo Final  - Pruebo IPC V2_top_k_20251026_144256.csv'}
+2025-10-26 14:43:01,020 - INFO - __main__ 288 - Log detallado: logs/log_TEST 1 - Modelo Final  - Pruebo IPC V2_2025-10-26_14-26-49.log
+2025-10-26 14:43:01,020 - INFO - __main__ 291 - >>> Ejecución finalizada. Revisar logs para mas detalles.

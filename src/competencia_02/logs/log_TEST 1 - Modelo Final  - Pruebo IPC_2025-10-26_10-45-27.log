@@ -1,0 +1,59 @@
+2025-10-26 10:45:27,852 - INFO - __main__ 35 - Iniciando programa de optimización con log fechado
+2025-10-26 10:45:27,853 - INFO - __main__ 38 - Configuración cargada desde YAML
+2025-10-26 10:45:27,853 - INFO - __main__ 39 - STUDY_NAME: TEST 1 - Modelo Final  - Pruebo IPC
+2025-10-26 10:45:27,853 - INFO - __main__ 40 - DATA_PATH: ../../../data/competencia_03.csv
+2025-10-26 10:45:27,853 - INFO - __main__ 41 - SEMILLA: [555557, 555871, 556219, 556459, 556691]
+2025-10-26 10:45:27,853 - INFO - __main__ 42 - MES_TRAIN: [2021, 202102]
+2025-10-26 10:45:27,853 - INFO - __main__ 43 - MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
+2025-10-26 10:45:27,853 - INFO - __main__ 44 - MES_VALIDACION: 202103
+2025-10-26 10:45:27,853 - INFO - __main__ 45 - MES_TEST: 202104
+2025-10-26 10:45:27,853 - INFO - __main__ 46 - FINAL_TRAIN: [202101, 202102, 202103, 202104]
+2025-10-26 10:45:27,853 - INFO - __main__ 47 - FINAL_PREDIC: 202106
+2025-10-26 10:45:27,853 - INFO - __main__ 48 - GANANCIA_ACIERTO: 780000
+2025-10-26 10:45:27,853 - INFO - __main__ 49 - COSTO_ESTIMULO: 20000
+2025-10-26 10:45:27,853 - INFO - __main__ 50 - UMBRAL: 0.015
+2025-10-26 10:45:27,853 - INFO - __main__ 51 - HIPERPARAMETROS: {'num_leaves': {'min': 20, 'max': 300, 'type': 'int'}, 'min_data_in_leaf': {'min': 10, 'max': 1000, 'type': 'int'}, 'feature_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'bagging_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'num_boost_round': {'min': 300, 'max': 1200, 'type': 'int'}, 'lr_init': {'min': 0.05, 'max': 0.2, 'type': 'float'}, 'lr_decay': {'min': 0.9, 'max': 0.999, 'type': 'float'}}
+2025-10-26 10:45:27,853 - INFO - __main__ 57 - === INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===
+2025-10-26 10:45:28,305 - INFO - __main__ 60 - ✅ df_fe.csv encontrado
+2025-10-26 10:55:42,217 - INFO - __main__ 174 - ⏳ CSV cargado o creado, ahora ejecutando optimización...
+2025-10-26 10:55:42,258 - INFO - __main__ 207 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-26 10:55:42,258 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-26 10:55:42,258 - INFO - config 30 - Período de test: 202104
+2025-10-26 11:01:20,780 - INFO - config 438 - === Comparando 5 semillas ===
+2025-10-26 11:01:20,780 - INFO - config 445 - 🔁 Semilla: 555557
+2025-10-26 11:01:20,879 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-26 11:01:20,880 - INFO - config 30 - Período de test: 202104
+2025-10-26 11:05:39,245 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-26 11:05:39,290 - INFO - grafico_test 40 - Ganancia máxima: 376,180,000 en posición 8350
+2025-10-26 11:05:39,291 - INFO - grafico_test 41 - Umbral óptimo: 0.027455
+2025-10-26 11:05:39,291 - INFO - config 445 - 🔁 Semilla: 555871
+2025-10-26 11:05:39,291 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-26 11:05:39,291 - INFO - config 30 - Período de test: 202104
+2025-10-26 11:09:35,847 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-26 11:09:35,854 - INFO - grafico_test 40 - Ganancia máxima: 378,840,000 en posición 8177
+2025-10-26 11:09:35,854 - INFO - grafico_test 41 - Umbral óptimo: 0.027725
+2025-10-26 11:09:35,855 - INFO - config 445 - 🔁 Semilla: 556219
+2025-10-26 11:09:35,855 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-26 11:09:35,855 - INFO - config 30 - Período de test: 202104
+2025-10-26 11:13:42,168 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-26 11:13:42,175 - INFO - grafico_test 40 - Ganancia máxima: 373,720,000 en posición 10153
+2025-10-26 11:13:42,175 - INFO - grafico_test 41 - Umbral óptimo: 0.021156
+2025-10-26 11:13:42,175 - INFO - config 445 - 🔁 Semilla: 556459
+2025-10-26 11:13:42,175 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-26 11:13:42,175 - INFO - config 30 - Período de test: 202104
+2025-10-26 11:18:20,504 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-26 11:18:20,512 - INFO - grafico_test 40 - Ganancia máxima: 378,520,000 en posición 8393
+2025-10-26 11:18:20,512 - INFO - grafico_test 41 - Umbral óptimo: 0.027591
+2025-10-26 11:18:20,512 - INFO - config 445 - 🔁 Semilla: 556691
+2025-10-26 11:18:20,512 - INFO - config 29 - === EVALUACIÓN EN CONJUNTO DE TEST ===
+2025-10-26 11:18:20,512 - INFO - config 30 - Período de test: 202104
+2025-10-26 11:22:22,718 - INFO - grafico_test 25 - Calculando ganancia acumulada optimizada...
+2025-10-26 11:22:22,726 - INFO - grafico_test 40 - Ganancia máxima: 373,560,000 en posición 8601
+2025-10-26 11:22:22,726 - INFO - grafico_test 41 - Umbral óptimo: 0.026830
+2025-10-26 11:22:25,350 - INFO - config 527 - ✅ Gráfico comparativo guardado: resultados/plots/TEST 1 - Modelo Final  - Pruebo IPC_comparativo_semillas_20251026_112224.png
+2025-10-26 11:22:28,037 - INFO - config 536 - ✅ Gráfico comparativo guardado: ../../../buckets/b1/Compe_02/TEST 1 - Modelo Final  - Pruebo IPC/TEST 1 - Modelo Final  - Pruebo IPC_comparativo_semillas_20251026_112226.png
+2025-10-26 11:22:38,567 - INFO - config 109 - Resultados de test guardados en resultados/TEST 1 - Modelo Final  - Pruebo IPC_test_results.json
+2025-10-26 11:22:38,567 - INFO - __main__ 230 - === RESUMEN DE EVALUACIÓN EN TEST ===
+2025-10-26 11:22:38,567 - INFO - __main__ 231 - ✅ Ganancia en test: 2,147,480,000
+2025-10-26 11:22:38,567 - INFO - __main__ 232 - 🎯 Predicciones positivas: 12,438 (7.61%)
+2025-10-26 11:22:38,567 - INFO - __main__ 235 - === GRAFICO DE TEST ===

@@ -1,0 +1,41 @@
+2025-10-26 11:27:59,282 - INFO - __main__ 35 - Iniciando programa de optimización con log fechado
+2025-10-26 11:27:59,282 - INFO - __main__ 38 - Configuración cargada desde YAML
+2025-10-26 11:27:59,282 - INFO - __main__ 39 - STUDY_NAME: TEST 1 - Modelo Final  - Pruebo IPC
+2025-10-26 11:27:59,282 - INFO - __main__ 40 - DATA_PATH: ../../../data/competencia_03.csv
+2025-10-26 11:27:59,282 - INFO - __main__ 41 - SEMILLA: [555557, 555871, 556219, 556459, 556691]
+2025-10-26 11:27:59,282 - INFO - __main__ 42 - MES_TRAIN: [2021, 202102]
+2025-10-26 11:27:59,282 - INFO - __main__ 43 - MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
+2025-10-26 11:27:59,282 - INFO - __main__ 44 - MES_VALIDACION: 202103
+2025-10-26 11:27:59,282 - INFO - __main__ 45 - MES_TEST: 202104
+2025-10-26 11:27:59,282 - INFO - __main__ 46 - FINAL_TRAIN: [202101, 202102, 202103, 202104]
+2025-10-26 11:27:59,282 - INFO - __main__ 47 - FINAL_PREDIC: 202106
+2025-10-26 11:27:59,282 - INFO - __main__ 48 - GANANCIA_ACIERTO: 780000
+2025-10-26 11:27:59,282 - INFO - __main__ 49 - COSTO_ESTIMULO: 20000
+2025-10-26 11:27:59,282 - INFO - __main__ 50 - UMBRAL: 0.015
+2025-10-26 11:27:59,282 - INFO - __main__ 51 - HIPERPARAMETROS: {'num_leaves': {'min': 20, 'max': 300, 'type': 'int'}, 'min_data_in_leaf': {'min': 10, 'max': 1000, 'type': 'int'}, 'feature_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'bagging_fraction': {'min': 0.15, 'max': 0.8, 'type': 'float'}, 'num_boost_round': {'min': 300, 'max': 1200, 'type': 'int'}, 'lr_init': {'min': 0.05, 'max': 0.2, 'type': 'float'}, 'lr_decay': {'min': 0.9, 'max': 0.999, 'type': 'float'}}
+2025-10-26 11:27:59,283 - INFO - __main__ 57 - === INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===
+2025-10-26 11:28:00,815 - INFO - __main__ 71 - ❌ df_fe.csv.gz no encontrado
+2025-10-26 11:28:00,816 - INFO - loader 88 - Cargando dataset desde ../../../datasets/competencia_01_crudo.csv
+2025-10-26 11:28:13,322 - INFO - loader 137 - Dataset cargado con 978439 filas y 155 columnas
+2025-10-26 11:28:13,728 - INFO - __main__ 78 - Datos cargados: (978439, 155)
+2025-10-26 11:28:13,728 - INFO - features 698 - Comenzando ajuste por IPC
+2025-10-26 11:28:15,054 - INFO - features 719 - Ajuste por IPC completado. Se ajustaron 73 columnas numéricas.
+2025-10-26 11:28:15,539 - INFO - features 172 - Variables TC_Total generadas. DataFrame resultante con 177 columnas
+2025-10-26 11:28:19,626 - INFO - features 32 - Realizando feature engineering con 1 lags para 213 atributos
+2025-10-26 11:28:30,983 - INFO - features 63 - Feature engineering completado. DataFrame resultante con 430 columnas
+2025-10-26 11:28:30,996 - INFO - features 32 - Realizando feature engineering con 2 lags para 213 atributos
+2025-10-26 11:28:55,508 - INFO - features 63 - Feature engineering completado. DataFrame resultante con 856 columnas
+2025-10-26 11:28:55,586 - INFO - features 88 - Realizando feature engineering con 1 deltas para 213 atributos
+2025-10-26 11:29:48,109 - INFO - features 119 - Feature engineering completado. DataFrame resultante con 1069 columnas
+2025-10-26 11:29:48,149 - INFO - features 88 - Realizando feature engineering con 2 deltas para 213 atributos
+2025-10-26 11:30:43,699 - INFO - features 119 - Feature engineering completado. DataFrame resultante con 1495 columnas
+2025-10-26 11:30:43,734 - INFO - features 197 - Calculando slope con ventana móvil de 2 meses para 213 atributos
+2025-10-26 11:32:07,312 - INFO - features 263 - Slope con ventana móvil calculado. DataFrame resultante con 1708 columnas
+2025-10-26 11:32:07,359 - INFO - features 197 - Calculando slope con ventana móvil de 3 meses para 213 atributos
+2025-10-26 11:34:12,293 - INFO - features 263 - Slope con ventana móvil calculado. DataFrame resultante con 1921 columnas
+2025-10-26 11:34:30,530 - INFO - __main__ 167 - Feature Engineering completado: (978439, 1915)
+2025-10-26 11:34:37,093 - INFO - loader 188 - Conversión completada:
+2025-10-26 11:34:37,093 - INFO - loader 189 -   Mapeo utilizado: CONTINUA -> 0, BAJA+1 -> 1, BAJA+2 -> 1
+2025-10-26 11:34:37,093 - INFO - loader 190 -   Original - CONTINUA: 642840, BAJA+1: 3434, BAJA+2: 3935
+2025-10-26 11:34:37,093 - INFO - loader 191 -   Binario - 0: 642840, 1: 7369
+2025-10-26 11:34:37,093 - INFO - loader 192 -   Distribución: 1.13% casos positivos
