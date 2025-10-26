@@ -52,162 +52,156 @@ def preparar_datos_entrenamiento_final(df: pd.DataFrame) -> tuple:
   
     return X_train, y_train, X_predict, clientes_predict
 
-def entrenar_modelo_final(X_train: pd.DataFrame, y_train: pd.Series, mejores_params: dict) -> lgb.Booster:
+def entrenar_modelo_final(X_train: pd.DataFrame,
+                                   y_train: pd.Series,
+                                   X_predict: pd.DataFrame,
+                                   mejores_params: dict,
+                                   semillas: list[int]) -> tuple:
     """
-    Entrena el modelo final con los mejores hiperparámetros.
-  
-    Args:
-        X_train: Features de entrenamiento
-        y_train: Target de entrenamiento
-        mejores_params: Mejores hiperparámetros de Optuna
-  
-    Returns:
-        lgb.Booster: Modelo entrenado
+    Entrena múltiples modelos LightGBM (uno por semilla) y promedia sus predicciones.
+    Devuelve las probabilidades promedio y los modelos entrenados.
+
+    Args
+    ----
+    X_train, y_train : datos de entrenamiento
+    X_predict : features del set de predicción final
+    mejores_params : dict
+        Hiperparámetros óptimos de Optuna
+    semillas : list[int]
+        Lista de semillas a utilizar para el ensamble
+
+    Returns
+    -------
+    tuple[np.ndarray, list[lgb.Booster]]
+        (predicciones_promedio, lista_de_modelos)
     """
-    logger.info("Iniciando entrenamiento del modelo final")
-  
-    # Configurar parámetros del modelo
+    logger.info("=== ENTRENAMIENTO FINAL (ENSEMBLE DE SEMILLAS) ===")
+    logger.info(f"Semillas utilizadas: {semillas}")
+    logger.info(f"Tamaño del set de entrenamiento: {len(X_train):,}")
+    logger.info(f"Tamaño del set de predicción: {len(X_predict):,}")
 
-    # def lr_schedule(iteration):
-    #     return params_base["lr_init"] * (params_base["lr_decay"] ** iteration)
-        
-    params = {
-        'objective': 'binary',
-        'metric': 'None',  # Usamos nuestra métrica personalizada
-        'random_state': SEMILLA[0] if isinstance(SEMILLA, list) else SEMILLA,
-        'verbose': -1,
-        'extra_trees': False,  # Para mayor diversidad entre semillas
-        **mejores_params  # Agregar los mejores hiperparámetros
-    }
-  
-    logger.info(f"Parámetros del modelo: {params}")
-  
-    # Crear dataset de LightGBM
+    modelos = []
+    preds_acumuladas = np.zeros(len(X_predict))
 
-    lgb_train = lgb.Dataset(X_train, label=y_train)
-  
-    # Entrenar modelo con lgb.train()
-    modelo = lgb.train(
-        params,
-        lgb_train,
-        valid_sets=[lgb_train],
-        callbacks=[
-        # lgb.reset_parameter(learning_rate=lr_schedule),
-        lgb.early_stopping(stopping_rounds=100),
-        lgb.log_evaluation(period=100)], 
-        feval=ganancia_evaluator
-    )
-    return modelo
+    for seed in semillas:
+        logger.info(f"Entrenando modelo con semilla {seed}...")
 
-# def generar_predicciones_finales(modelo: lgb.Booster, X_predict: pd.DataFrame, clientes_predict: np.ndarray, umbral: float = 0.04) -> pd.DataFrame:
-#     """
-#     Genera las predicciones finales para el período objetivo.
-  
-#     Args:
-#         modelo: Modelo entrenado
-#         X_predict: Features para predicción
-#         clientes_predict: IDs de clientes
-#         umbral: Umbral para clasificación binaria
-  
-#     Returns:
-#         pd.DataFrame: DataFrame con numero_cliente y predict
-#     """
-#     logger.info("Generando predicciones finales")
-  
-#     # Generar probabilidades con el modelo entrenado
-#     y_pred = modelo.predict(X_predict, num_iteration=modelo.best_iteration)
+        params = {
+            'objective': 'binary',
+            'metric': 'None',  # métrica custom
+            'boosting_type': 'gbdt',
+            'first_metric_only': True,
+            'boost_from_average': True,
+            'feature_pre_filter': False,
+            'max_bin': 31,
+            'seed': seed,
+            'verbose': -1,
+            **mejores_params
+        }
 
-#     # Convertir a predicciones binarias con el umbral establecido
-#     y_pred_binary = (y_pred > umbral).astype(int)
+        lgb_train = lgb.Dataset(X_train, label=y_train)
 
-#     # Crear DataFrame de 'resultados' con nombres de atributos que pide kaggle
-#     resultados = pd.DataFrame({
-#         'numero_de_cliente': clientes_predict,
-#         'predict': y_pred_binary
-#     })
+        modelo = lgb.train(
+            params,
+            lgb_train,
+            valid_sets=[lgb_train],
+            feval=ganancia_evaluator,
+            callbacks=[
+                lgb.early_stopping(stopping_rounds=100),
+                lgb.log_evaluation(period=100)
+            ]
+        )
 
-#     # Estadísticas de predicciones
-#     total_predicciones = len(resultados)
-#     predicciones_positivas = (resultados['predict'] == 1).sum()
-#     porcentaje_positivas = (predicciones_positivas / total_predicciones) * 100
+        modelos.append(modelo)
+        preds = modelo.predict(X_predict, num_iteration=modelo.best_iteration)
+        preds_acumuladas += preds
 
-#     feature_importance(modelo)
-  
-#     logger.info(f"Predicciones generadas:")
-#     logger.info(f"  Total clientes: {total_predicciones:,}")
-#     logger.info(f"  Predicciones positivas: {predicciones_positivas:,} ({porcentaje_positivas:.2f}%)")
-#     logger.info(f"  Predicciones negativas: {total_predicciones - predicciones_positivas:,}")
-#     logger.info(f"  Umbral utilizado: {umbral}")
-  
-#     return resultados
+    # Promedio de probabilidades del ensamble
+    preds_prom = preds_acumuladas / len(semillas)
+    logger.info(f"✅ Ensamble final completado con {len(semillas)} modelos.")
+    
+    return preds_prom, modelos
+
 
 def generar_predicciones_finales(
-    modelo: lgb.Booster,
+    modelos: list[lgb.Booster],
     X_predict: pd.DataFrame,
     clientes_predict: np.ndarray,
     umbral: float = 0.04,
     top_k: int = 10000
 ) -> dict:
     """
-    Genera las predicciones finales para el período objetivo, tanto con umbral como con top_k.
+    Genera las predicciones finales promediando varios modelos (ensamble).
+    Produce tanto predicciones con umbral como por top_k.
 
-    Args:
-        modelo: Modelo entrenado
-        X_predict: Features para predicción
-        clientes_predict: IDs de clientes
-        umbral: Umbral para clasificación binaria
-        top_k: Cantidad de clientes con mayor probabilidad a seleccionar (opcional)
+    Args
+    ----
+    modelos : list[lgb.Booster]
+        Lista de modelos LightGBM entrenados.
+    X_predict : pd.DataFrame
+        Features para predicción.
+    clientes_predict : np.ndarray
+        IDs de clientes.
+    umbral : float, default=0.04
+        Umbral para clasificación binaria.
+    top_k : int, default=10000
+        Cantidad de clientes con mayor probabilidad a seleccionar.
 
-    Returns:
-        dict: {'umbral': DataFrame, 'top_k': DataFrame (si aplica)}
+    Returns
+    -------
+    dict
+        {'umbral': DataFrame, 'top_k': DataFrame}
     """
-    logger.info("Generando predicciones finales")
     import os
     os.makedirs("predict", exist_ok=True)
 
-    # Generar probabilidades con el modelo entrenado
-    y_pred = modelo.predict(X_predict, num_iteration=modelo.best_iteration)
+    logger.info("=== GENERANDO PREDICCIONES FINALES (ENSAMBLE) ===")
+    n_modelos = len(modelos)
+    logger.info(f"Se detectaron {n_modelos} modelos para el ensamble.")
 
-    # --- Predicciones con umbral ---
-    y_pred_binary = (y_pred > umbral).astype(int)
+    # --- Promediar predicciones ---
+    preds_sum = np.zeros(len(X_predict), dtype=np.float32)
+    for i, modelo in enumerate(modelos, start=1):
+        pred_i = modelo.predict(X_predict, num_iteration=modelo.best_iteration)
+        preds_sum += pred_i
+        logger.info(f"  Modelo {i}/{n_modelos} procesado.")
+    y_pred = preds_sum / n_modelos
+
+    # --- Predicciones binarias (umbral) ---
+    y_pred_bin = (y_pred > umbral).astype(int)
     resultados_umbral = pd.DataFrame({
-        'numero_de_cliente': clientes_predict,
-        'predict': y_pred_binary,
-        'probabilidad': y_pred
+        "numero_de_cliente": clientes_predict,
+        "predict": y_pred_bin,
+        "probabilidad": y_pred
     })
 
-    total_predicciones = len(resultados_umbral)
-    predicciones_positivas = (resultados_umbral['predict'] == 1).sum()
-    porcentaje_positivas = (predicciones_positivas / total_predicciones) * 100
+    total = len(resultados_umbral)
+    positivos = (resultados_umbral["predict"] == 1).sum()
+    pct_positivos = positivos / total * 100
+    logger.info(f"Total clientes: {total:,}")
+    logger.info(f"Predicciones positivas: {positivos:,} ({pct_positivos:.2f}%)")
+    logger.info(f"Umbral utilizado: {umbral}")
 
-    feature_importance(modelo)
+    # --- Feature importance del primer modelo (referencia) ---
+    feature_importance(modelos[0])
 
-    logger.info(f"Predicciones con umbral generadas:")
-    logger.info(f"  Total clientes: {total_predicciones:,}")
-    logger.info(f"  Positivas: {predicciones_positivas:,} ({porcentaje_positivas:.2f}%)")
-    logger.info(f"  Umbral utilizado: {umbral}")
+    resultados = {"umbral": resultados_umbral[["numero_de_cliente", "predict"]]}
 
-    resultados = {'umbral': resultados_umbral[['numero_de_cliente', 'predict']]}
+    # --- Predicciones por top_k ---
+    logger.info(f"Generando predicciones con top_k={top_k:,}")
+    df_topk = resultados_umbral[["numero_de_cliente", "probabilidad"]].copy()
+    df_topk = df_topk.sort_values("probabilidad", ascending=False, ignore_index=True)
+    df_topk["predict"] = 0
+    df_topk.loc[:top_k - 1, "predict"] = 1
 
-    # --- Predicciones con top_k ---
-    if top_k is not None:
-        logger.info(f"Generando predicciones con top_k={top_k:,}")
-        df_topk = pd.DataFrame({
-            'numero_de_cliente': clientes_predict,
-            'probabilidad': y_pred
-        }).sort_values('probabilidad', ascending=False)
+    resultados["top_k"] = df_topk[["numero_de_cliente", "predict"]]
 
-        df_topk['predict'] = 0
-        df_topk.iloc[:top_k, df_topk.columns.get_loc('predict')] = 1
-
-
-        resultados['top_k'] = df_topk[['numero_de_cliente', 'predict']]
-
-        logger.info(f"  Predicciones top_k generadas (K={top_k:,})")
-        logger.info(f"  Máxima probabilidad: {df_topk['probabilidad'].iloc[0]:.4f}")
-        logger.info(f"  Mínima probabilidad dentro del top_k: {df_topk['probabilidad'].iloc[top_k - 1]:.4f}")
+    logger.info(f"Máx prob: {df_topk['probabilidad'].iloc[0]:.4f}")
+    logger.info(f"Mín prob dentro del top_k: {df_topk['probabilidad'].iloc[top_k - 1]:.4f}")
+    logger.info("✅ Predicciones finales generadas correctamente.")
 
     return resultados
+
 
 def feature_importance(modelo: lgb.Booster, max_num_features: int = 1000):
     """

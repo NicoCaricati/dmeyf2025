@@ -62,14 +62,13 @@ def main():
     # else:
     #     logger.info("❌ df_fe.csv no encontrado")
     
-    path_csv = os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv.gz")
-    
-    if os.path.exists(path_csv):
-        logger.info("✅ df_fe.csv.gz encontrado")
-        df_fe = pd.read_csv(path_csv, compression='gzip')  # pandas lo detecta, pero mejor explicitarlo
+    path_parquet = os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.parquet")
+
+    if os.path.exists(path_parquet):
+        logger.info("✅ df_fe.parquet encontrado")
+        df_fe = pd.read_parquet(path_parquet)
     else:
-        logger.info("❌ df_fe.csv.gz no encontrado")
-        
+        logger.info("❌ df_fe.parquet no encontrado")
         # 1. Cargar datos
         df = cargar_datos("../../../datasets/competencia_01_crudo.csv")
         if df is None:
@@ -178,14 +177,10 @@ def main():
         # 4. Ejecutar optimización (función simple)
 
         # df_fe.to_csv(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv"), index=False)
-        df_fe.to_csv(
-            os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv.gz"),
-            index=False,
-            compression='gzip',
-            engine='pyarrow',      # mucho más rápido si tenés pyarrow instalado
-            chunksize=250_000,     # evita usar demasiada RAM
+        df_fe.to_parquet(
+            os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.parquet"),
+            compression='snappy'
         )
-
 
     
     logger.info("⏳ CSV cargado o creado, ahora ejecutando optimización...")
@@ -221,7 +216,7 @@ def main():
     # logger.info("=== OPTIMIZACIÓN COMPLETADA ===")
 
      #05 Test en mes desconocido
-    logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
+
     
     # Cargar mejores hiperparámetros
 
@@ -232,34 +227,36 @@ def main():
     # mejores_params = {'num_leaves': 23, 'lr_init': 0.14053552566659705, 'min_data_in_leaf': 223, 'feature_fraction': 0.6616669584635271, 'bagging_fraction': 0.23994377622330532, 'num_boost_round': 439, 'lr_decay': 0.9124750514032693}
 
   
-    # Evaluar en test
-    resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params)
+    # logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
     
-    res = comparar_semillas_en_grafico(df_fe, mejores_params, SEMILLA, study_name=STUDY_NAME)
+    # # Evaluar en test
+    # resultados_test, y_pred_proba, y_test = evaluar_en_test_ensamble(df_fe, mejores_params)
+    
+    # res = comparar_semillas_en_grafico(df_fe, mejores_params, SEMILLA, study_name=STUDY_NAME)
 
-    # Simular distribución de ganancias
-    ganancias_sim = muestrear_ganancias(y_test, y_pred_proba)
+    # # Simular distribución de ganancias
+    # ganancias_sim = muestrear_ganancias(y_test, y_pred_proba)
   
-    # Guardar resultados de test
-    guardar_resultados_test(resultados_test)
+    # # Guardar resultados de test
+    # guardar_resultados_test(resultados_test)
   
-    # Resumen de evaluación en test
-    logger.info("=== RESUMEN DE EVALUACIÓN EN TEST ===")
-    logger.info(f"✅ Ganancia en test: {resultados_test['ganancia_test']:,.0f}")
-    logger.info(f"🎯 Predicciones positivas: {resultados_test['predicciones_positivas']:,} ({resultados_test['porcentaje_positivas']:.2f}%)")
+    # # Resumen de evaluación en test
+    # logger.info("=== RESUMEN DE EVALUACIÓN EN TEST ===")
+    # logger.info(f"✅ Ganancia en test: {resultados_test['ganancia_test']:,.0f}")
+    # logger.info(f"🎯 Predicciones positivas: {resultados_test['predicciones_positivas']:,} ({resultados_test['porcentaje_positivas']:.2f}%)")
 
  
-    logger.info("=== GRAFICO DE TEST ===")
+    # logger.info("=== GRAFICO DE TEST ===")
 
-    # Graficar y guardar
-    graficar_distribucion_ganancia(ganancias_sim, modelo_nombre= STUDY_NAME)
+    # # Graficar y guardar
+    # graficar_distribucion_ganancia(ganancias_sim, modelo_nombre= STUDY_NAME)
 
-    # Registrar resultados en CSV comparativo
-    registrar_resultados_modelo(STUDY_NAME, ganancias_sim)
+    # # Registrar resultados en CSV comparativo
+    # registrar_resultados_modelo(STUDY_NAME, ganancias_sim)
 
-    # Grafico de test
-    logger.info("=== GRAFICO DE TEST ===")
-    ruta_grafico = crear_grafico_ganancia_avanzado(y_test,y_pred_proba)
+    # # Grafico de test
+    # logger.info("=== GRAFICO DE TEST ===")
+    # ruta_grafico = crear_grafico_ganancia_avanzado(y_test,y_pred_proba)
 
 
     #06 Entrenar modelo final

@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "TEST 1 - Modelo Final  - Pruebo IPC"
+STUDY_NAME : "TEST 1 - Modelo Final  - Pruebo Ensambles")
 
 competencia01:
     DATA_PATH: "../../../data/competencia_03.csv"

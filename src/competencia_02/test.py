@@ -14,6 +14,12 @@ from grafico_test import crear_grafico_ganancia_avanzado
 import random
 from grafico_test import calcular_ganancia_acumulada_optimizada
 
+import lightgbm as lgb
+import numpy as np
+import pandas as pd
+import logging
+
+
 def evaluar_en_test(df, mejores_params, seed = SEMILLA[0]) -> dict:
     """
     Evalúa el modelo con los mejores hiperparámetros en el conjunto de test.
@@ -93,6 +99,103 @@ def evaluar_en_test(df, mejores_params, seed = SEMILLA[0]) -> dict:
     }
   
     return resultados, y_pred_proba, y_test
+
+
+
+def evaluar_en_test_ensamble(df, mejores_params, semillas: list[int]) -> dict:
+    """
+    Evalúa un ensamble de modelos LightGBM entrenados con distintas semillas
+    sobre el conjunto de test. Promedia las probabilidades por cliente.
+
+    Args
+    ----
+    df : pd.DataFrame
+        DataFrame con todos los datos.
+    mejores_params : dict
+        Mejores hiperparámetros encontrados por Optuna.
+    semillas : list[int]
+        Lista de semillas para entrenar múltiples modelos y promediar.
+
+    Returns
+    -------
+    tuple[dict, np.ndarray, pd.Series]
+        (resultados, y_pred_proba_prom, y_test)
+    """
+    logger = logging.getLogger(__name__)
+    logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST (ENSEMBLE) ===")
+    logger.info(f"Período de test: {MES_TEST}")
+    logger.info(f"Semillas utilizadas: {semillas}")
+
+    # Definir períodos de entrenamiento (TRAIN + VALID)
+    if isinstance(MES_TRAIN, list):
+        periodos_entrenamiento = MES_TRAIN + [MES_VALIDACION]
+    else:
+        periodos_entrenamiento = [MES_TRAIN, MES_VALIDACION]
+
+    df_train_completo = df[df['foto_mes'].isin(periodos_entrenamiento)]
+    df_test = df[df['foto_mes'] == MES_TEST]
+
+    y_test = df_test['target_to_calculate_gan']
+    X_test = df_test.drop(columns=['target', 'target_to_calculate_gan'])
+    X_train = df_train_completo.drop(columns=['target', 'target_to_calculate_gan'])
+    y_train = df_train_completo['target']
+
+    # Acumular predicciones
+    predicciones = np.zeros(len(X_test))
+
+    for seed in semillas:
+        logger.info(f"Entrenando modelo con semilla {seed}...")
+        params = mejores_params.copy()
+        params.update({
+            'objective': 'binary',
+            'metric': 'custom',
+            'boosting_type': 'gbdt',
+            'first_metric_only': True,
+            'boost_from_average': True,
+            'feature_pre_filter': False,
+            'max_bin': 31,
+            'seed': seed,
+            'verbose': -1
+        })
+
+        lgb_train = lgb.Dataset(X_train, label=y_train)
+
+        gbm = lgb.train(
+            params,
+            lgb_train,
+            feval=ganancia_evaluator,
+            callbacks=[lgb.log_evaluation(period=50)],
+        )
+
+        y_pred_proba = gbm.predict(X_test, num_iteration=gbm.best_iteration)
+        predicciones += y_pred_proba
+
+    # Promediar predicciones de todas las semillas
+    y_pred_proba_prom = predicciones / len(semillas)
+    y_pred_binary = (y_pred_proba_prom > UMBRAL).astype(int)
+
+    # Calcular ganancia final
+    ganancia_test = ganancia_evaluator(y_test, y_pred_binary)
+
+    # Estadísticas básicas
+    total_predicciones = len(y_pred_binary)
+    predicciones_positivas = np.sum(y_pred_binary == 1)
+    porcentaje_positivas = (predicciones_positivas / total_predicciones) * 100
+
+    resultados = {
+        'ganancia_test': float(ganancia_test),
+        'total_predicciones': int(total_predicciones),
+        'predicciones_positivas': int(predicciones_positivas),
+        'porcentaje_positivas': float(porcentaje_positivas),
+        'n_modelos_ensemble': len(semillas)
+    }
+
+    logger.info(f"✅ Ensamble completado con {len(semillas)} modelos.")
+    logger.info(f"Ganancia test: {ganancia_test:,.0f}")
+    logger.info(f"Predicciones positivas: {predicciones_positivas} ({porcentaje_positivas:.2f}%)")
+
+    return resultados, y_pred_proba_prom, y_test
+
 
 def guardar_resultados_test(resultados_test, archivo_base=None):
     """
