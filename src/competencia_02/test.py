@@ -189,6 +189,9 @@ def registrar_resultados_modelo(modelo_nombre, ganancias, csv_path="resultados/c
     csv_path : str
         Ruta al archivo CSV donde se acumulan los resultados
     """
+    
+    study_name = STUDY_NAME
+    
     os.makedirs(os.path.dirname(csv_path), exist_ok=True)
     
     os.makedirs(f"../../../buckets/b1/Compe_02/{study_name}", exist_ok=True)

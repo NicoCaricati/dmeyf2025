@@ -56,11 +56,19 @@ def main():
     """Pipeline principal con optimización usando configuración YAML."""
     logger.info("=== INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===")
 
-    if os.path.exists(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv")):
-        logger.info("✅ df_fe.csv encontrado")
-        df_fe = pd.read_csv(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv"))
+    # if os.path.exists(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv")):
+    #     logger.info("✅ df_fe.csv encontrado")
+    #     df_fe = pd.read_csv(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv"))
+    # else:
+    #     logger.info("❌ df_fe.csv no encontrado")
+    
+    path_csv = os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv.gz")
+    
+    if os.path.exists(path_csv):
+        logger.info("✅ df_fe.csv.gz encontrado")
+        df_fe = pd.read_csv(path_csv, compression='gzip')  # pandas lo detecta, pero mejor explicitarlo
     else:
-        logger.info("❌ df_fe.csv no encontrado")
+        logger.info("❌ df_fe.csv.gz no encontrado")
         
         # 1. Cargar datos
         df = cargar_datos("../../../datasets/competencia_01_crudo.csv")
@@ -169,7 +177,16 @@ def main():
     
         # 4. Ejecutar optimización (función simple)
 
-        df_fe.to_csv(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv"), index=False)
+        # df_fe.to_csv(os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv"), index=False)
+        df_fe.to_csv(
+            os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.csv.gz"),
+            index=False,
+            compression='gzip',
+            engine='pyarrow',      # mucho más rápido si tenés pyarrow instalado
+            chunksize=250_000,     # evita usar demasiada RAM
+        )
+
+
     
     logger.info("⏳ CSV cargado o creado, ahora ejecutando optimización...")
     
