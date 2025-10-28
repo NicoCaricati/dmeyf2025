@@ -648,3 +648,106 @@ def comparar_semillas_en_grafico(df_fe, mejores_params, semillas, study_name="mu
         "curva_prom": curva_prom,
         "curva_std": curva_std,
     }
+
+
+
+
+def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, study_name="multi_seed"):
+    """
+    Corre el modelo con distintas semillas y muestra las curvas de ganancia acumulada
+    individuales, promedio y del ensamble completo.
+    """
+    logger.info(f"=== Comparando {len(semillas)} semillas con ensamble individual ===")
+
+    curvas = []
+    ganancias_max = []
+
+    # Curvas individuales por semilla
+    for seed in semillas:
+        logger.info(f"🔁 Semilla: {seed}")
+        np.random.seed(seed)
+        random.seed(seed)
+
+        resultados_test, y_pred_proba, y_test = evaluar_en_test_ensamble(df_fe, mejores_params, semillas=[seed])
+        y_test = np.asarray(y_test)
+        y_pred_proba = np.asarray(y_pred_proba)
+
+        ganancias_acumuladas, _, _ = calcular_ganancia_acumulada_optimizada(y_test, y_pred_proba)
+        curvas.append(ganancias_acumuladas)
+        ganancias_max.append(np.max(ganancias_acumuladas))
+
+    # Curva del ensamble completo (todas las semillas)
+    logger.info("🔁 Calculando curva del ensamble completo...")
+    resultados_ensamble, y_pred_ensamble, y_test_ensamble = evaluar_en_test_ensamble(df_fe, mejores_params, semillas=semillas)
+    y_test_ensamble = np.asarray(y_test_ensamble)
+    y_pred_ensamble = np.asarray(y_pred_ensamble)
+    curva_ensamble, _, _ = calcular_ganancia_acumulada_optimizada(y_test_ensamble, y_pred_ensamble)
+
+    # Emparejar largo de las curvas
+    min_len = min(len(c) for c in curvas + [curva_ensamble])
+    curvas = np.array([c[:min_len] for c in curvas])
+    curva_ensamble = curva_ensamble[:min_len]
+
+    # Promedio y desviación
+    curva_prom = curvas.mean(axis=0)
+    curva_std = curvas.std(axis=0)
+
+    # Punto óptimo del promedio
+    LIMITE_X = 20000
+    x_max = min(min_len, LIMITE_X)
+    curva_prom_cortada = curva_prom[:x_max]
+    idx_max = np.argmax(curva_prom_cortada)
+    ganancia_optima = curva_prom_cortada[idx_max]
+    clientes_optimos = idx_max
+
+    # === GRAFICAR ===
+    plt.style.use('seaborn-v0_8')
+    fig, ax = plt.subplots(figsize=(12, 7))
+
+    for i, curva in enumerate(curvas):
+        ax.plot(curva[:x_max], alpha=0.8, lw=1.8, label=f"Seed {semillas[i]}")
+
+    ax.plot(curva_prom[:x_max], color="black", lw=3, label="Promedio", zorder=5)
+    ax.fill_between(range(x_max), 
+                    curva_prom[:x_max] - curva_std[:x_max], 
+                    curva_prom[:x_max] + curva_std[:x_max], 
+                    color="gray", alpha=0.2)
+
+    ax.plot(curva_ensamble[:x_max], color="blue", lw=3, linestyle="--", label="Ensamble Total", zorder=4)
+
+    ax.scatter(clientes_optimos, ganancia_optima, 
+               color='red', s=100, marker='*', zorder=10, 
+               label=f"Óptimo Promedio: {ganancia_optima:,.0f} ({clientes_optimos} Clientes)")
+
+    ax.set_title(f"Ganancia acumulada por semilla - {study_name}", fontsize=14, fontweight="bold")
+    ax.set_xlabel("Clientes ordenados por probabilidad", fontsize=12)
+    ax.set_ylabel("Ganancia acumulada", fontsize=12)
+    ax.grid(True, alpha=0.3)
+    ax.legend(fontsize=9, ncol=2)
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, p: f"{x:,.0f}"))
+    ax.set_xlim(right=x_max)
+    ax.set_ylim(bottom=0)
+    plt.tight_layout()
+
+
+    # Guardar gráfico
+    os.makedirs("resultados/plots", exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    ruta = f"resultados/plots/{study_name}_comparativo_semillas_{timestamp}.png"
+    ruta_2 = f"../../../buckets/b1/Compe_02/{study_name}/{study_name}_comparativo_semillas_{timestamp}.png"
+    plt.savefig(ruta_2, dpi=300, bbox_inches="tight", facecolor="white")
+    plt.savefig(ruta, dpi=300, bbox_inches="tight", facecolor="white")
+    plt.close()
+    logger.info(f"✅ Gráfico comparativo guardado: {ruta}")
+
+    return {
+        "ruta_grafico": ruta,
+        "ganancias_max": ganancias_max,
+        "curva_prom": curva_prom,
+        "curva_std": curva_std,
+        "curva_ensamble": curva_ensamble,
+    }
+
+
+
+

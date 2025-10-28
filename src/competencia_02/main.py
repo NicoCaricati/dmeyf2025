@@ -20,7 +20,7 @@ import re
 ### Configuración de logging ###
 os.makedirs("logs", exist_ok=True)
 fecha = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-nombre_log = f"/log_{STUDY_NAME}_{fecha}.log"
+nombre_log = f"´/{STUDY_NAME}/log_{STUDY_NAME}_{fecha}.log"
 bucket_name = BUCKET_NAME
 logging.basicConfig(
     level=logging.INFO,
@@ -227,32 +227,29 @@ def main():
     # mejores_params = {'num_leaves': 23, 'lr_init': 0.14053552566659705, 'min_data_in_leaf': 223, 'feature_fraction': 0.6616669584635271, 'bagging_fraction': 0.23994377622330532, 'num_boost_round': 439, 'lr_decay': 0.9124750514032693}
 
   
-    # logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
+    logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
     
-    # # Evaluar en test
+    # Evaluar en test
     # resultados_test, y_pred_proba, y_test = evaluar_en_test_ensamble(df_fe, mejores_params)
     
     # res = comparar_semillas_en_grafico(df_fe, mejores_params, SEMILLA, study_name=STUDY_NAME)
 
     # # Simular distribución de ganancias
     # ganancias_sim = muestrear_ganancias(y_test, y_pred_proba)
-  
-    # # Guardar resultados de test
-    # guardar_resultados_test(resultados_test)
-  
-    # # Resumen de evaluación en test
-    # logger.info("=== RESUMEN DE EVALUACIÓN EN TEST ===")
-    # logger.info(f"✅ Ganancia en test: {resultados_test['ganancia_test']:,.0f}")
-    # logger.info(f"🎯 Predicciones positivas: {resultados_test['predicciones_positivas']:,} ({resultados_test['porcentaje_positivas']:.2f}%)")
 
- 
+    # Ejecutar comparación y graficar
+    resultados_grafico= comparar_semillas_en_grafico_con_ensamble(df_fe=df,mejores_params=mejores_params,semillas=SEMILLA,study_name=STUDY_NAME)
+  
+    # Guardar resultados de test
+    guardar_resultados_test(resultados_test)
+    
+    # Resumen de evaluación del ensamble completo
+    logger.info("=== RESUMEN DE EVALUACIÓN EN TEST (ENSAMBLE TOTAL) ===")
+    logger.info(f"✅ Ganancia en test: {resultados_ensamble['ganancia_test']:,.0f}")
+    logger.info(f"🎯 Predicciones positivas: {resultados_ensamble['predicciones_positivas']:,} ({resultados_ensamble['porcentaje_positivas']:.2f}%)")
+    
+     
     # logger.info("=== GRAFICO DE TEST ===")
-
-    # # Graficar y guardar
-    # graficar_distribucion_ganancia(ganancias_sim, modelo_nombre= STUDY_NAME)
-
-    # # Registrar resultados en CSV comparativo
-    # registrar_resultados_modelo(STUDY_NAME, ganancias_sim)
 
     # # Grafico de test
     # logger.info("=== GRAFICO DE TEST ===")
