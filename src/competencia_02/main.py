@@ -21,7 +21,7 @@ import re
 fecha = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 nombre_log = f"´/{STUDY_NAME}/log_{STUDY_NAME}_{fecha}.log"
 bucket_name = BUCKET_NAME
-os.makedirs("bucket_name +"f/{STUDY_NAME}"s, exist_ok=True)
+os.makedirs(f"{bucket_name}/{STUDY_NAME}", exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(name)s %(lineno)d - %(message)s",
