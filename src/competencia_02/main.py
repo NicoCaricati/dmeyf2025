@@ -20,13 +20,13 @@ import re
 ### Configuración de logging ###
 os.makedirs("logs", exist_ok=True)
 fecha = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-nombre_log = f"log_{STUDY_NAME}_{fecha}.log"
-
+nombre_log = f"/log_{STUDY_NAME}_{fecha}.log"
+bucket_name = BUCKET_NAME
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(name)s %(lineno)d - %(message)s",
     handlers=[
-        logging.FileHandler("logs/" + nombre_log),
+        logging.FileHandler(bucket_name + nombre_log),
         logging.StreamHandler()
     ]
 )
