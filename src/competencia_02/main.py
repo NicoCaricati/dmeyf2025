@@ -238,10 +238,10 @@ def main():
     # ganancias_sim = muestrear_ganancias(y_test, y_pred_proba)
 
     # Ejecutar comparación y graficar
-    resultados_grafico= comparar_semillas_en_grafico_con_ensamble(df_fe=df,mejores_params=mejores_params,semillas=SEMILLA,study_name=STUDY_NAME)
+    resultados_grafico= comparar_semillas_en_grafico_con_ensamble(df_fe=df_fe,mejores_params=mejores_params,semillas=SEMILLA,study_name=STUDY_NAME)
   
-    # Guardar resultados de test
-    guardar_resultados_test(resultados_test)
+    # # Guardar resultados de test
+    # guardar_resultados_test(resultados_test)
     
     # Resumen de evaluación del ensamble completo
     logger.info("=== RESUMEN DE EVALUACIÓN EN TEST (ENSAMBLE TOTAL) ===")

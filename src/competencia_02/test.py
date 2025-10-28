@@ -668,7 +668,7 @@ def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, s
         np.random.seed(seed)
         random.seed(seed)
 
-        resultados_test, y_pred_proba, y_test = evaluar_en_test_ensamble(df_fe, mejores_params, semillas=[seed])
+        resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params, semillas=[seed])
         y_test = np.asarray(y_test)
         y_pred_proba = np.asarray(y_pred_proba)
 
