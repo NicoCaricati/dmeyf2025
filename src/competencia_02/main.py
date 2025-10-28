@@ -18,10 +18,10 @@ from grafico_test import *
 import re
 
 ### Configuración de logging ###
-os.makedirs("logs", exist_ok=True)
 fecha = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 nombre_log = f"´/{STUDY_NAME}/log_{STUDY_NAME}_{fecha}.log"
 bucket_name = BUCKET_NAME
+os.makedirs("bucket_name +"f/{STUDY_NAME}"s, exist_ok=True)
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(name)s %(lineno)d - %(message)s",
