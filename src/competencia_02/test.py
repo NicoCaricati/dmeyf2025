@@ -649,12 +649,7 @@ def comparar_semillas_en_grafico(df_fe, mejores_params, semillas, study_name="mu
         "curva_std": curva_std,
     }
 
-
 def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, study_name="multi_seed"):
-    """
-    Corre modelos individuales por semilla, grafica sus curvas de ganancia acumulada,
-    la curva promedio y la del ensamble total (promedio de probabilidades).
-    """
     logger.info(f"=== Comparando {len(semillas)} semillas ===")
 
     curvas = []
@@ -680,20 +675,30 @@ def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, s
         curvas.append(ganancias_acumuladas)
         ganancias_max.append(np.max(ganancias_acumuladas))
 
-    # Calcular curva del ensamble total (promedio de probabilidades)
+    # Calcular curva del ensamble total
     y_pred_ensamble = np.mean(todas_predicciones, axis=0)
     curva_ensamble, _, _ = calcular_ganancia_acumulada_optimizada(y_test_global, y_pred_ensamble)
+
+    # Calcular resumen del ensamble
+    y_pred_binary = (y_pred_ensamble > UMBRAL).astype(int)
+    ganancia_test = ganancia_evaluator(y_test_global, y_pred_binary)
+    predicciones_positivas = int(np.sum(y_pred_binary))
+    porcentaje_positivas = float(np.mean(y_pred_binary) * 100)
+
+    resultados_ensamble = {
+        'ganancia_test': float(ganancia_test),
+        'predicciones_positivas': predicciones_positivas,
+        'porcentaje_positivas': porcentaje_positivas
+    }
 
     # Emparejar largo de las curvas
     min_len = min(len(c) for c in curvas + [curva_ensamble])
     curvas = np.array([c[:min_len] for c in curvas])
     curva_ensamble = curva_ensamble[:min_len]
 
-    # Promedio y desviación
     curva_prom = curvas.mean(axis=0)
     curva_std = curvas.std(axis=0)
 
-    # Punto óptimo del promedio
     LIMITE_X = 20000
     x_max = min(min_len, LIMITE_X)
     curva_prom_cortada = curva_prom[:x_max]
@@ -730,6 +735,7 @@ def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, s
     ax.set_ylim(bottom=0)
     plt.tight_layout()
 
+
     # Guardar gráfico
     os.makedirs("resultados/plots", exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -747,7 +753,9 @@ def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, s
         "curva_prom": curva_prom,
         "curva_std": curva_std,
         "curva_ensamble": curva_ensamble,
+        "resultados_ensamble": resultados_ensamble
     }
+
 
 
 
