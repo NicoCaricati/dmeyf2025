@@ -650,38 +650,39 @@ def comparar_semillas_en_grafico(df_fe, mejores_params, semillas, study_name="mu
     }
 
 
-
-
 def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, study_name="multi_seed"):
     """
-    Corre el modelo con distintas semillas y muestra las curvas de ganancia acumulada
-    individuales, promedio y del ensamble completo.
+    Corre modelos individuales por semilla, grafica sus curvas de ganancia acumulada,
+    la curva promedio y la del ensamble total (promedio de probabilidades).
     """
-    logger.info(f"=== Comparando {len(semillas)} semillas con ensamble individual ===")
+    logger.info(f"=== Comparando {len(semillas)} semillas ===")
 
     curvas = []
     ganancias_max = []
+    todas_predicciones = []
+    y_test_global = None
 
-    # Curvas individuales por semilla
     for seed in semillas:
         logger.info(f"🔁 Semilla: {seed}")
         np.random.seed(seed)
         random.seed(seed)
 
-        resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params, semillas=[seed])
+        resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params, seed=seed)
         y_test = np.asarray(y_test)
         y_pred_proba = np.asarray(y_pred_proba)
+
+        if y_test_global is None:
+            y_test_global = y_test
+
+        todas_predicciones.append(y_pred_proba)
 
         ganancias_acumuladas, _, _ = calcular_ganancia_acumulada_optimizada(y_test, y_pred_proba)
         curvas.append(ganancias_acumuladas)
         ganancias_max.append(np.max(ganancias_acumuladas))
 
-    # Curva del ensamble completo (todas las semillas)
-    logger.info("🔁 Calculando curva del ensamble completo...")
-    resultados_ensamble, y_pred_ensamble, y_test_ensamble = evaluar_en_test_ensamble(df_fe, mejores_params, semillas=semillas)
-    y_test_ensamble = np.asarray(y_test_ensamble)
-    y_pred_ensamble = np.asarray(y_pred_ensamble)
-    curva_ensamble, _, _ = calcular_ganancia_acumulada_optimizada(y_test_ensamble, y_pred_ensamble)
+    # Calcular curva del ensamble total (promedio de probabilidades)
+    y_pred_ensamble = np.mean(todas_predicciones, axis=0)
+    curva_ensamble, _, _ = calcular_ganancia_acumulada_optimizada(y_test_global, y_pred_ensamble)
 
     # Emparejar largo de las curvas
     min_len = min(len(c) for c in curvas + [curva_ensamble])
@@ -729,7 +730,6 @@ def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, s
     ax.set_ylim(bottom=0)
     plt.tight_layout()
 
-
     # Guardar gráfico
     os.makedirs("resultados/plots", exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -738,6 +738,7 @@ def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, s
     plt.savefig(ruta_2, dpi=300, bbox_inches="tight", facecolor="white")
     plt.savefig(ruta, dpi=300, bbox_inches="tight", facecolor="white")
     plt.close()
+    logger.info(f"✅ Gráfico comparativo guardado: {ruta_2}")
     logger.info(f"✅ Gráfico comparativo guardado: {ruta}")
 
     return {
@@ -747,7 +748,6 @@ def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, s
         "curva_std": curva_std,
         "curva_ensamble": curva_ensamble,
     }
-
 
 
 
