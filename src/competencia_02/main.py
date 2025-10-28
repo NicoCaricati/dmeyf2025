@@ -19,7 +19,7 @@ import re
 
 ### Configuración de logging ###
 fecha = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-nombre_log = f"´/{STUDY_NAME}/log_{STUDY_NAME}_{fecha}.log"
+nombre_log = f"/{STUDY_NAME}/log_{STUDY_NAME}_{fecha}.log"
 bucket_name = BUCKET_NAME
 os.makedirs(f"{bucket_name}/{STUDY_NAME}", exist_ok=True)
 logging.basicConfig(
