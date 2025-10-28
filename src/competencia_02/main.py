@@ -266,7 +266,7 @@ def main():
   
     # Entrenar modelo final
     logger.info("Entrenar modelo final")
-    modelo_final = entrenar_modelo_final(X_train, y_train, X_predict ,mejores_params, SEMILLA)
+    _ , modelo_final = entrenar_modelo_final(X_train, y_train, X_predict ,mejores_params, SEMILLA)
   
     # Generar predicciones finales
     logger.info("Generar predicciones finales")
