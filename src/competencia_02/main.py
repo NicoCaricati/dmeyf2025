@@ -144,9 +144,9 @@ def main():
 
     # Cargar mejores hiperparámetros
 
-    # mejores_params = cargar_mejores_hiperparametros()
+    mejores_params = cargar_mejores_hiperparametros()
 
-    mejores_params = {'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
+    # mejores_params = {'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
 
   
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
