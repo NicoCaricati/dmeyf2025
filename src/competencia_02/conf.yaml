@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "TEST 1 - Modelo Final  - Pruebo Ensambles"
+STUDY_NAME : "TEST 1 - Modelo Final  - Pruebo Regularizacion con Landas"
 
 competencia01:
     DATA_PATH: "../../../data/competencia_03.csv"
@@ -20,36 +20,50 @@ competencia01:
     HYPERPARAM_RANGES:
         num_leaves:
             min: 20
-            max: 300
+            max: 250
             type: int
-        # learning_rate:
-        #     min: 0.005
-        #     max: 0.06
-        #     type: float
+        learning_rate:
+            min: 0.005
+            max: 0.06
+            type: float
         min_data_in_leaf:
             min: 10
             max: 1000
             type: int
         feature_fraction:
-            min: 0.15
-            max: 0.8
+            min: 0.30
+            max: 1.0
             type: float
         bagging_fraction:
-            min: 0.15
-            max: 0.8
+            min: 0.25
+            max: 1.0
             type: float
         num_boost_round:
             min: 300
-            max: 1200
+            max: 2000
             type: int
-        lr_init:
-            min: 0.05
-            max: 0.2
+        max_depth:
+            min: 3
+            max: 20
+            type: int
+        lambda_l1:
+            min: 0.0
+            max: 5.0
             type: float
-        lr_decay:
-            min: 0.90
-            max: 0.999
+        lambda_l2:
+            min: 0.0
+            max: 5.0
             type: float
+
+
+        # lr_init:
+        #     min: 0.05
+        #     max: 0.2
+        #     type: float
+        # lr_decay:
+        #     min: 0.90
+        #     max: 0.999
+        #     type: float
     
 
 

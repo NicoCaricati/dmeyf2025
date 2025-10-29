@@ -92,7 +92,7 @@ def objetivo_ganancia(trial, df, undersampling=0.2) -> float:
     # Rango por defecto de hiperparámetros
     DEFAULT_HYPERPARAMS = {
         "num_leaves":      {"min": 5, "max": 50, "type": "int"},
-        # "learning_rate":   {"min": 0.005, "max": 0.10, "type": "float"},
+        "learning_rate":   {"min": 0.005, "max": 0.10, "type": "float"},
         "min_data_in_leaf":{"min": 300, "max": 800, "type": "int"},
         "feature_fraction":{"min": 0.1, "max": 0.8, "type": "float"},
         "bagging_fraction":{"min": 0.2, "max": 0.8, "type": "float"},
@@ -123,8 +123,6 @@ def objetivo_ganancia(trial, df, undersampling=0.2) -> float:
         else:
             raise ValueError(f"Tipo de hiperparámetro no soportado: {cfg['type']}")
 
-    def lr_schedule(iteration):
-        return params_base["lr_init"] * (params_base["lr_decay"] ** iteration)
 
     # --- ENTRENAMIENTO MULTISEMILLA ---
     ganancias = []
@@ -146,7 +144,6 @@ def objetivo_ganancia(trial, df, undersampling=0.2) -> float:
             feval=ganancia_evaluator,
             num_boost_round=1000,
             callbacks=[
-                lgb.reset_parameter(learning_rate=lr_schedule),
                 lgb.early_stopping(stopping_rounds=50),
                 lgb.log_evaluation(period=50),
             ],
@@ -222,7 +219,6 @@ def optimizar(df: pd.DataFrame, n_trials: int, study_name: str = None, undersamp
   
     # Ejecutar optimización
     if trials_a_ejecutar > 0:
-        ##LO UNICO IMPORTANTE DEL METODO Y EL study CLARO
         study.optimize(lambda trial: objetivo_ganancia(trial, df, undersampling), n_trials=trials_a_ejecutar)
         logger.info(f"🏆 Mejor ganancia: {study.best_value:,.0f}")
         logger.info(f"Mejores parámetros: {study.best_params}")
@@ -329,3 +325,12 @@ def guardar_iteracion(trial, ganancia, archivo_base=None):
   
     logger.info(f"Iteración {trial.number} guardada en {archivo}")
     logger.info(f"Ganancia: {ganancia:,.0f}" + "---" + "Parámetros: {params}")
+
+
+
+
+## Codigo Muerto
+
+
+    # def lr_schedule(iteration):
+    #     return params_base["lr_init"] * (params_base["lr_decay"] ** iteration)
