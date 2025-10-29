@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "TEST 1 - Modelo Final  - Pruebo Regularizacion con Landas y Max_Depth"
+STUDY_NAME : "TEST 1 - Modelo Final  - Pruebo Regularizacion con Landas (no Max_Depth)"
 
 competencia01:
     DATA_PATH: "../../../data/competencia_03.csv"
@@ -42,10 +42,10 @@ competencia01:
             min: 300
             max: 2000
             type: int
-        max_depth:
-            min: 3
-            max: 20
-            type: int
+        # max_depth:
+        #     min: 3
+        #     max: 20
+        #     type: int
         lambda_l1:
             min: 0.0
             max: 5.0
