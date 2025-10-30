@@ -84,10 +84,10 @@ def main():
 
         for i in (1,2):
             df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
-        for i in (1,2):
-            df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
-        for i in (2,3):
-            df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
+        # for i in (1,2):
+        #     df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
+        # for i in (2,3):
+        #     df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
     
     
         variables_con_drfting =["Visa_Finiciomora","Master_fultimo_cierre","Visa_fultimo_cierre","Master_Finiciomora","cpayroll_trx","mpayroll"]
