@@ -1,8 +1,8 @@
 # config.yaml
-STUDY_NAME : "TEST 1 - Modelo Final  - Pruebo Regularizacion con Landas (no Max_Depth)"
+STUDY_NAME : "Pruebo Correr con todas las semanas"
 
 competencia01:
-    DATA_PATH: "../../../data/competencia_03.csv"
+    DATA_PATH: "../../../datasets/competencia_02_crudo.csv.gz"
     BUCKET_NAME: "../../../buckets/b1/Compe_02"
     # SEMILLA: [5555571]
     # SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
