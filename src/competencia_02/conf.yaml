@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "Pruebo Correr con todas las semanas pero solo Lags"
+STUDY_NAME : "Pruebo Correr con todas las semanas con 32 bits"
 
 competencia01:
     DATA_PATH: "../../../datasets/competencia_02_crudo.csv.gz"
