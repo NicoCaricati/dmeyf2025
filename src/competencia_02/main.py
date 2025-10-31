@@ -174,19 +174,20 @@ def main():
     )
 
 
-    # # Ejecutar comparación y graficar
-    # resultados_grafico = comparar_semillas_en_grafico_con_ensamble(
-    #     df_fe=df_fe,
-    #     mejores_params=mejores_params,
-    #     semillas=SEMILLA,
-    #     study_name= STUDY_NAME
-    # )
+    # Ejecutar comparación y graficar
+    resultados_grafico = comparar_semillas_en_grafico_con_ensamble(
+    df_fe=df_fe,
+    mejores_params=mejores_params,
+    semillas=semillas,
+    study_name=study_name,
+    nombre_archivo=nombre_archivo
+)
     
-    # # Mostrar resumen del ensamble total
-    # res = resultados_grafico["resultados_ensamble"]
-    # logger.info("=== RESUMEN DE EVALUACIÓN EN TEST (ENSAMBLE TOTAL) ===")
-    # logger.info(f"✅ Ganancia en test: {res['ganancia_test']:,.0f}")
-    # logger.info(f"🎯 Predicciones positivas: {res['predicciones_positivas']:,} ({res['porcentaje_positivas']:.2f}%)")
+    # Mostrar resumen del ensamble total
+    res = resultados_grafico["resultados_ensamble"]
+    logger.info("=== RESUMEN DE EVALUACIÓN EN TEST (ENSAMBLE TOTAL) ===")
+    logger.info(f"✅ Ganancia en test: {res['ganancia_test']:,.0f}")
+    logger.info(f"🎯 Predicciones positivas: {res['predicciones_positivas']:,} ({res['porcentaje_positivas']:.2f}%)")
 
 
     # #06 Entrenar modelo final

@@ -23,14 +23,14 @@ def evaluar_meses_test(df_fe, mejores_params, semillas, study_name, config_meses
         MES_TRAIN = train_periodos
 
         # Nombre único para este test
-        nombre_estudio_mes = f"{study_name}_test_{mes_test}"
+        nombre_archivo  = f"{study_name}_test_{mes_test}"
 
         # Ejecutar evaluación
         resultados = comparar_semillas_en_grafico_con_ensamble(
             df_fe=df_fe,
             mejores_params=mejores_params,
             semillas=semillas,
-            study_name=nombre_estudio_mes
+            study_name=nombre_archivo 
         )
 
         res = resultados["resultados_ensamble"]
