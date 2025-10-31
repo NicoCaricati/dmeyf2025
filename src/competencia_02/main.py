@@ -17,7 +17,7 @@ from test import *
 from grafico_test import *
 import re
 from evaluar_meses_test import evaluar_meses_test
-from snapshot.py import *
+from snapshot import *
 
 
 ### Configuración de logging ###
