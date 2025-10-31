@@ -30,8 +30,12 @@ def evaluar_meses_test(df_fe, mejores_params, semillas, study_name, config_meses
             df_fe=df_fe,
             mejores_params=mejores_params,
             semillas=semillas,
-            study_name=nombre_archivo 
+            mes_test=int(mes_test),
+            meses_train=train_periodos,
+            study_name=study_name,
+            nombre_archivo=nombre_archivo
         )
+
 
         res = resultados["resultados_ensamble"]
         curva_prom = resultados["curva_prom"]
