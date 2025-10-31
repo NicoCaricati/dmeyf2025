@@ -169,6 +169,149 @@ def objetivo_ganancia(trial, df, undersampling=0.2) -> float:
 
 
 
+def objetivo_ganancia_ensamble(trial, df, undersampling=0.2) -> float:
+    """
+    Igual que objetivo_ganancia, pero entrena un modelo por cada semilla y ensambla
+    promediando las predicciones en validación antes de calcular la ganancia.
+    """
+
+    # Hiperparámetros y configuración general
+    semillas = SEMILLA
+    mes_train = MES_TRAIN
+    mes_validacion = MES_VALIDACION
+
+    # Dividir datos en train y validación
+    df_train = df[df['foto_mes'].isin(mes_train)].copy()
+    df_val = df[df['foto_mes'].isin([mes_validacion])].copy()
+
+    # --- UNDERSAMPLING A NIVEL CLIENTE ---
+    if isinstance(undersampling, float) and 0 < undersampling < 1:
+        np.random.seed(SEMILLA[0])
+
+        # Clientes que alguna vez tuvieron target=1 → conservar todos sus registros
+        clientes_con_target1 = (
+            df_train.groupby("numero_de_cliente")["target"]
+            .max()
+            .reset_index()
+        )
+        clientes_con_target1 = clientes_con_target1[
+            clientes_con_target1["target"] == 1
+        ]["numero_de_cliente"]
+
+        # Clientes que siempre fueron 0
+        clientes_siempre_0 = (
+            df_train.loc[
+                ~df_train["numero_de_cliente"].isin(clientes_con_target1),
+                "numero_de_cliente",
+            ]
+            .unique()
+        )
+
+        # Subsamplear clientes 0
+        n_subsample = int(len(clientes_siempre_0) * undersampling)
+        clientes_siempre_0_sample = np.random.choice(
+            clientes_siempre_0, n_subsample, replace=False
+        )
+
+        # Combinar ambos grupos
+        clientes_final = np.concatenate(
+            [clientes_con_target1.values, clientes_siempre_0_sample]
+        )
+
+        # Filtrar train
+        df_train = df_train[df_train["numero_de_cliente"].isin(clientes_final)]
+
+        logger.debug(
+            f"Undersampling aplicado: {len(clientes_con_target1)} clientes con target=1 "
+            f"+ {len(clientes_siempre_0_sample)} clientes 0 (de {len(clientes_siempre_0)} posibles) "
+            f"→ total {len(clientes_final)} clientes en train."
+        )
+
+    else:
+        logger.debug("Sin undersampling: se usan todos los clientes en train.")
+
+    # Separar características y target
+    X_train = df_train.drop(columns=['target', 'target_to_calculate_gan'])
+    y_train = df_train['target']
+
+    X_val = df_val.drop(columns=['target', 'target_to_calculate_gan'])
+    y_val = df_val['target']
+
+    # Rango por defecto de hiperparámetros
+    DEFAULT_HYPERPARAMS = {
+        "num_leaves":      {"min": 5, "max": 50, "type": "int"},
+        "learning_rate":   {"min": 0.005, "max": 0.10, "type": "float"},
+        "min_data_in_leaf":{"min": 300, "max": 800, "type": "int"},
+        "feature_fraction":{"min": 0.1, "max": 0.8, "type": "float"},
+        "bagging_fraction":{"min": 0.2, "max": 0.8, "type": "float"},
+    }
+
+    # Merge entre YAML y defaults
+    PARAM_RANGES = {**DEFAULT_HYPERPARAMS, **HYPERPARAM_RANGES}
+
+    # Sugerir hiperparámetros desde Optuna
+    params_base = {
+        'objective': 'binary',
+        'metric': 'custom',
+        'boosting_type': 'gbdt',
+        'first_metric_only': True,
+        'boost_from_average': True,
+        'feature_pre_filter': False,
+        'max_bin': 31,
+        'verbose': -1,
+    }
+
+    for hp, cfg in PARAM_RANGES.items():
+        if cfg["type"] == "int":
+            params_base[hp] = trial.suggest_int(hp, cfg["min"], cfg["max"])
+        elif cfg["type"] == "float":
+            params_base[hp] = trial.suggest_float(hp, cfg["min"], cfg["max"])
+        else:
+            raise ValueError(f"Tipo de hiperparámetro no soportado: {cfg['type']}")
+
+    # --- ENTRENAMIENTO MULTISEMILLA CON ENSAMBLE ---
+    preds_acumuladas = np.zeros(len(X_val))
+
+    for seed in SEMILLA:
+        params = params_base.copy()
+        params['seed'] = seed
+
+        lgb_train = lgb.Dataset(X_train, label=y_train)
+        lgb_val = lgb.Dataset(X_val, label=y_val, reference=lgb_train)
+
+        gbm = lgb.train(
+            params,
+            lgb_train,
+            valid_sets=[lgb_train, lgb_val],
+            valid_names=['train', 'valid'],
+            feval=ganancia_evaluator,
+            num_boost_round=1000,
+            callbacks=[
+                lgb.early_stopping(stopping_rounds=50),
+                lgb.log_evaluation(period=50),
+            ],
+        )
+
+        preds_acumuladas += gbm.predict(X_val, num_iteration=gbm.best_iteration)
+
+    # Promediar predicciones
+    y_pred_proba_prom = preds_acumuladas / len(SEMILLA)
+    y_pred_binary = (y_pred_proba_prom > UMBRAL).astype(int)
+
+    # Calcular ganancia final del ensamble
+    ganancia_total = ganancia_evaluator(y_val, y_pred_binary)
+
+    # Guardar en JSON y loggear
+    guardar_iteracion(trial, ganancia_total)
+    logger.debug(
+        f"Trial {trial.number}: Ganancia (ensamble) = {ganancia_total:,.0f}"
+    )
+
+    return ganancia_total
+
+
+
+
 
 def optimizar(df: pd.DataFrame, n_trials: int, study_name: str = None, undersampling: float = 0.2) -> optuna.Study:
     """
@@ -219,7 +362,7 @@ def optimizar(df: pd.DataFrame, n_trials: int, study_name: str = None, undersamp
   
     # Ejecutar optimización
     if trials_a_ejecutar > 0:
-        study.optimize(lambda trial: objetivo_ganancia(trial, df, undersampling), n_trials=trials_a_ejecutar)
+        study.optimize(lambda trial: objetivo_ganancia_ensamble(trial, df, undersampling), n_trials=trials_a_ejecutar)
         logger.info(f"🏆 Mejor ganancia: {study.best_value:,.0f}")
         logger.info(f"Mejores parámetros: {study.best_params}")
     else:
