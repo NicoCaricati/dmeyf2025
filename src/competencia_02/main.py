@@ -146,9 +146,9 @@ def main():
 
     logger.info("=== OPTIMIZACIÓN COMPLETADA ===")
 
-     05 Test en mes desconocido
+    #  05 Test en mes desconocido
 
-    Cargar mejores hiperparámetros
+    # Cargar mejores hiperparámetros
 
     mejores_params = cargar_mejores_hiperparametros()
 
