@@ -23,7 +23,7 @@ def crear_snapshot_modelo(study_name: str, archivos_extra: list[str] = None) -> 
     logger.info(f"📁 Creando snapshot del modelo en: {carpeta_modelo}")
 
     # Archivos base a copiar
-    archivos = ["main.py", "config.yaml","config.py","final_training.py","loader.py","optimization.py","test.py","evaluar_meses_test.py" ]
+    archivos = ["main.py", "conf.yaml","config.py","final_training.py","loader.py","optimization.py","test.py","evaluar_meses_test.py" ]
     if archivos_extra:
         archivos.extend(archivos_extra)
 
