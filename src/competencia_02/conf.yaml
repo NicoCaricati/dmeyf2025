@@ -1,11 +1,11 @@
 # config.yaml
-STUDY_NAME : "Pruebo Test con Meses Corridos - Saco Julio"
+STUDY_NAME : "Pruebo Historicas - Pendiente 2,4,7,12"
 
 competencia01:
     DATA_PATH: "../../../datasets/competencia_02_crudo.csv.gz"
     BUCKET_NAME: "../../../buckets/b1/Compe_02"
-    SEMILLA: [5555571, 1]
-    # SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
+    # SEMILLA: [5555571, 1]
+    SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
     # SEMILLA: [555557, 555871, 556219, 556459, 556691]
     MESES_EVALUACION:
       202106:
@@ -14,8 +14,8 @@ competencia01:
         train: [202011, 202012, 202101, 202102, 202103]
       202104:
         train: [202010, 202011, 202012, 202101, 202102]
-      202103:
-        train: [202009,202010, 202011, 202012, 202101]
+      # 202103:
+      #   train: [202009,202010, 202011, 202012, 202101]
     MES_TRAIN: [2021, 202102]
     MES_VALIDACION: 202103
     MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
