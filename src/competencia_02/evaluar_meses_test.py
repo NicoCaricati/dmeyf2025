@@ -51,8 +51,8 @@ def evaluar_meses_test(df_fe, mejores_params, semillas, study_name, config_meses
 
     # Guardar CSV resumen
     df_resumen = pd.DataFrame(resumen)
-    os.makedirs(f"{BUCKET_NAME}/{study_name}", exist_ok=True)
-    ruta_csv = f"{BUCKET_NAME}/{study_name}/resumen_evaluacion_multimes.csv"
+    os.makedirs(f"{BUCKET_NAME}/{STUDY_NAME}", exist_ok=True)
+    ruta_csv = f"{BUCKET_NAME}/{STUDY_NAME}/resumen_evaluacion_multimes.csv"
     df_resumen.to_csv(ruta_csv, index=False)
     logger.info(f"📄 CSV resumen guardado: {ruta_csv}")
 
@@ -72,7 +72,7 @@ def evaluar_meses_test(df_fe, mejores_params, semillas, study_name, config_meses
     plt.tight_layout()
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    ruta_plot = f"{BUCKET_NAME}/{study_name}/comparativo_multimes_{timestamp}.png"
+    ruta_plot = f"{BUCKET_NAME}/{STUDY_NAME}/comparativo_multimes_{timestamp}.png"
     plt.savefig(ruta_plot, dpi=300, bbox_inches="tight", facecolor="white")
     plt.close()
     logger.info(f"📊 Gráfico combinado guardado: {ruta_plot}")
