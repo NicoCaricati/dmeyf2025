@@ -17,6 +17,7 @@ from test import *
 from grafico_test import *
 import re
 from evaluar_meses_test import evaluar_meses_test
+from snapshot.py import *
 
 
 ### Configuración de logging ###
@@ -53,10 +54,13 @@ logger.info(f"UMBRAL: {UMBRAL}")
 logger.info(f"HIPERPARAMETROS: {HYPERPARAM_RANGES}")
 
 
+
 ### Main ###
 def main():
     """Pipeline principal con optimización usando configuración YAML."""
     logger.info("=== INICIANDO OPTIMIZACIÓN CON CONFIGURACIÓN YAML ===")
+
+    crear_snapshot_modelo(STUDY_NAME)
 
     path_parquet = os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.parquet")
 
