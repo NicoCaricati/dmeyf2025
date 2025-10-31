@@ -741,8 +741,11 @@ def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, s
     os.makedirs("resultados/plots", exist_ok=True)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     ruta = f"resultados/plots/{study_name}_comparativo_semillas_{timestamp}.png"
-    nombre_archivo = nombre_archivo or f"{study_name}_comparativo_semillas"
-    ruta_2 = f"../../../buckets/b1/Compe_02/{study_name}/{nombre_archivo}_comparativo_semillas_{timestamp}.png"
+    nombre_archivo = nombre_archivo or study_name
+    ruta_2 = f"../../../buckets/b1/Compe_02/{study_name}/{nombre_archivo}_{timestamp}.png"
+    os.makedirs(os.path.dirname(ruta_2), exist_ok=True)
+
+
 
     plt.savefig(ruta_2, dpi=300, bbox_inches="tight", facecolor="white")
     plt.savefig(ruta, dpi=300, bbox_inches="tight", facecolor="white")
