@@ -20,7 +20,7 @@ import pandas as pd
 import logging
 
 
-def evaluar_en_test(df, mejores_params, seed = SEMILLA[0]) -> dict:
+def evaluar_en_test(df, mejores_params, mes_test, meses_train, seed=SEMILLA[0]) -> dict:
     """
     Evalúa el modelo con los mejores hiperparámetros en el conjunto de test.
     Solo calcula la ganancia, sin usar sklearn.
@@ -33,17 +33,14 @@ def evaluar_en_test(df, mejores_params, seed = SEMILLA[0]) -> dict:
         dict: Resultados de la evaluación en test (ganancia + estadísticas básicas)
     """
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
-    logger.info(f"Período de test: {MES_TEST}")
+    logger.info(f"Período de test: {mes_test}")
   
-    # Preparar datos de entrenamiento (TRAIN + VALIDACION)
-    if isinstance(MES_TRAIN, list):
-        periodos_entrenamiento = MES_TRAIN + [MES_VALIDACION]
-    else:
-        periodos_entrenamiento = [MES_TRAIN, MES_VALIDACION]
+    # Preparar datos de entrenamiento 
+    periodos_entrenamiento = meses_train
   
     df_train_completo = df[df['foto_mes'].isin(periodos_entrenamiento)]
 
-    df_test = df[df['foto_mes'] == MES_TEST]
+    df_test = df[df['foto_mes'] == mes_test]
     y_test = df_test['target_to_calculate_gan']
     X_test = df_test.drop(columns=['target','target_to_calculate_gan'])
     X_train = df_train_completo.drop(columns=['target', 'target_to_calculate_gan'])
@@ -663,7 +660,7 @@ def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, s
         np.random.seed(seed)
         random.seed(seed)
 
-        resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params, seed=seed)
+        resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params, mes_test=int(mes_test), meses_train=train_periodos, seed=seed)
         y_test = np.asarray(y_test)
         y_pred_proba = np.asarray(y_pred_proba)
 

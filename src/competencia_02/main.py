@@ -174,14 +174,14 @@ def main():
     )
 
 
-    # Ejecutar comparación y graficar
-    resultados_grafico = comparar_semillas_en_grafico_con_ensamble(
-    df_fe=df_fe,
-    mejores_params=mejores_params,
-    semillas=semillas,
-    study_name=study_name,
-    nombre_archivo=nombre_archivo
-)
+#     # Ejecutar comparación y graficar
+#     resultados_grafico = comparar_semillas_en_grafico_con_ensamble(
+#     df_fe=df_fe,
+#     mejores_params=mejores_params,
+#     semillas=SEMILLA,
+#     study_name=STUDY_NAME,
+#     nombre_archivo=nombre_archivo
+# )
     
     # Mostrar resumen del ensamble total
     res = resultados_grafico["resultados_ensamble"]
