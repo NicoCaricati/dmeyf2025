@@ -184,11 +184,11 @@ def main():
 #     nombre_archivo=nombre_archivo
 # )
     
-    # Mostrar resumen del ensamble total
-    res = resultados_grafico["resultados_ensamble"]
-    logger.info("=== RESUMEN DE EVALUACIÓN EN TEST (ENSAMBLE TOTAL) ===")
-    logger.info(f"✅ Ganancia en test: {res['ganancia_test']:,.0f}")
-    logger.info(f"🎯 Predicciones positivas: {res['predicciones_positivas']:,} ({res['porcentaje_positivas']:.2f}%)")
+    # # Mostrar resumen del ensamble total
+    # res = resultados_grafico["resultados_ensamble"]
+    # logger.info("=== RESUMEN DE EVALUACIÓN EN TEST (ENSAMBLE TOTAL) ===")
+    # logger.info(f"✅ Ganancia en test: {res['ganancia_test']:,.0f}")
+    # logger.info(f"🎯 Predicciones positivas: {res['predicciones_positivas']:,} ({res['porcentaje_positivas']:.2f}%)")
 
 
     # #06 Entrenar modelo final

@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "Pruebo Test con Meses Corridos"
+STUDY_NAME : "Pruebo Test con Meses Corridos - Corrijo Error en Variable Target"
 
 competencia01:
     DATA_PATH: "../../../datasets/competencia_02_crudo.csv.gz"

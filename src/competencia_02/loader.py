@@ -156,9 +156,9 @@ def convertir_clase_ternaria_a_target(df: pd.DataFrame) -> pd.DataFrame:
     # Crear copia del DataFrame para no modificar el original
     df_result = df.copy()
 
-    # Seteo para meses 5 y 6 target como null
-    if 'foto_mes' in df_result.columns and 'target' in df_result.columns:
-        df_result.loc[df_result['foto_mes'].isin([202105, 202106]), 'target'] = None
+    # # Seteo para meses 5 y 6 target como null
+    # if 'foto_mes' in df_result.columns and 'target' in df_result.columns:
+    #     df_result.loc[df_result['foto_mes'].isin([202107, 202108]), 'target'] = None
   
     # Contar valores originales para logging
     n_continua_orig = (df_result['target'] == 'CONTINUA').sum()
