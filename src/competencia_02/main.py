@@ -88,10 +88,10 @@ def main():
         columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target","target_to_calculate_gan"]
         atributos = [c for c in columnas_base if c not in columnas_a_excluir]
         df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
-        for i in (1,2):
-            df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
-        for i in (1,2):
-            df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
+        # for i in (1,2):
+        #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
+        # for i in (1,2):
+        #     df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
         for i in (2,3):
             df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
 
