@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "Pruebo Test con Meses Corridos - Corrijo Error en Variable Target"
+STUDY_NAME : "Pruebo Test con Meses Corridos - Saco Julio"
 
 competencia01:
     DATA_PATH: "../../../datasets/competencia_02_crudo.csv.gz"
@@ -8,12 +8,14 @@ competencia01:
     # SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
     # SEMILLA: [555557, 555871, 556219, 556459, 556691]
     MESES_EVALUACION:
-      202107:
-        train: [202101, 202102, 202103, 202104, 202105]
+      202106:
+        train: [202012, 202101, 202102, 202103,202104]
       202105:
         train: [202011, 202012, 202101, 202102, 202103]
       202104:
         train: [202010, 202011, 202012, 202101, 202102]
+      202103:
+        train: [202009,202010, 202011, 202012, 202101]
     MES_TRAIN: [2021, 202102]
     MES_VALIDACION: 202103
     MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
