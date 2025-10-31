@@ -646,7 +646,7 @@ def comparar_semillas_en_grafico(df_fe, mejores_params, semillas, study_name="mu
         "curva_std": curva_std,
     }
 
-def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, study_name="multi_seed", nombre_archivo=None):
+def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, mes_test, meses_train, study_name="multi_seed", nombre_archivo=None):
 
     logger.info(f"=== Comparando {len(semillas)} semillas ===")
 
@@ -660,7 +660,13 @@ def comparar_semillas_en_grafico_con_ensamble(df_fe, mejores_params, semillas, s
         np.random.seed(seed)
         random.seed(seed)
 
-        resultados_test, y_pred_proba, y_test = evaluar_en_test(df_fe, mejores_params, mes_test=int(mes_test), meses_train=train_periodos, seed=seed)
+        resultados_test, y_pred_proba, y_test = evaluar_en_test(
+            df_fe,
+            mejores_params,
+            mes_test=mes_test,
+            meses_train=meses_train,
+            seed=seed)
+
         y_test = np.asarray(y_test)
         y_pred_proba = np.asarray(y_pred_proba)
 

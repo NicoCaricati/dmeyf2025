@@ -165,13 +165,16 @@ def main():
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
 
     # Evaluación multimes
-    evaluar_meses_test(
-    df_fe=df_fe,
-    mejores_params=mejores_params,
-    semillas=SEMILLA,
-    study_name=STUDY_NAME,
-    config_meses=MESES_EVALUACION
+    resultados = comparar_semillas_en_grafico_con_ensamble(
+        df_fe=df_fe,
+        mejores_params=mejores_params,
+        semillas=semillas,
+        mes_test=int(mes_test),
+        meses_train=train_periodos,
+        study_name=study_name,
+        nombre_archivo=nombre_archivo
     )
+
 
 
 #     # Ejecutar comparación y graficar
