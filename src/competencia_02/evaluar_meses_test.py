@@ -2,7 +2,7 @@
 import os
 import pandas as pd
 import matplotlib.pyplot as plt
-from grafico_test import comparar_semillas_en_grafico_con_ensamble
+from test import comparar_semillas_en_grafico_con_ensamble
 from config import BUCKET_NAME, UMBRAL
 from datetime import datetime
 import logging
