@@ -161,18 +161,16 @@ def main():
     # mejores_params = {'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
     mejores_params = {'bagging_fraction': 0.9366158838759591, 'feature_fraction': 0.6097465146850822, 'lambda_l1': 1.8715916172393408, 'lambda_l2': 0.47499514072885834, 'learning_rate': 0.03421069355219755, 'min_data_in_leaf': 19, 'num_boost_round': 1562, 'num_leaves': 151}
 
-  
-    logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
 
+    logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
+    
     # Evaluación multimes
-    resultados = comparar_semillas_en_grafico_con_ensamble(
+    evaluar_meses_test(
         df_fe=df_fe,
         mejores_params=mejores_params,
         semillas=SEMILLA,
-        mes_test=int(mes_test),
-        meses_train=train_periodos,
-        study_name=study_name,
-        nombre_archivo=nombre_archivo
+        study_name=STUDY_NAME,
+        config_meses=MESES_EVALUACION
     )
 
 
