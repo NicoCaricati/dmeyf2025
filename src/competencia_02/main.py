@@ -16,6 +16,8 @@ from config import *
 from test import *
 from grafico_test import *
 import re
+from evaluar_meses_test import evaluar_meses_test
+
 
 ### Configuración de logging ###
 fecha = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -157,6 +159,16 @@ def main():
 
   
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
+
+    # Evaluación multimes
+    evaluar_meses_test(
+    df_fe=df_fe,
+    mejores_params=mejores_params,
+    semillas=SEMILLA,
+    study_name=STUDY_NAME,
+    config_meses=MESES_EVALUACION
+    )
+
     
 
     # Ejecutar comparación y graficar

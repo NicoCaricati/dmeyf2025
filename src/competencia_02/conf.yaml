@@ -1,12 +1,19 @@
 # config.yaml
-STUDY_NAME : "Pruebo Optimizar Modelos de Ensamble"
+STUDY_NAME : "Pruebo Test con Meses Corridos"
 
 competencia01:
-    DATA_PATH: "../../../datasets/competencia_01_crudo.csv"
+    DATA_PATH: "../../../datasets/competencia_02_crudo.csv.gz"
     BUCKET_NAME: "../../../buckets/b1/Compe_02"
     # SEMILLA: [5555571]
     SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
     # SEMILLA: [555557, 555871, 556219, 556459, 556691]
+    MESES_EVALUACION:
+      202107:
+        train: [202101, 202102, 202103, 202104, 202105]
+      202105:
+        train: [202011, 202012, 202101, 202102, 202103]
+      202104:
+        train: [202010, 202011, 202012, 202101, 202102]
     MES_TRAIN: [2021, 202102]
     MES_VALIDACION: 202103
     MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
@@ -21,7 +28,7 @@ competencia01:
         num_leaves:
             min: 20
             max: 250
-            type: int
+                type: int
         learning_rate:
             min: 0.005
             max: 0.06
