@@ -58,6 +58,7 @@ def evaluar_meses_test(df_fe, mejores_params, semillas, study_name, config_meses
 
     # Graficar curvas combinadas
     fig, ax = plt.subplots(figsize=(12, 7))
+    
     for mes, curva in curvas_por_mes.items():
         ax.plot(curva, lw=2.5, label=f"{mes} (Ganancia: {max(curva):,.0f})")
 
