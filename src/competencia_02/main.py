@@ -122,44 +122,44 @@ def main():
 
     # 4. Ejecutar optimización (función simple)
     
-    study = optimizar(df_fe, n_trials=50,study_name = STUDY_NAME ,undersampling = 0.2)
+    # study = optimizar(df_fe, n_trials=50,study_name = STUDY_NAME ,undersampling = 0.2)
   
-    # 5. Análisis adicional
-    logger.info("=== ANÁLISIS DE RESULTADOS ===")
+    # # 5. Análisis adicional
+    # logger.info("=== ANÁLISIS DE RESULTADOS ===")
     
-    trials_df = study.trials_dataframe()
+    # trials_df = study.trials_dataframe()
     
-    if trials_df is not None and len(trials_df) > 0:
-        # Ordenar por valor (mayor ganancia)
-        top_5 = trials_df.nlargest(5, 'value')
-        logger.info("Top 5 mejores trials:")
+    # if trials_df is not None and len(trials_df) > 0:
+    #     # Ordenar por valor (mayor ganancia)
+    #     top_5 = trials_df.nlargest(5, 'value')
+    #     logger.info("Top 5 mejores trials:")
     
-        for idx, trial in top_5.iterrows():
-            # Extraer parámetros (columnas que empiezan con 'params_')
-            params_cols = [c for c in trial.index if c.startswith('params_')]
-            if params_cols:
-                params = {col.replace('params_', ''): trial[col] for col in params_cols}
-            else:
-                params = {}
+    #     for idx, trial in top_5.iterrows():
+    #         # Extraer parámetros (columnas que empiezan con 'params_')
+    #         params_cols = [c for c in trial.index if c.startswith('params_')]
+    #         if params_cols:
+    #             params = {col.replace('params_', ''): trial[col] for col in params_cols}
+    #         else:
+    #             params = {}
     
-            logger.info(
-                f"Trial {int(trial['number'])}: "
-                f"Ganancia = {trial['value']:,.0f} | "
-                f"Parámetros: {params}"
-            )
-    else:
-        logger.warning("No se encontraron trials para analizar.")
+    #         logger.info(
+    #             f"Trial {int(trial['number'])}: "
+    #             f"Ganancia = {trial['value']:,.0f} | "
+    #             f"Parámetros: {params}"
+    #         )
+    # else:
+    #     logger.warning("No se encontraron trials para analizar.")
 
-    logger.info("=== OPTIMIZACIÓN COMPLETADA ===")
+    # logger.info("=== OPTIMIZACIÓN COMPLETADA ===")
 
     #  05 Test en mes desconocido
 
     # Cargar mejores hiperparámetros
 
-    mejores_params = cargar_mejores_hiperparametros()
+    # mejores_params = cargar_mejores_hiperparametros()
 
     # mejores_params = {'num_leaves': 169, 'learning_rate': 0.01653493811854045, 'min_data_in_leaf': 666, 'feature_fraction': 0.22865878320049338, 'bagging_fraction': 0.7317466615048293, 'num_boost_round': 682}
-    # mejores_params = {'bagging_fraction': 0.9366158838759591, 'feature_fraction': 0.6097465146850822, 'lambda_l1': 1.8715916172393408, 'lambda_l2': 0.47499514072885834, 'learning_rate': 0.03421069355219755, 'min_data_in_leaf': 19, 'num_boost_round': 1562, 'num_leaves': 151}
+    mejores_params = {'bagging_fraction': 0.9366158838759591, 'feature_fraction': 0.6097465146850822, 'lambda_l1': 1.8715916172393408, 'lambda_l2': 0.47499514072885834, 'learning_rate': 0.03421069355219755, 'min_data_in_leaf': 19, 'num_boost_round': 1562, 'num_leaves': 151}
 
   
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
@@ -173,51 +173,50 @@ def main():
     config_meses=MESES_EVALUACION
     )
 
+
+    # # Ejecutar comparación y graficar
+    # resultados_grafico = comparar_semillas_en_grafico_con_ensamble(
+    #     df_fe=df_fe,
+    #     mejores_params=mejores_params,
+    #     semillas=SEMILLA,
+    #     study_name= STUDY_NAME
+    # )
     
-
-    # Ejecutar comparación y graficar
-    resultados_grafico = comparar_semillas_en_grafico_con_ensamble(
-        df_fe=df_fe,
-        mejores_params=mejores_params,
-        semillas=SEMILLA,
-        study_name= STUDY_NAME
-    )
-    
-    # Mostrar resumen del ensamble total
-    res = resultados_grafico["resultados_ensamble"]
-    logger.info("=== RESUMEN DE EVALUACIÓN EN TEST (ENSAMBLE TOTAL) ===")
-    logger.info(f"✅ Ganancia en test: {res['ganancia_test']:,.0f}")
-    logger.info(f"🎯 Predicciones positivas: {res['predicciones_positivas']:,} ({res['porcentaje_positivas']:.2f}%)")
+    # # Mostrar resumen del ensamble total
+    # res = resultados_grafico["resultados_ensamble"]
+    # logger.info("=== RESUMEN DE EVALUACIÓN EN TEST (ENSAMBLE TOTAL) ===")
+    # logger.info(f"✅ Ganancia en test: {res['ganancia_test']:,.0f}")
+    # logger.info(f"🎯 Predicciones positivas: {res['predicciones_positivas']:,} ({res['porcentaje_positivas']:.2f}%)")
 
 
-    #06 Entrenar modelo final
-    logger.info("=== ENTRENAMIENTO FINAL ===")
-    logger.info("Preparar datos para entrenamiento final")
-    X_train, y_train, X_predict, clientes_predict = preparar_datos_entrenamiento_final(df_fe)
+    # #06 Entrenar modelo final
+    # logger.info("=== ENTRENAMIENTO FINAL ===")
+    # logger.info("Preparar datos para entrenamiento final")
+    # X_train, y_train, X_predict, clientes_predict = preparar_datos_entrenamiento_final(df_fe)
   
-    # Entrenar modelo final
-    logger.info("Entrenar modelo final")
-    _ , modelo_final = entrenar_modelo_final(X_train, y_train, X_predict ,mejores_params, SEMILLA)
+    # # Entrenar modelo final
+    # logger.info("Entrenar modelo final")
+    # _ , modelo_final = entrenar_modelo_final(X_train, y_train, X_predict ,mejores_params, SEMILLA)
   
-    # Generar predicciones finales
-    logger.info("Generar predicciones finales")
-    resultados = generar_predicciones_finales(modelo_final, X_predict, clientes_predict, umbral=UMBRAL, top_k=TOP_K)
+    # # Generar predicciones finales
+    # logger.info("Generar predicciones finales")
+    # resultados = generar_predicciones_finales(modelo_final, X_predict, clientes_predict, umbral=UMBRAL, top_k=TOP_K)
   
-    # Guardar predicciones
-    logger.info("Guardar predicciones")
-    archivo_salida = guardar_predicciones_finales(resultados)
+    # # Guardar predicciones
+    # logger.info("Guardar predicciones")
+    # archivo_salida = guardar_predicciones_finales(resultados)
   
-    # Resumen final
-    logger.info("=== RESUMEN FINAL ===")
-    logger.info(f"Entrenamiento final completado exitosamente")
-    logger.info(f"Mejores hiperparámetros utilizados: {mejores_params}")
-    logger.info(f"Períodos de entrenamiento: {FINAL_TRAIN}")
-    logger.info(f"Período de predicción: {FINAL_PREDIC}")
-    logger.info(f"Archivo de salida: {archivo_salida}")
-    logger.info(f"Log detallado: logs/{nombre_log}")
+    # # Resumen final
+    # logger.info("=== RESUMEN FINAL ===")
+    # logger.info(f"Entrenamiento final completado exitosamente")
+    # logger.info(f"Mejores hiperparámetros utilizados: {mejores_params}")
+    # logger.info(f"Períodos de entrenamiento: {FINAL_TRAIN}")
+    # logger.info(f"Período de predicción: {FINAL_PREDIC}")
+    # logger.info(f"Archivo de salida: {archivo_salida}")
+    # logger.info(f"Log detallado: logs/{nombre_log}")
 
 
-    logger.info(f">>> Ejecución finalizada. Revisar logs para mas detalles.")
+    # logger.info(f">>> Ejecución finalizada. Revisar logs para mas detalles.")
 
 if __name__ == "__main__":
     main()

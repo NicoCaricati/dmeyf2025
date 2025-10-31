@@ -28,7 +28,7 @@ competencia01:
         num_leaves:
             min: 20
             max: 250
-                type: int
+            type: int
         learning_rate:
             min: 0.005
             max: 0.06
