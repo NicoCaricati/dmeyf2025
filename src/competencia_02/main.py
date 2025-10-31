@@ -168,7 +168,7 @@ def main():
     resultados = comparar_semillas_en_grafico_con_ensamble(
         df_fe=df_fe,
         mejores_params=mejores_params,
-        semillas=semillas,
+        semillas=SEMILLA,
         mes_test=int(mes_test),
         meses_train=train_periodos,
         study_name=study_name,
