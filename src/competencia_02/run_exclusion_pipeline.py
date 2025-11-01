@@ -20,27 +20,31 @@ def ejecutar_cmd(cmd):
     if result.returncode != 0:
         raise subprocess.CalledProcessError(result.returncode, cmd)
 
-
-# Cargar YAML original
+# Cargar YAML original una sola vez
 with open("conf.yaml", "r") as f:
-    conf_yaml = yaml.safe_load(f)
-    print("YAML cargado correctamente:", conf_yaml.get("STUDY_NAME"))
+    conf_yaml_original = yaml.safe_load(f)
 
-
-STUDY_BASE = conf_yaml["STUDY_NAME"]
+STUDY_BASE = conf_yaml_original["STUDY_NAME"]
 
 # Iterar por cada grupo
 for grupo in GRUPOS_VARIABLES:
-    print("Grupos cargados:", GRUPOS_VARIABLES)
     nuevo_nombre = f"{STUDY_BASE}__sin_{grupo}"
     print(f"\n🔄 Ejecutando experimento: {nuevo_nombre}")
 
-    # Actualizar YAML
+    # Crear copia limpia del YAML original en cada iteración
+    conf_yaml = conf_yaml_original.copy()
     conf_yaml["STUDY_NAME"] = nuevo_nombre
+
+    # Guardar YAML actualizado
     with open("conf.yaml", "w") as f:
         yaml.dump(conf_yaml, f)
 
     # Ejecutar pipeline
-    ejecutar_cmd("python run_pipeline.py")
+    try:
+        ejecutar_cmd("python run_pipeline.py")
+    except subprocess.CalledProcessError as e:
+        print(f"❌ Error en experimento {nuevo_nombre}: {e}")
+        continue
+
 
 print("\n✅ Todos los experimentos finalizados.")

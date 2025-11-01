@@ -18,7 +18,7 @@ from grafico_test import *
 import re
 from evaluar_meses_test import evaluar_meses_test
 from snapshot import *
-
+from undersampling import undersample_clientes
 
 ### Configuración de logging ###
 fecha = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
