@@ -178,7 +178,7 @@ def main():
 
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
 
-    df_fe_under = undersample_clientes(df_fe, 0.2, semilla: int = SEMILLA[0])
+    df_fe_under = undersample_clientes(df_fe, 0.2, semilla =  SEMILLA[0])
     
     # Evaluación multimes
     evaluar_meses_test(
