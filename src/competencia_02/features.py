@@ -6,7 +6,7 @@ import logging
 import numpy as np
 import polars as pl
 from itertools import combinations
-
+from config import grupos_variables  # asegurate de importar esto
 
 logger = logging.getLogger("__name__")
 
@@ -671,3 +671,17 @@ def ajustar_por_ipc(df: pd.DataFrame, columnas: list[str], columna_mes: str = 'f
     df = df.drop(columns=['foto_mes_ipc', 'Nivel general'], errors='ignore')
 
     return df
+
+
+
+def detectar_grupo_excluido(study_name: str) -> str | None:
+    """
+    Detecta si el STUDY_NAME indica exclusión de un grupo de variables.
+    Ejemplo: "Experimento__sin_tarjetas_consumos" → retorna "tarjetas_consumos"
+    """
+    match = re.search(r"__sin_(\w+)", study_name)
+    if match:
+        return match.group(1)
+    return None
+
+
