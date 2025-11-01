@@ -77,8 +77,8 @@ def main():
         logger.info(f"Datos cargados: {df.shape}")
 
         grupo_excluido = detectar_grupo_excluido(STUDY_NAME)
-    
-        if grupo_excluido and grupo_excluido in grupos_variables:
+        
+        if grupo_excluido and grupo_excluido in GRUPOS_VARIABLES:
             variables_a_excluir = grupos_variables[grupo_excluido]
             df_fe = df_fe.drop(columns=[col for col in variables_a_excluir if col in df_fe.columns])
             logger.info(f"📉 Variables del grupo '{grupo_excluido}' excluidas: {len(variables_a_excluir)} columnas")
