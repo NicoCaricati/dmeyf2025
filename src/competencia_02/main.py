@@ -80,7 +80,7 @@ def main():
         
         if grupo_excluido and grupo_excluido in GRUPOS_VARIABLES:
             variables_a_excluir = GRUPOS_VARIABLES[grupo_excluido]
-            df = df.drop(columns=[col for col in variables_a_excluir if col in df_fe.columns])
+            df = df.drop(columns=[col for col in variables_a_excluir if col in df.columns])
             logger.info(f"📉 Variables del grupo '{grupo_excluido}' excluidas: {len(variables_a_excluir)} columnas")
         else:
             logger.info("✅ No se detectó exclusión de variables en el STUDY_NAME")
