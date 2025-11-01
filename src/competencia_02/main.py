@@ -179,6 +179,7 @@ def main():
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
 
     df_fe_under = undersample_clientes(df_fe, 0.2, 555557)
+    df_fe_under = df_fe_under.select_dtypes(include=["number", "bool"]).copy()
     
     # Evaluación multimes
     evaluar_meses_test(
