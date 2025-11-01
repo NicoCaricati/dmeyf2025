@@ -6,7 +6,7 @@ import logging
 import numpy as np
 import polars as pl
 from itertools import combinations
-from config import grupos_variables  # asegurate de importar esto
+from config import GRUPOS_VARIABLES
 
 logger = logging.getLogger("__name__")
 

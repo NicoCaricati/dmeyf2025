@@ -1,7 +1,7 @@
 import yaml
 import subprocess
 from datetime import datetime
-from config import grupos_variables
+from config import GRUPOS_VARIABLES
 
 def ejecutar_cmd(cmd):
     """Ejecuta un comando según el entorno."""
