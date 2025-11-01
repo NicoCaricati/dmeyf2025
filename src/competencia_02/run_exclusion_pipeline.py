@@ -9,20 +9,20 @@ def ejecutar_cmd(cmd):
     subprocess.run(cmd, shell=True, check=True)
 
 # Cargar YAML original
-with open("config.yaml", "r") as f:
-    config_yaml = yaml.safe_load(f)
+with open("conf.yaml", "r") as f:
+    conf_yaml = yaml.safe_load(f)
 
-STUDY_BASE = config_yaml["STUDY_NAME"]
+STUDY_BASE = conf_yaml["STUDY_NAME"]
 
 # Iterar por cada grupo
-for grupo in grupos_variables:
+for grupo in GRUPOS_VARIABLES:
     nuevo_nombre = f"{STUDY_BASE}__sin_{grupo}"
     print(f"\n🔄 Ejecutando experimento: {nuevo_nombre}")
 
     # Actualizar YAML
-    config_yaml["STUDY_NAME"] = nuevo_nombre
-    with open("config.yaml", "w") as f:
-        yaml.dump(config_yaml, f)
+    conf_yaml["STUDY_NAME"] = nuevo_nombre
+    with open("conf.yaml", "w") as f:
+        yaml.dump(conf_yaml, f)
 
     # Ejecutar pipeline
     ejecutar_cmd("python run_pipeline.py")
