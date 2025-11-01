@@ -30,6 +30,7 @@ try:
         MESES_EVALUACION = _cfg.get("MESES_EVALUACION", {})
         if not isinstance(MESES_EVALUACION, dict):
             raise ValueError("La sección MESES_EVALUACION debe ser un diccionario en el YAML.")
+        GRUPOS_VARIABLES = _cfgGeneral.get("GRUPOS_VARIABLES", {})
 
 
 

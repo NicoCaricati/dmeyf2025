@@ -28,3 +28,17 @@ for grupo in grupos_variables:
     ejecutar_cmd("python run_pipeline.py")
 
 print("\n✅ Todos los experimentos finalizados.")
+
+
+from config import grupos_variables  # asegurate de importar esto
+
+def detectar_grupo_excluido(study_name: str) -> str | None:
+    """
+    Detecta si el STUDY_NAME indica exclusión de un grupo de variables.
+    Ejemplo: "Experimento__sin_tarjetas_consumos" → retorna "tarjetas_consumos"
+    """
+    match = re.search(r"__sin_(\w+)", study_name)
+    if match:
+        return match.group(1)
+    return None
+
