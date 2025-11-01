@@ -79,7 +79,10 @@ def main():
     
         # 2. Feature Engineering
         # Excluyo las variables no corregidas
-        cols_ajustar = [c for c in df.columns if c.startswith(('m', 'Visa_m', 'Master_m'))]
+        cols_ajustar = [
+            c for c in df.columns
+            if c.startswith(('m', 'Visa_m', 'Master_m')) and 'dolares' not in c
+        ]
         df_fe = ajustar_por_ipc(df, cols_ajustar, columna_mes='foto_mes')
         df_fe = feature_engineering_tc_total(df_fe)
         # df_fe = generar_ctrx_features(df_fe)
@@ -164,10 +167,12 @@ def main():
 
 
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
+
+    df_fe_under = undersample_clientes(df_fe, 0.2, semilla: int = SEMILLA[0])
     
     # Evaluación multimes
     evaluar_meses_test(
-        df_fe=df_fe,
+        df_fe=df_fe_under,
         mejores_params=mejores_params,
         semillas=SEMILLA,
         study_name=STUDY_NAME,
