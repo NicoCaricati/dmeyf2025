@@ -4,6 +4,10 @@ from datetime import datetime
 from config import GRUPOS_VARIABLES
 import os
 
+print("Grupos variables cargados:", GRUPOS_VARIABLES)
+print("Tipo de GRUPOS_VARIABLES:", type(GRUPOS_VARIABLES))
+
+
 # Forzar ejecución desde el directorio del script
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
