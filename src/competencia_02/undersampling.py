@@ -4,7 +4,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def undersample_clientes(df: pd.DataFrame, ratio: float, semilla: int = SEMILLA[0]) -> pd.DataFrame:
+def undersample_clientes(df: pd.DataFrame, ratio: float, semilla: int = 555557) -> pd.DataFrame:
     """
     Aplica undersampling a nivel cliente:
     - Conserva todos los clientes que alguna vez tuvieron target=1.
