@@ -20,11 +20,14 @@ def ejecutar_cmd(cmd):
 # Cargar YAML original
 with open("conf.yaml", "r") as f:
     conf_yaml = yaml.safe_load(f)
+    print("YAML cargado correctamente:", conf_yaml.get("STUDY_NAME"))
+
 
 STUDY_BASE = conf_yaml["STUDY_NAME"]
 
 # Iterar por cada grupo
 for grupo in GRUPOS_VARIABLES:
+    print("Grupos cargados:", GRUPOS_VARIABLES)
     nuevo_nombre = f"{STUDY_BASE}__sin_{grupo}"
     print(f"\n🔄 Ejecutando experimento: {nuevo_nombre}")
 
