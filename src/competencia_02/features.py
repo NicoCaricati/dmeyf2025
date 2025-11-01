@@ -7,6 +7,7 @@ import numpy as np
 import polars as pl
 from itertools import combinations
 from config import GRUPOS_VARIABLES
+import re
 
 logger = logging.getLogger("__name__")
 
