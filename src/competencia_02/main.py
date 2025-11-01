@@ -92,8 +92,9 @@ def main():
         #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
         # for i in (1,2):
         #     df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
-        for i in (2,4,7,12):
+        for i in (2,5,10):
             df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
+            df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
 
 
         # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'_delta_\d+_delta_', c)]]

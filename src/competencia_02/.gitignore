@@ -6,3 +6,4 @@ __pycache__/
 +!resultados/
 +!feature_importance/
 +!predict/
+.tmp/
