@@ -1,4 +1,5 @@
 STUDY_NAME: Pruebo sacando variables
+competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
   DATA_PATH: ../../../datasets/competencia_02_crudo.csv.gz
