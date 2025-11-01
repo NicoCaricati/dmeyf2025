@@ -2,9 +2,12 @@ import yaml
 import subprocess
 from datetime import datetime
 from config import GRUPOS_VARIABLES
+import os
+
+# Forzar ejecución desde el directorio del script
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def ejecutar_cmd(cmd):
-    """Ejecuta un comando según el entorno."""
     print(f"🖥️ Ejecutando: {cmd}")
     subprocess.run(cmd, shell=True, check=True)
 
@@ -28,4 +31,3 @@ for grupo in GRUPOS_VARIABLES:
     ejecutar_cmd("python run_pipeline.py")
 
 print("\n✅ Todos los experimentos finalizados.")
-
