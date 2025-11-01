@@ -8,8 +8,14 @@ import os
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def ejecutar_cmd(cmd):
+    """Ejecuta un comando y muestra su salida completa."""
     print(f"🖥️ Ejecutando: {cmd}")
-    subprocess.run(cmd, shell=True, check=True)
+    result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+    print(result.stdout)
+    print(result.stderr)
+    if result.returncode != 0:
+        raise subprocess.CalledProcessError(result.returncode, cmd)
+
 
 # Cargar YAML original
 with open("conf.yaml", "r") as f:
