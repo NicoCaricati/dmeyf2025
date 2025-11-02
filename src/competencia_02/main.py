@@ -81,9 +81,9 @@ def main():
         # Excluyo las variables no corregidas
         cols_ajustar = [c for c in df.columns if c.startswith(('m', 'Visa_m', 'Master_m'))]
         df_fe = ajustar_por_ipc(df, cols_ajustar, columna_mes='foto_mes')
-        # df_fe = feature_engineering_tc_total(df_fe)
+        df_fe = feature_engineering_tc_total(df_fe)
         # df_fe = generar_ctrx_features(df_fe)
-        # df_fe = variables_aux(df_fe)
+        df_fe = variables_aux(df_fe)
         columnas_base = df_fe.columns.tolist()
         columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target","target_to_calculate_gan"]
         atributos = [c for c in columnas_base if c not in columnas_a_excluir]
@@ -92,9 +92,17 @@ def main():
         #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
         # for i in (1,2):
         #     df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
-        for i in (2,5,10):
-            df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag = i)
-            df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+
+        df_original = df_fe.copy()
+        
+        for i in (2, 5, 10):
+            df_lags = feature_engineering_lag(df_original, columnas=atributos, cant_lag=i)
+            df_lags = df_lags.astype({col: "float32" for col in df_lags.select_dtypes("float").columns})
+            df_fe = pd.concat([df_fe, df_lags[[col for col in df_lags.columns if col.endswith(f"_lag_{i}")]]], axis=1)
+
+        # for i in (2,5,10):
+        #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag = i)
+        #     df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
 
 
         # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'_delta_\d+_delta_', c)]]
