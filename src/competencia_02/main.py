@@ -5,7 +5,7 @@ import os
 import pandas as pd
 import numpy as np
 import polars as pl
-from features import feature_engineering_lag, feature_engineering_delta, feature_engineering_regr_slope_window, feature_engineering_ratio, feature_engineering_tc_total, generar_ctrx_features, feature_engineering_cpayroll_trx_corregida, feature_engineering_mpayroll_corregida, variables_aux,feature_engineering_robust_by_month_polars,ajustar_por_ipc, detectar_grupo_excluido
+from features import feature_engineering_lag, feature_engineering_delta, feature_engineering_regr_slope_window, feature_engineering_ratio, feature_engineering_tc_total, generar_ctrx_features, feature_engineering_cpayroll_trx_corregida, feature_engineering_mpayroll_corregida, variables_aux,feature_engineering_robust_by_month_polars,ajustar_por_ipc
 from loader import cargar_datos, convertir_clase_ternaria_a_target
 from optimization import *
 from best_params import cargar_mejores_hiperparametros
@@ -18,7 +18,7 @@ from grafico_test import *
 import re
 from evaluar_meses_test import evaluar_meses_test
 from snapshot import *
-from undersampling import undersample_clientes
+
 
 ### Configuración de logging ###
 fecha = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
@@ -75,28 +75,15 @@ def main():
             logger.error("No se pudieron cargar los datos; 'cargar_datos' retornó None.")
             raise ValueError("cargar_datos devolvió None. Verificar ruta o contenido de 'data/competencia_01_crudo.csv'.")
         logger.info(f"Datos cargados: {df.shape}")
-
-        grupo_excluido = detectar_grupo_excluido(STUDY_NAME)
-        
-        if grupo_excluido and grupo_excluido in GRUPOS_VARIABLES:
-            variables_a_excluir = GRUPOS_VARIABLES[grupo_excluido]
-            df = df.drop(columns=[col for col in variables_a_excluir if col in df.columns])
-            logger.info(f"📉 Variables del grupo '{grupo_excluido}' excluidas: {len(variables_a_excluir)} columnas")
-        else:
-            logger.info("✅ No se detectó exclusión de variables en el STUDY_NAME")
-
     
     
         # 2. Feature Engineering
         # Excluyo las variables no corregidas
-        cols_ajustar = [
-            c for c in df.columns
-            if c.startswith(('m', 'Visa_m', 'Master_m')) and 'dolares' not in c
-        ]
+        cols_ajustar = [c for c in df.columns if c.startswith(('m', 'Visa_m', 'Master_m'))]
         df_fe = ajustar_por_ipc(df, cols_ajustar, columna_mes='foto_mes')
-        # df_fe = feature_engineering_tc_total(df_fe)
-        # # df_fe = generar_ctrx_features(df_fe)
-        # df_fe = variables_aux(df_fe)
+        df_fe = feature_engineering_tc_total(df_fe)
+        # df_fe = generar_ctrx_features(df_fe)
+        df_fe = variables_aux(df_fe)
         columnas_base = df_fe.columns.tolist()
         columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target","target_to_calculate_gan"]
         atributos = [c for c in columnas_base if c not in columnas_a_excluir]
@@ -105,9 +92,9 @@ def main():
         #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
         # for i in (1,2):
         #     df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
-        # for i in (2,5,10):
-        #     df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
-        #     df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+        for i in (2,5,10):
+            df_fe = feature_engineering_lag(df_fe, columnas=atributos, ventana = i)
+            df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
 
 
         # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'_delta_\d+_delta_', c)]]
@@ -116,9 +103,9 @@ def main():
         # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'lag\d+_\d+$', c)]]
     
     
-        # variables_con_drfting =["Visa_Finiciomora","Master_fultimo_cierre","Visa_fultimo_cierre","Master_Finiciomora","cpayroll_trx","mpayroll"]
+        variables_con_drfting =["Visa_Finiciomora","Master_fultimo_cierre","Visa_fultimo_cierre","Master_Finiciomora","cpayroll_trx","mpayroll"]
     
-        # df_fe = df_fe.drop(columns=variables_con_drfting, errors='ignore')
+        df_fe = df_fe.drop(columns=variables_con_drfting, errors='ignore')
         
         
         logger.info(f"Feature Engineering completado: {df_fe.shape}")
@@ -177,13 +164,10 @@ def main():
 
 
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
-
-    df_fe_under = undersample_clientes(df_fe, 0.2, 555557)
-    df_fe_under = df_fe_under.select_dtypes(include=["number", "bool"]).copy()
     
     # Evaluación multimes
     evaluar_meses_test(
-        df_fe=df_fe_under,
+        df_fe=df_fe,
         mejores_params=mejores_params,
         semillas=SEMILLA,
         study_name=STUDY_NAME,
