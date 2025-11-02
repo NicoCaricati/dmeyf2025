@@ -93,7 +93,7 @@ def main():
         # for i in (1,2):
         #     df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
         for i in (2,5,10):
-            df_fe = feature_engineering_lag(df_fe, columnas=atributos, ventana = i)
+            df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag = i)
             df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
 
 
