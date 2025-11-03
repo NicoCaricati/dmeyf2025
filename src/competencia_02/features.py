@@ -41,13 +41,13 @@ def feature_engineering_lag(df: pd.DataFrame, columnas: list[str], cant_lag: int
     sql = f"SELECT {columnas_sql}"
 
     # Agregar los lags para los atributos especificados
+# Agregar solo el lag especificado para cada atributo
     for attr in columnas:
         if attr in df.columns:
-            for i in range(1, cant_lag + 1):
-                sql += f", lag({attr}, {i}) OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) AS {attr}_lag_{i}"
+            sql += f", lag({attr}, {cant_lag}) OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) AS {attr}_lag_{cant_lag}"
         else:
             logger.warning(f"El atributo {attr} no existe en el DataFrame")
-  
+
     # Completar la consulta
     sql += " FROM df"
 
