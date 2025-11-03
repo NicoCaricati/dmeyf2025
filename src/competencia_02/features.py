@@ -96,14 +96,13 @@ def feature_engineering_delta(df: pd.DataFrame, columnas: list[str], cant_delta:
     columnas_sql = ", ".join(df.columns)
     sql = f"SELECT {columnas_sql}"
   
-    # Agregar los deltas para los atributos especificados
+    # Agregar solo el delta especificado para cada atributo
     for attr in columnas:
         if attr in df.columns:
-            for i in range(1, cant_delta + 1):
-                sql += f", {attr} - LAG({attr}, {i}) OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) AS {attr}_delta_{i}"
+            sql += f", {attr} - LAG({attr}, {cant_delta}) OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) AS {attr}_delta_{cant_delta}"
         else:
             logger.warning(f"El atributo {attr} no existe en el DataFrame")
-  
+
     # Completar la consulta
     sql += " FROM df"
 
