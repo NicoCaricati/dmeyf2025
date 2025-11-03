@@ -96,7 +96,7 @@ def main():
         df_original = df_fe.copy()
         
         for i in (2, 5, 10):
-            df_lags = feature_engineering_lag(df_original, columnas=atributos, cant_lag=i)
+            df_lags = feature_engineering_delta(df_original, columnas=atributos, cant_delta=i)
             df_lags = df_lags.astype({col: "float32" for col in df_lags.select_dtypes("float").columns})
             df_fe = pd.concat([df_fe, df_lags[[col for col in df_lags.columns if col.endswith(f"_lag_{i}")]]], axis=1)
 

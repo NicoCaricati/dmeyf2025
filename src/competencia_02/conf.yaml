@@ -1,5 +1,5 @@
 # config.yaml
-STUDY_NAME : "Pruebo Historicas - Lag 2,5,10"
+STUDY_NAME : "Pruebo Historicas - Delta 2,5,10"
 
 competencia01:
     DATA_PATH: "../../../datasets/competencia_02_crudo.csv.gz"
