@@ -5,7 +5,7 @@ import os
 import pandas as pd
 import numpy as np
 import polars as pl
-from features import feature_engineering_lag, feature_engineering_delta, feature_engineering_regr_slope_window, feature_engineering_ratio, feature_engineering_tc_total, generar_ctrx_features, feature_engineering_cpayroll_trx_corregida, feature_engineering_mpayroll_corregida, variables_aux,feature_engineering_robust_by_month_polars,ajustar_por_ipc, detectar_grupo_excluido
+from features import feature_engineering_lag, feature_engineering_delta, feature_engineering_regr_slope_window, feature_engineering_ratio, feature_engineering_tc_total, generar_ctrx_features, feature_engineering_cpayroll_trx_corregida, feature_engineering_mpayroll_corregida, variables_aux,feature_engineering_robust_by_month_polars,ajustar_por_ipc, detectar_grupo_excluido, detectar_variable_excluida
 from loader import cargar_datos, convertir_clase_ternaria_a_target
 from optimization import *
 from best_params import cargar_mejores_hiperparametros
@@ -75,15 +75,12 @@ def main():
             logger.error("No se pudieron cargar los datos; 'cargar_datos' retornó None.")
             raise ValueError("cargar_datos devolvió None. Verificar ruta o contenido de 'data/competencia_01_crudo.csv'.")
         logger.info(f"Datos cargados: {df.shape}")
-
-        grupo_excluido = detectar_grupo_excluido(STUDY_NAME)
         
-        if grupo_excluido and grupo_excluido in GRUPOS_VARIABLES:
-            variables_a_excluir = GRUPOS_VARIABLES[grupo_excluido]
-            df = df.drop(columns=[col for col in variables_a_excluir if col in df.columns])
-            logger.info(f"📉 Variables del grupo '{grupo_excluido}' excluidas: {len(variables_a_excluir)} columnas")
-        else:
-            logger.info("✅ No se detectó exclusión de variables en el STUDY_NAME")
+        variable_excluida = detectar_variable_excluida(STUDY_NAME)
+        
+        if variable_excluida and variable_excluida in df.columns:
+            df = df.drop(columns=[variable_excluida])
+            logger.info(f"📉 Variable individual '{variable_excluida}' excluida del dataset.")
 
     
     

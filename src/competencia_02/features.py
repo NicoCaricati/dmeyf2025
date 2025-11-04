@@ -684,4 +684,9 @@ def detectar_grupo_excluido(study_name: str) -> str | None:
         return match.group(1)
     return None
 
+def detectar_variable_excluida(study_name: str) -> str | None:
+    match = re.search(r"__sin_([a-zA-Z0-9_]+)$", study_name)
+    if match:
+        return match.group(1)
+    return None
 
