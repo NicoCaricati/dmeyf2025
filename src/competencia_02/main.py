@@ -91,7 +91,7 @@ def main():
             if c.startswith(('m', 'Visa_m', 'Master_m')) and 'dolares' not in c
         ]
         df_fe = ajustar_por_ipc(df, cols_ajustar, columna_mes='foto_mes')
-        df_fe = feature_engineering_tc_total(df_fe)
+        # df_fe = feature_engineering_tc_total(df_fe)
         # # df_fe = generar_ctrx_features(df_fe)
         df_fe = variables_aux(df_fe)
         columnas_base = df_fe.columns.tolist()
@@ -102,10 +102,10 @@ def main():
         #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
         # for i in (1,2):
         #     df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
-        for i in (2,3,5,7):
+        for i in (3,6,12):
             df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
             df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
-        for i in (2,3,6):
+        for i in (2,5):
             df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta = i)
             df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})        
 
