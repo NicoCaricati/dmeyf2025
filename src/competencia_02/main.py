@@ -91,7 +91,7 @@ def main():
             if c.startswith(('m', 'Visa_m', 'Master_m')) and 'dolares' not in c
         ]
         df_fe = ajustar_por_ipc(df, cols_ajustar, columna_mes='foto_mes')
-        # df_fe = feature_engineering_tc_total(df_fe)
+        df_fe = feature_engineering_tc_total(df_fe)
         # # df_fe = generar_ctrx_features(df_fe)
         df_fe = variables_aux(df_fe)
         columnas_base = df_fe.columns.tolist()
