@@ -440,8 +440,6 @@ def feature_engineering_cpayroll_trx_corregida(df: pd.DataFrame) -> pd.DataFrame
     return df
 
 
-
-
 def variables_aux(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
 
@@ -476,18 +474,15 @@ def variables_aux(df: pd.DataFrame) -> pd.DataFrame:
         "cliente_vip"
     ]
 
-    # Asegurar que solo se trabajen columnas existentes
-    cols_existentes = [c for c in columnas_numericas if c in df.columns]
-
-    for c in cols_existentes:
-        df[c] = pd.to_numeric(df[c], errors='coerce')
-
-    df[cols_existentes] = df[cols_existentes].fillna(0)
+    for c in columnas_numericas:
+        if c not in df.columns:
+            df[c] = 0
+        df[c] = pd.to_numeric(df[c], errors="coerce").fillna(0)
 
     # ===============================
     # 1. ACTIVIDAD / ENGAGEMENT
     # ===============================
-    df["actividad_total"] = (
+    df["cactividad_total"] = (
         df["ctarjeta_visa_transacciones"] +
         df["ctarjeta_master_transacciones"] +
         df["ctarjeta_debito_transacciones"] +
@@ -497,58 +492,55 @@ def variables_aux(df: pd.DataFrame) -> pd.DataFrame:
         df["ctransferencias_recibidas"]
     )
 
-    df["uso_digital_ratio"] = (
+    df["cuso_digital_ratio"] = (
         (df["chomebanking_transacciones"] + df["cmobile_app_trx"]) /
-        (1 + df["actividad_total"])
+        (1 + df["cactividad_total"])
     )
 
-    df["uso_tarjeta_ratio"] = (
+    df["cuso_tarjeta_ratio"] = (
         (df["ctarjeta_visa_transacciones"] + df["ctarjeta_master_transacciones"]) /
-        (1 + df["actividad_total"])
+        (1 + df["cactividad_total"])
     )
 
-    df["canales_activos"] = (
-        df["thomebanking"] + df["tcallcenter"] + df["tmobile_app"]
-    )
-
-    df["usa_app_o_homebanking"] = (
-        ((df["tmobile_app"] == 1) | (df["thomebanking"] == 1)).astype(int)
-    )
+    df["ccanales_activos"] = df["thomebanking"] + df["tcallcenter"] + df["tmobile_app"]
+    df["tusa_app_o_homebanking"] = ((df["tmobile_app"] == 1) | (df["thomebanking"] == 1)).astype(int)
 
     # ===============================
     # 2. RENTABILIDAD / VALOR
     # ===============================
-    df["rentabilidad_media_mensual"] = df["mrentabilidad_annual"] / (1 + df["cliente_antiguedad"])
-    df["margen_total"] = df["mactivos_margen"] + df["mpasivos_margen"]
-    df["rentabilidad_vs_margen"] = df["mrentabilidad"] / (1 + df["margen_total"])
-    df["margen_por_producto"] = df["margen_total"] / (1 + df["cproductos"])
-    df["comisiones_ratio"] = df["mcomisiones"] / (1 + np.abs(df["mrentabilidad"]))
+    df["mrentabilidad_media_mensual"] = df["mrentabilidad_annual"] / (1 + df["cliente_antiguedad"])
+    df["mmargen_total"] = df["mactivos_margen"] + df["mpasivos_margen"]
+    df["mrentabilidad_vs_margen"] = df["mrentabilidad"] / (1 + df["mmargen_total"])
+    df["mmargen_por_producto"] = df["mmargen_total"] / (1 + df["cproductos"])
+    df["mcomisiones_ratio"] = df["mcomisiones"] / (1 + np.abs(df["mrentabilidad"]))
 
     # ===============================
     # 3. CRÉDITO Y APALANCAMIENTO
     # ===============================
-    df["deuda_tarjetas_total"] = df["Visa_msaldototal"] + df["Master_msaldototal"]
-    df["limite_tarjetas_total"] = df["Visa_mlimitecompra"] + df["Master_mlimitecompra"]
-    df["uso_credito_ratio"] = df["deuda_tarjetas_total"] / (1 + df["limite_tarjetas_total"])
-    df["mora_total"] = ((df["Visa_delinquency"] == 1) | (df["Master_delinquency"] == 1)).astype(int)
-    df["dias_mora_promedio"] = df[["Visa_Finiciomora", "Master_Finiciomora"]].mean(axis=1)
+    df["mdeuda_tarjetas_total"] = df["Visa_msaldototal"] + df["Master_msaldototal"]
+    df["mlimite_tarjetas_total"] = df["Visa_mlimitecompra"] + df["Master_mlimitecompra"]
+    df["muso_credito_ratio"] = df["mdeuda_tarjetas_total"] / (1 + df["mlimite_tarjetas_total"])
+    df["tmora_total"] = ((df["Visa_delinquency"] == 1) | (df["Master_delinquency"] == 1)).astype(int)
+    df["cdias_mora_promedio"] = df[["Visa_Finiciomora", "Master_Finiciomora"]].mean(axis=1)
 
     # ===============================
     # 4. AHORRO / INVERSIÓN
     # ===============================
-    df["saldo_total_pesos"] = (
-        df["mcaja_ahorro"] + df["mcuenta_corriente"] + df["mplazo_fijo_pesos"] +
-        df["minversion1_pesos"] + df["minversion2"]
+    df["msaldo_total_pesos"] = (
+        df["mcaja_ahorro"] + df["mcuenta_corriente"] +
+        df["mplazo_fijo_pesos"] + df["minversion1_pesos"] + df["minversion2"]
     )
-    df["saldo_total_dolares"] = (
+    df["msaldo_total_dolares"] = (
         df["mcaja_ahorro_dolares"] + df["mplazo_fijo_dolares"] + df["minversion1_dolares"]
     )
-    df["saldo_total"] = df["saldo_total_pesos"] + df["saldo_total_dolares"]
-    df["inversion_ratio"] = (
+    df["msaldo_total"] = df["msaldo_total_pesos"] + df["msaldo_total_dolares"]
+
+    df["minversion_ratio"] = (
         (df["mplazo_fijo_pesos"] + df["minversion1_pesos"] + df["minversion2"]) /
-        (1 + df["saldo_total"])
+        (1 + df["msaldo_total"])
     )
-    df["diversificacion_financiera"] = (
+
+    df["cdiversificacion_financiera"] = (
         (df[["mplazo_fijo_pesos", "mplazo_fijo_dolares", "minversion1_pesos", "minversion2"]] > 0)
         .sum(axis=1)
     )
@@ -556,42 +548,44 @@ def variables_aux(df: pd.DataFrame) -> pd.DataFrame:
     # ===============================
     # 5. MOVIMIENTOS OPERATIVOS
     # ===============================
-    df["flujo_netotransf"] = df["mtransferencias_recibidas"] - df["mtransferencias_emitidas"]
-    df["flujo_cheques"] = df["mcheques_depositados"] - df["mcheques_emitidos"]
-    df["saldo_vs_movimientos"] = (
-        df["mcuentas_saldo"] / (1 + df["ctransferencias_emitidas"] + df["ctransferencias_recibidas"])
+    df["mflujo_netotransf"] = df["mtransferencias_recibidas"] - df["mtransferencias_emitidas"]
+    df["mflujo_cheques"] = df["mcheques_depositados"] - df["mcheques_emitidos"]
+    df["msaldo_vs_movimientos_ratio"] = df["mcuentas_saldo"] / (
+        1 + df["ctransferencias_emitidas"] + df["ctransferencias_recibidas"]
     )
-    df["extracciones_ratio"] = df["mextraccion_autoservicio"] / (1 + df["mcuentas_saldo"])
+    df["mextracciones_ratio"] = df["mextraccion_autoservicio"] / (1 + df["mcuentas_saldo"])
 
     # ===============================
     # 6. INGRESOS / PAYROLL
     # ===============================
-    df["ingresos_mensuales"] = df["mpayroll"] + df["mpayroll2"]
-    df["ingresos_vs_saldo"] = df["ingresos_mensuales"] / (1 + df["mcuentas_saldo"])
-    df["es_empleado"] = (df["cpayroll_trx"] > 0).astype(int)
-    df["cantidad_empleadores"] = df["cpayroll_trx"]
+    df["mingresos_mensuales"] = df["mpayroll"] + df["mpayroll2"]
+    df["mingresos_vs_saldo_ratio"] = df["mingresos_mensuales"] / (1 + df["mcuentas_saldo"])
+    df["tes_empleado"] = (df["cpayroll_trx"] > 0).astype(int)
+    df["cempleadores"] = df["cpayroll_trx"]
 
     # ===============================
     # 7. FLAGS BINARIOS / CONDICIONALES
     # ===============================
-    df["sin_transacciones_mes"] = (df["actividad_total"] == 0).astype(int)
-    df["sin_sueldo_mes"] = (df["ingresos_mensuales"] == 0).astype(int)
-    df["alta_mora"] = (df["mora_total"] == 1).astype(int)
-    df["sin_inversiones"] = (
+    df["tsin_transacciones_mes"] = (df["cactividad_total"] == 0).astype(int)
+    df["tsin_sueldo_mes"] = (df["mingresos_mensuales"] == 0).astype(int)
+    df["talta_mora"] = (df["tmora_total"] == 1).astype(int)
+    df["tsin_inversiones"] = (
         (df["mplazo_fijo_pesos"] + df["minversion1_pesos"] + df["minversion2"] == 0)
     ).astype(int)
-    df["solo_tarjetas"] = (
-        ((df["ctarjeta_visa"] + df["ctarjeta_master"]) > 0) & (df["tcuentas"] == 0)
+    df["tsolo_tarjetas"] = (
+        ((df["ctarjeta_visa"] + df["ctarjeta_master"]) > 0) &
+        (df["tcuentas"] == 0)
     ).astype(int)
 
     # ===============================
     # 8. INTERACCIONES / RELACIONES
     # ===============================
-    df["ratio_productos_uso"] = df["actividad_total"] / (1 + df["cproductos"])
-    df["ingresos_por_producto"] = df["ingresos_mensuales"] / (1 + df["cproductos"])
-    df["margen_por_cuenta"] = df["margen_total"] / (1 + df["tcuentas"])
-    df["clientes_vip_baja_actividad"] = (
-        (df["cliente_vip"] == 1) & (df["actividad_total"] < df["actividad_total"].quantile(0.25))
+    df["cproductos_uso_ratio"] = df["cactividad_total"] / (1 + df["cproductos"])
+    df["mingresos_por_producto_ratio"] = df["mingresos_mensuales"] / (1 + df["cproductos"])
+    df["mmargen_por_cuenta_ratio"] = df["mmargen_total"] / (1 + df["tcuentas"])
+    df["tvip_baja_actividad"] = (
+        (df["cliente_vip"] == 1) &
+        (df["cactividad_total"] < df["cactividad_total"].quantile(0.25))
     ).astype(int)
 
     return df

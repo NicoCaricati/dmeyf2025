@@ -96,19 +96,23 @@ def main():
         df_fe = variables_aux(df_fe)
         columnas_base = df_fe.columns.tolist()
         columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target","target_to_calculate_gan"]
+        columnas_para_fe_regresiones = [
+            c for c in df.columns
+            if c.startswith(('m', 'Visa_m', 'Master_m')) and 'dolares' not in c
+        ]
         atributos = [c for c in columnas_base if c not in columnas_a_excluir]
         df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
         # for i in (1,2):
         #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
         # for i in (1,2):
         #     df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
-        for i in (3,6,12):
+        for i in (2,3,6,12):
             df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
             df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
-        # for i in (2,5):
-        #     df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta = i)
-        #     df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})       
-        df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta = 2)
+        for i in (2,3):
+            df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta = i)
+            df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})       
+        # df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta = 2)
         
 
 
@@ -180,8 +184,8 @@ def main():
 
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
 
-    # df_fe_under = undersample_clientes(df_fe, 0.2, 555557)
-    # df_fe_under = df_fe_under.select_dtypes(include=["number", "bool"]).copy()
+    df_fe_under = undersample_clientes(df_fe, 0.2, 555557)
+    df_fe_under = df_fe_under.select_dtypes(include=["number", "bool"]).copy()
     
     # Evaluación multimes
     evaluar_meses_test(
