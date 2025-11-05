@@ -185,7 +185,7 @@ def main():
     
     # Evaluación multimes
     evaluar_meses_test(
-        df_fe=df_fe_under,
+        df_fe=df_fe,
         mejores_params=mejores_params,
         semillas=SEMILLA,
         study_name=STUDY_NAME,
