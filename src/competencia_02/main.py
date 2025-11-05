@@ -86,40 +86,35 @@ def main():
     
         # 2. Feature Engineering
         # Excluyo las variables no corregidas
-        cols_ajustar = [
+        cols_ajustar_ipc = [
             c for c in df.columns
             if c.startswith(('m', 'Visa_m', 'Master_m')) and 'dolares' not in c
         ]
-        df_fe = ajustar_por_ipc(df, cols_ajustar, columna_mes='foto_mes')
+        df_fe = ajustar_por_ipc(df, cols_ajustar_ipc, columna_mes='foto_mes')
         df_fe = feature_engineering_tc_total(df_fe)
-        # # df_fe = generar_ctrx_features(df_fe)
         df_fe = variables_aux(df_fe)
-        columnas_base = df_fe.columns.tolist()
         columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target","target_to_calculate_gan"]
         columnas_para_fe_regresiones = [
-            c for c in df.columns
-            if c.startswith(('m', 'Visa_m', 'Master_m')) and 'dolares' not in c
+            c for c in df_fe.columns
+            if c.startswith(('m', 'Visa_m', 'Master_m')) 
+            and c not in columnas_a_excluir
         ]
-        atributos = [c for c in columnas_base if c not in columnas_a_excluir]
+        
+        columnas_para_fe_deltas = [
+            c for c in df_fe.columns
+            if c.startswith(('c', 'Visa_c', 'Master_c')) 
+            and c not in columnas_a_excluir
+        ]
         df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
         # for i in (1,2):
         #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
-        # for i in (1,2):
-        #     df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta=i)
         for i in (2,3,6,12):
-            df_fe = feature_engineering_regr_slope_window(df_fe, columnas=atributos, ventana = i)
+            df_fe = feature_engineering_regr_slope_window(df_fe, columnas=columnas_para_fe_regresiones, ventana = i)
             df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
-        for i in (2,3):
-            df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta = i)
+        for i in (2,3,4):
+            df_fe = feature_engineering_delta(df_fe, columnas=columnas_para_fe_deltas, cant_delta = i)
             df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})       
-        # df_fe = feature_engineering_delta(df_fe, columnas=atributos, cant_delta = 2)
-        
 
-
-        # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'_delta_\d+_delta_', c)]]
-        # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'_delta_\d+_\d+$', c)]]
-        # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'lag\d+lag', c)]]
-        # df_fe = df_fe[[c for c in df_fe.columns if not re.search(r'lag\d+_\d+$', c)]]
     
     
         # variables_con_drfting =["Visa_Finiciomora","Master_fultimo_cierre","Visa_fultimo_cierre","Master_Finiciomora","cpayroll_trx","mpayroll"]

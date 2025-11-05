@@ -1,4 +1,4 @@
-STUDY_NAME: Pruebo con 5 meses y sin sacar variables
+STUDY_NAME: Corrijo Aux, hago FE dependiedo el tipo de var, Undersampling 0.2
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
