@@ -1,4 +1,4 @@
-STUDY_NAME: Pruebo sacando a variable_V3
+STUDY_NAME: Pruebo con 5 meses y sin sacar variables
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
@@ -10,39 +10,6 @@ competencia01:
   - 202103
   - 202104
   GANANCIA_ACIERTO: 780000
-  GRUPOS_VARIABLES:
-    caja_ahorro:
-    - ccaja_ahorro
-    - mcaja_ahorro
-    - mcaja_ahorro_adicional
-    - mcaja_ahorro_dolares
-    comisiones_otras:
-    - ccomisiones_otras
-    - mcomisiones_otras
-    - mcomisiones
-    forex:
-    - cforex
-    - cforex_buy
-    - mforex_buy
-    - cforex_sell
-    - mforex_sell
-    prestamos:
-    - cprestamos_hipotecarios
-    - mprestamos_hipotecarios
-    - cprestamos_personales
-    - mprestamos_personales
-    - cprestamos_prendarios
-    - mprestamos_prendarios
-    tarjeta_debito:
-    - ctarjeta_debito
-    - ctarjeta_debito_transacciones
-    tarjetas_adelantos:
-    - Master_cadelantosefectivo
-    - Master_madelantopesos
-    - Master_madelantodolares
-    - Visa_cadelantosefectivo
-    - Visa_madelantopesos
-    - Visa_madelantodolares
   HYPERPARAM_RANGES:
     bagging_fraction:
       max: 1.0
