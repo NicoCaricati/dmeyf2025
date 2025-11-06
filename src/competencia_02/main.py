@@ -86,7 +86,7 @@ def main():
         
         df_fe = convertir_clase_ternaria_a_target(df)
         df_fe = undersample_clientes(df_fe, 0.2, 555557)
-        df_fe = df_fe_under.select_dtypes(include=["number", "bool"]).copy()
+        df_fe = df_fe.select_dtypes(include=["number", "bool"]).copy()
     
         # 2. Feature Engineering
         # Excluyo las variables no corregidas
