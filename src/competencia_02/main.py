@@ -83,11 +83,12 @@ def main():
         #     logger.info(f"📉 Variable individual '{variable_excluida}' excluida del dataset.")
 
         # 1. Undersampling
-        
+
         df_fe = convertir_clase_ternaria_a_target(df)
-        df_fe = undersample_clientes(df_fe, 0.15, 555557)
-        df_fe = df_fe.select_dtypes(include=["number", "bool"]).copy()
+        df_fe = df_fe[df_fe["target"].notnull()].copy()
+        df_fe = undersample_clientes(df_fe, 0.2, 555557)
         logger.info(f"Después de undersampling: {df_fe.shape}")
+
 
     
         # 2. Feature Engineering
