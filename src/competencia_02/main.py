@@ -87,6 +87,8 @@ def main():
         df_fe = convertir_clase_ternaria_a_target(df)
         df_fe = undersample_clientes(df_fe, 0.15, 555557)
         df_fe = df_fe.select_dtypes(include=["number", "bool"]).copy()
+        logger.info(f"Después de undersampling: {df_fe.shape}")
+
     
         # 2. Feature Engineering
         # Excluyo las variables no corregidas
