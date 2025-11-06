@@ -76,21 +76,25 @@ def main():
             raise ValueError("cargar_datos devolvió None. Verificar ruta o contenido de 'data/competencia_01_crudo.csv'.")
         logger.info(f"Datos cargados: {df.shape}")
         
-        variable_excluida = detectar_variable_excluida(STUDY_NAME)
+        # variable_excluida = detectar_variable_excluida(STUDY_NAME)
         
-        if variable_excluida and variable_excluida in df.columns:
-            df = df.drop(columns=[variable_excluida])
-            logger.info(f"📉 Variable individual '{variable_excluida}' excluida del dataset.")
+        # if variable_excluida and variable_excluida in df.columns:
+        #     df = df.drop(columns=[variable_excluida])
+        #     logger.info(f"📉 Variable individual '{variable_excluida}' excluida del dataset.")
 
-    
+        # 1. Undersampling
+        
+        df_fe = convertir_clase_ternaria_a_target(df)
+        df_fe = undersample_clientes(df_fe, 0.2, 555557)
+        df_fe = df_fe_under.select_dtypes(include=["number", "bool"]).copy()
     
         # 2. Feature Engineering
         # Excluyo las variables no corregidas
         cols_ajustar_ipc = [
-            c for c in df.columns
+            c for c in df_fe.columns
             if c.startswith(('m', 'Visa_m', 'Master_m')) and 'dolares' not in c
         ]
-        df_fe = ajustar_por_ipc(df, cols_ajustar_ipc, columna_mes='foto_mes')
+        df_fe = ajustar_por_ipc(df_fe, cols_ajustar_ipc, columna_mes='foto_mes')
         df_fe = feature_engineering_tc_total(df_fe)
         df_fe = variables_aux(df_fe)
         columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target","target_to_calculate_gan"]
@@ -124,9 +128,6 @@ def main():
         
         logger.info(f"Feature Engineering completado: {df_fe.shape}")
         
-    
-        # 3. Convertir clase_ternaria a binario
-        df_fe = convertir_clase_ternaria_a_target(df_fe)
     
         df_fe.to_parquet(
             os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.parquet"),
@@ -179,8 +180,8 @@ def main():
 
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
 
-    df_fe_under = undersample_clientes(df_fe, 0.2, 555557)
-    df_fe_under = df_fe_under.select_dtypes(include=["number", "bool"]).copy()
+    # df_fe_under = undersample_clientes(df_fe, 0.2, 555557)
+    # df_fe_under = df_fe_under.select_dtypes(include=["number", "bool"]).copy()
     
     # Evaluación multimes
     evaluar_meses_test(
