@@ -86,7 +86,7 @@ def main():
 
         df_fe = convertir_clase_ternaria_a_target(df)
         df_fe = df_fe[df_fe["target"].notnull()].copy()
-        df_fe = undersample_clientes(df_fe, 0.2, 555557)
+        df_fe = undersample_clientes(df_fe, 0.03, 555557)
         logger.info(f"Después de undersampling: {df_fe.shape}")
 
 
