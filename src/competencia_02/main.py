@@ -85,7 +85,7 @@ def main():
         # 1. Undersampling
         
         df_fe = convertir_clase_ternaria_a_target(df)
-        df_fe = undersample_clientes(df_fe, 0.2, 555557)
+        df_fe = undersample_clientes(df_fe, 0.15, 555557)
         df_fe = df_fe.select_dtypes(include=["number", "bool"]).copy()
     
         # 2. Feature Engineering

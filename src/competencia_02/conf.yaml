@@ -1,4 +1,4 @@
-STUDY_NAME: Corrijo Aux, hago FE dependiedo el tipo de var, Undersampling 0.2
+STUDY_NAME: Corrijo Aux, hago FE dependiedo el tipo de var, Undersampling 0.15, Entreno con 10 meses
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
@@ -45,7 +45,12 @@ competencia01:
       type: int
   MESES_EVALUACION:
     202104:
-      train:
+     train:
+      - 202004
+      - 202005
+      - 202007
+      - 202008
+      - 202009
       - 202010
       - 202011
       - 202012
@@ -53,6 +58,11 @@ competencia01:
       - 202102
     202105:
       train:
+      - 202005
+      - 202007
+      - 202008
+      - 202009
+      - 202010
       - 202011
       - 202012
       - 202101
@@ -60,6 +70,11 @@ competencia01:
       - 202103
     202106:
       train:
+      - 202007
+      - 202008
+      - 202009
+      - 202010
+      - 202011
       - 202012
       - 202101
       - 202102
