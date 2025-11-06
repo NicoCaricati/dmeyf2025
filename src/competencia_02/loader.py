@@ -113,6 +113,10 @@ def convertir_clase_ternaria_a_target(df: pd.DataFrame) -> pd.DataFrame:
     # Log de la conversión
     n_ceros = (df_result['target'] == 0).sum()
     n_unos = (df_result['target'] == 1).sum()
+
+    df_result = df_result[df_result["target"].isin([0, 1])].copy()
+    df_result["target"] = df_result["target"].astype(int)
+
   
     logger.info(f"Conversión completada:")
     logger.info(f"  Mapeo utilizado: CONTINUA -> 0, BAJA+1 -> 1, BAJA+2 -> 1")
