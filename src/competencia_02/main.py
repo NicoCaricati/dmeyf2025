@@ -52,6 +52,7 @@ logger.info(f"GANANCIA_ACIERTO: {GANANCIA_ACIERTO}")
 logger.info(f"COSTO_ESTIMULO: {COSTO_ESTIMULO}")
 logger.info(f"UMBRAL: {UMBRAL}")
 logger.info(f"HIPERPARAMETROS: {HYPERPARAM_RANGES}")
+logger.info(f"UNDERSAMPLING: {UNDERSAMPLING}"
 
 
 
@@ -85,9 +86,9 @@ def main():
         # 1. Undersampling
 
         df_fe = convertir_clase_ternaria_a_target(df)
-        df_fe = df_fe[df_fe["target"].notnull()].copy()
-        df_fe = undersample_clientes(df_fe, 0.03, 555557)
-        logger.info(f"Después de undersampling: {df_fe.shape}")
+        # df_fe = df_fe[df_fe["target"].notnull()].copy()
+        # df_fe = undersample_clientes(df_fe, UNDERSAMPLING, 555557)
+        # logger.info(f"Después de undersampling: {df_fe.shape}")
 
 
 
@@ -119,7 +120,7 @@ def main():
         df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
         # for i in (1,2):
         #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
-        for i in (2,3,6,12):
+        for i in (2,3,6,12,18,24,30):
             df_fe = feature_engineering_regr_slope_window(df_fe, columnas=columnas_para_fe_regresiones, ventana = i)
             df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
         for i in (2,3,4):
@@ -187,17 +188,17 @@ def main():
 
     logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
 
-    # df_fe_under = undersample_clientes(df_fe, 0.2, 555557)
-    # df_fe_under = df_fe_under.select_dtypes(include=["number", "bool"]).copy()
+    df_fe_under = undersample_clientes(df_fe, UNDERSAMPLING, 555557)
+    df_fe_under = df_fe_under.select_dtypes(include=["number", "bool"]).copy()
     
-    # # Evaluación multimes
-    # evaluar_meses_test(
-    #     df_fe=df_fe,
-    #     mejores_params=mejores_params,
-    #     semillas=SEMILLA,
-    #     study_name=STUDY_NAME,
-    #     config_meses=MESES_EVALUACION
-    # )
+    # Evaluación multimes
+    evaluar_meses_test(
+        df_fe=df_fe,
+        mejores_params=mejores_params,
+        semillas=SEMILLA,
+        study_name=STUDY_NAME,
+        config_meses=MESES_EVALUACION
+    )
 
 
 
@@ -270,7 +271,7 @@ def main():
   
     # Entrenar modelo final
     logger.info("Entrenar modelo final")
-    _ , modelo_final = entrenar_modelo_final_undersampling(X_train, y_train, X_predict ,mejores_params, SEMILLA, ratio_undersampling = 0.03)
+    _ , modelo_final = entrenar_modelo_final_undersampling(X_train, y_train, X_predict ,mejores_params, SEMILLA, ratio_undersampling = UNDERSAMPLING)
 
   
     # Generar predicciones finales
