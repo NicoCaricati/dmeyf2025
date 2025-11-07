@@ -190,14 +190,14 @@ def main():
     # df_fe_under = undersample_clientes(df_fe, 0.2, 555557)
     # df_fe_under = df_fe_under.select_dtypes(include=["number", "bool"]).copy()
     
-    # Evaluación multimes
-    evaluar_meses_test(
-        df_fe=df_fe,
-        mejores_params=mejores_params,
-        semillas=SEMILLA,
-        study_name=STUDY_NAME,
-        config_meses=MESES_EVALUACION
-    )
+    # # Evaluación multimes
+    # evaluar_meses_test(
+    #     df_fe=df_fe,
+    #     mejores_params=mejores_params,
+    #     semillas=SEMILLA,
+    #     study_name=STUDY_NAME,
+    #     config_meses=MESES_EVALUACION
+    # )
 
 
 
@@ -270,7 +270,8 @@ def main():
   
     # Entrenar modelo final
     logger.info("Entrenar modelo final")
-    _ , modelo_final = entrenar_modelo_final(X_train, y_train, X_predict ,mejores_params, SEMILLA)
+    _ , modelo_final = entrenar_modelo_final_undersampling(X_train, y_train, X_predict ,mejores_params, SEMILLA, ratio_undersampling = 0.03)
+
   
     # Generar predicciones finales
     logger.info("Generar predicciones finales")

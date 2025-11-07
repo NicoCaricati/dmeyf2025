@@ -7,6 +7,9 @@ from datetime import datetime
 from config import FINAL_TRAIN, FINAL_PREDIC, SEMILLA, STUDY_NAME
 from best_params import cargar_mejores_hiperparametros
 from gain_function import ganancia_lgb_binary, ganancia_evaluator
+from typing import Tuple
+from undersampling import undersample_clientes
+
 
 logger = logging.getLogger(__name__)
 
@@ -229,3 +232,86 @@ def feature_importance(modelo: lgb.Booster, max_num_features: int = 1000):
     
     feat_imp_df.to_csv(f"feature_importance/feature_importance_{STUDY_NAME}_{fecha}.csv", index=False)
     logger.info(f"Importancia de las primeras {max_num_features} variables guardada en 'feature_importance/feature_importance_{STUDY_NAME}.csv'")
+
+
+logger = logging.getLogger(__name__)
+
+
+def entrenar_modelo_final_undersampling(X_train: pd.DataFrame,
+                                        y_train: pd.Series,
+                                        X_predict: pd.DataFrame,
+                                        mejores_params: dict,
+                                        semillas: list[int],
+                                        ratio_undersampling: float = 0.2) -> Tuple[np.ndarray, list[lgb.Booster]]:
+    """
+    Entrena múltiples modelos LightGBM con undersampling por semilla y promedia sus predicciones.
+
+    Args:
+        X_train: Features del set de entrenamiento.
+        y_train: Target binario.
+        X_predict: Features del set de predicción final.
+        mejores_params: Hiperparámetros óptimos.
+        semillas: Lista de semillas para el ensamble.
+        ratio_undersampling: Proporción de clientes 0 a conservar (entre 0 y 1).
+
+    Returns:
+        Tuple con (predicciones promedio, lista de modelos entrenados).
+    """
+    logger.info("=== ENTRENAMIENTO FINAL CON UNDERSAMPLING POR SEMILLA ===")
+    logger.info(f"Semillas utilizadas: {semillas}")
+    logger.info(f"Ratio de undersampling: {ratio_undersampling}")
+    logger.info(f"Tamaño del set de predicción: {len(X_predict):,}")
+
+    # Combinar X_train + y_train para aplicar undersampling
+    df_train = X_train.copy()
+    df_train["target"] = y_train
+    if "numero_de_cliente" not in df_train.columns:
+        raise ValueError("La columna 'numero_de_cliente' es requerida para el undersampling.")
+
+    modelos = []
+    preds_acumuladas = np.zeros(len(X_predict))
+
+    for seed in semillas:
+        logger.info(f"🔁 Entrenando modelo con semilla {seed}...")
+
+        df_us = undersample_clientes(df_train, ratio=ratio_undersampling, semilla=seed)
+        X_us = df_us.drop(columns=["target"])
+        y_us = df_us["target"]
+
+        logger.info(f"📊 Tamaño del set de entrenamiento (undersampled): {len(X_us):,}")
+        logger.info(f"🎯 Distribución target: {y_us.value_counts().to_dict()}")
+
+        params = {
+            'objective': 'binary',
+            'metric': 'None',
+            'boosting_type': 'gbdt',
+            'first_metric_only': True,
+            'boost_from_average': True,
+            'feature_pre_filter': False,
+            'max_bin': 31,
+            'seed': seed,
+            'verbose': -1,
+            **mejores_params
+        }
+
+        lgb_train = lgb.Dataset(X_us, label=y_us)
+
+        modelo = lgb.train(
+            params,
+            lgb_train,
+            valid_sets=[lgb_train],
+            feval=ganancia_evaluator,
+            callbacks=[
+                lgb.early_stopping(stopping_rounds=100),
+                lgb.log_evaluation(period=100)
+            ]
+        )
+
+        modelos.append(modelo)
+        preds = modelo.predict(X_predict, num_iteration=modelo.best_iteration)
+        preds_acumuladas += preds
+
+    preds_prom = preds_acumuladas / len(semillas)
+    logger.info(f"✅ Ensamble final completado con {len(semillas)} modelos.")
+
+    return preds_prom, modelos
