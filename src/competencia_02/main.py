@@ -90,8 +90,12 @@ def main():
         logger.info(f"Después de undersampling: {df_fe.shape}")
 
 
+
     
         # 2. Feature Engineering
+        # Excluyo Comisiones Otras 
+        df_fe = df_fe.drop(columns=['ccomisiones_otras'])
+
         # Excluyo las variables no corregidas
         cols_ajustar_ipc = [
             c for c in df_fe.columns
@@ -213,31 +217,31 @@ def main():
     # logger.info(f"🎯 Predicciones positivas: {res['predicciones_positivas']:,} ({res['porcentaje_positivas']:.2f}%)")
 
 
-    # #06 Entrenar modelo final
-    # logger.info("=== ENTRENAMIENTO FINAL ===")
-    # logger.info("Preparar datos para entrenamiento final")
-    # X_train, y_train, X_predict, clientes_predict = preparar_datos_entrenamiento_final(df_fe)
+    #06 Entrenar modelo final
+    logger.info("=== ENTRENAMIENTO FINAL ===")
+    logger.info("Preparar datos para entrenamiento final")
+    X_train, y_train, X_predict, clientes_predict = preparar_datos_entrenamiento_final(df_fe)
   
-    # # Entrenar modelo final
-    # logger.info("Entrenar modelo final")
-    # _ , modelo_final = entrenar_modelo_final(X_train, y_train, X_predict ,mejores_params, SEMILLA)
+    # Entrenar modelo final
+    logger.info("Entrenar modelo final")
+    _ , modelo_final = entrenar_modelo_final(X_train, y_train, X_predict ,mejores_params, SEMILLA)
   
-    # # Generar predicciones finales
-    # logger.info("Generar predicciones finales")
-    # resultados = generar_predicciones_finales(modelo_final, X_predict, clientes_predict, umbral=UMBRAL, top_k=TOP_K)
+    # Generar predicciones finales
+    logger.info("Generar predicciones finales")
+    resultados = generar_predicciones_finales(modelo_final, X_predict, clientes_predict, umbral=UMBRAL, top_k=TOP_K)
   
-    # # Guardar predicciones
-    # logger.info("Guardar predicciones")
-    # archivo_salida = guardar_predicciones_finales(resultados)
+    # Guardar predicciones
+    logger.info("Guardar predicciones")
+    archivo_salida = guardar_predicciones_finales(resultados)
   
-    # # Resumen final
-    # logger.info("=== RESUMEN FINAL ===")
-    # logger.info(f"Entrenamiento final completado exitosamente")
-    # logger.info(f"Mejores hiperparámetros utilizados: {mejores_params}")
-    # logger.info(f"Períodos de entrenamiento: {FINAL_TRAIN}")
-    # logger.info(f"Período de predicción: {FINAL_PREDIC}")
-    # logger.info(f"Archivo de salida: {archivo_salida}")
-    # logger.info(f"Log detallado: logs/{nombre_log}")
+    # Resumen final
+    logger.info("=== RESUMEN FINAL ===")
+    logger.info(f"Entrenamiento final completado exitosamente")
+    logger.info(f"Mejores hiperparámetros utilizados: {mejores_params}")
+    logger.info(f"Períodos de entrenamiento: {FINAL_TRAIN}")
+    logger.info(f"Período de predicción: {FINAL_PREDIC}")
+    logger.info(f"Archivo de salida: {archivo_salida}")
+    logger.info(f"Log detallado: logs/{nombre_log}")
 
 
     # logger.info(f">>> Ejecución finalizada. Revisar logs para mas detalles.")
