@@ -220,6 +220,52 @@ def main():
     #06 Entrenar modelo final
     logger.info("=== ENTRENAMIENTO FINAL ===")
     logger.info("Preparar datos para entrenamiento final")
+    df = cargar_datos(DATA_PATH)
+    logger.info(f"Datos cargados: {df.shape}")
+        
+    df_fe = convertir_clase_ternaria_a_target(df)
+    df_fe = df_fe[df_fe["target"].notnull()].copy()
+
+    
+    # 2. Feature Engineering
+    # Excluyo Comisiones Otras 
+    df_fe = df_fe.drop(columns=['ccomisiones_otras'])
+    
+    # Excluyo las variables no corregidas
+    cols_ajustar_ipc = [
+        c for c in df_fe.columns
+        if c.startswith(('m', 'Visa_m', 'Master_m')) and 'dolares' not in c
+    ]
+    df_fe = ajustar_por_ipc(df_fe, cols_ajustar_ipc, columna_mes='foto_mes')
+    df_fe = feature_engineering_tc_total(df_fe)
+    df_fe = variables_aux(df_fe)
+    columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target","target_to_calculate_gan"]
+    columnas_para_fe_regresiones = [
+        c for c in df_fe.columns
+        if c.startswith(('m', 'Visa_m', 'Master_m')) 
+        and c not in columnas_a_excluir
+    ]
+    
+    columnas_para_fe_deltas = [
+        c for c in df_fe.columns
+        if c.startswith(('c', 'Visa_c', 'Master_c')) 
+        and c not in columnas_a_excluir
+    ]
+    df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+    # for i in (1,2):
+    #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
+    for i in (2,3,6,12):
+        df_fe = feature_engineering_regr_slope_window(df_fe, columnas=columnas_para_fe_regresiones, ventana = i)
+        df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+    for i in (2,3,4):
+        df_fe = feature_engineering_delta(df_fe, columnas=columnas_para_fe_deltas, cant_delta = i)
+        df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+
+    
+    
+        # variables_con_drfting =["Visa_Finiciomora","Master_fultimo_cierre","Visa_fultimo_cierre","Master_Finiciomora","cpayroll_trx","mpayroll"]
+    
+        # df_fe = df_fe.drop(columns=variables_con_drfting, errors='ignore')
     X_train, y_train, X_predict, clientes_predict = preparar_datos_entrenamiento_final(df_fe)
   
     # Entrenar modelo final
