@@ -9,7 +9,7 @@ from features import feature_engineering_lag, feature_engineering_delta, feature
 from loader import cargar_datos, convertir_clase_ternaria_a_target
 from optimization import *
 from best_params import cargar_mejores_hiperparametros
-from final_training import preparar_datos_entrenamiento_final, generar_predicciones_finales, entrenar_modelo_final,feature_importance
+from final_training import preparar_datos_entrenamiento_final, generar_predicciones_finales, entrenar_modelo_final,feature_importance,entrenar_modelo_final_undersampling
 from output_manager import guardar_predicciones_finales
 from best_params import obtener_estadisticas_optuna
 from config import *
