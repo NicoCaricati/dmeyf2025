@@ -81,6 +81,15 @@ competencia01:
     #   max: 50
     #   min: 0
     #   type: int
+    pos_bagging_fraction:
+      max: 1
+      min: 0.1
+      type: float  
+    neg_bagging_fraction:
+      max: 1
+      min: 0.1
+      type: float  
+
   MESES_EVALUACION:
     202104:
      train:
