@@ -543,6 +543,7 @@ def objetivo_ganancia_por_meses(trial, df, undersampling=0.2) -> float:
     for mes, grupos_train, mes_predic in [
         ("abril", FINAL_TRAINING_GROUPS_APRIL, FINAL_PREDIC_APRIL),
         ("junio", FINAL_TRAINING_GROUPS_JUNE, FINAL_PREDIC_JUNE),
+        ("julio", FINAL_TRAINING_GROUPS_JULIO, FINAL_PREDIC_JULIO),
     ]:
         logger.info(f"=== OPTIMIZACIÓN VALIDANDO EN {mes.upper()} ===")
 
@@ -585,7 +586,7 @@ def objetivo_ganancia_por_meses(trial, df, undersampling=0.2) -> float:
     ganancia_promedio = np.mean(ganancias_por_mes)
 
     guardar_iteracion(trial, ganancia_promedio)
-    logger.debug(f"Trial {trial.number}: Ganancia promedio (abril+junio) = {ganancia_promedio:,.0f}")
+    logger.debug(f"Trial {trial.number}: Ganancia promedio (abril+junio+julio) = {ganancia_promedio:,.0f}")
 
     return ganancia_promedio
 
