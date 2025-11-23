@@ -1,0 +1,5 @@
+mes,grupo,modelo_id,ganancia_test
+202106,final_training_june,final_training_june_seed1,374400000.0
+202106,final_training_june,final_training_june_seed2,372000000.0
+202106,GLOBAL,ensamble_global,377600000.0
+202106,GRUPOS,ensamble_grupos,377600000.0
