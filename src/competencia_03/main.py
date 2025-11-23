@@ -213,7 +213,7 @@ def main():
 
     # Cargar mejores hiperparámetros
 
-    mejores_params = cargar_mejores_hiperparametros()
+    # mejores_params = cargar_mejores_hiperparametros()
 
     # mejores_params = {'bagging_fraction': 0.648239786, 'feature_fraction': 0.338110921, 'lambda_l1': 3.152084178, 'lambda_l2': 2.623895465, 'learning_rate': 0.074681467, 'min_data_in_leaf': 10, 'num_boost_round': 496, 'num_leaves': 26} # Opti sin US
     # mejores_params = {'num_leaves': 86, 'learning_rate': 0.04515219676722008, 'min_data_in_leaf': 45, 'feature_fraction': 0.2783670269042045, 'bagging_fraction': 0.68927175577007, 'lambda_l1': 1.4668038650423412, 'lambda_l2': 4.8010252173774495, 'num_boost_round': 507} # Opti con 0.2 de US
