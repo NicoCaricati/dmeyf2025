@@ -526,7 +526,7 @@ def preparar_datos_entrenamiento_por_grupos_por_semilla(
 
         for seed in semillas:
             rng = np.random.default_rng(seed)
-            meses_seleccionados = rng.choice(meses, size=5, replace=False)
+            meses_seleccionados = rng.choice(meses, size=3, replace=False)
             df_grupo_meses_aleatorios = df[df["foto_mes"].isin(meses_seleccionados)]            
             df_sampleado = undersample_clientes(df_grupo, ratio=undersampling_ratio, semilla=seed)
             X_train = df_sampleado.drop(columns=["target", "target_to_calculate_gan"])
