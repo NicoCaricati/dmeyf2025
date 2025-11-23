@@ -1,5 +1,5 @@
 #yaml
-STUDY_NAME: Modelo Final US 0.2 8 Semillas - Mejor Modelo
+STUDY_NAME: Modelo Final US 0.2 sobre 5 meses y 8 Semillas
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
@@ -210,11 +210,11 @@ competencia01:
   - 555557
   - 555871
   - 556219
-  # - 556459
-  # - 556691
-  # - 556903
-  # - 557159
-  # - 557399
+  - 556459
+  - 556691
+  - 556903
+  - 557159
+  - 557399
   # - 557597
   # - 557861
   # - 555552
