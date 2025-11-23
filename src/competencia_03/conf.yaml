@@ -1,5 +1,5 @@
 #yaml
-STUDY_NAME: Modelo Final US 0.03 20 Semillas - Uso Meses Corridos - Optimizacion
+STUDY_NAME: Modelo Final US 0.03 20 Semillas - Mejor Modelo
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
