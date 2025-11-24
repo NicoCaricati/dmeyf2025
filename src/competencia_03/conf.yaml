@@ -1,5 +1,5 @@
 #yaml
-STUDY_NAME: Modelo Final US 0.05 sobre 3 meses y 5 Semillas sin Lamdas
+STUDY_NAME: Modelo Final US 0.05 sobre 3 meses y 5 Semillas sin Lamdas - Optimizacion
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
@@ -46,35 +46,35 @@ competencia01:
   GANANCIA_ACIERTO: 780000
   HYPERPARAM_RANGES:
     bagging_fraction:
-      max: 1.0
+      max: 0.8
       min: 0.25
       type: float
     feature_fraction:
-      max: 1.0
+      max: 0.8
       min: 0.25
       type: float
-    lambda_l1:
-      max: 5.0
-      min: 0.0
-      type: float
-    lambda_l2:
-      max: 5.0
-      min: 0.0
-      type: float
+    # lambda_l1:
+    #   max: 5.0
+    #   min: 0.0
+    #   type: float
+    # lambda_l2:
+    #   max: 5.0
+    #   min: 0.0
+    #   type: float
     learning_rate:
-      max: 0.1
+      max: 0.2
       min: 0.005
       type: float
     min_data_in_leaf:
-      max: 100
+      max: 50
       min: 3
       type: int
     num_boost_round:
-      max: 1000
+      max: 800
       min: 200
       type: int
     num_leaves:
-      max: 150
+      max: 350
       min: 10
       type: int
     # min_gain_to_split:
@@ -212,12 +212,12 @@ competencia01:
   - 556219
   - 556459
   - 556691
-  # - 556903
-  # - 557159
-  # - 557399
-  # - 557597
-  # - 557861
-  # - 555552
+  - 556903
+  - 557159
+  - 557399
+  - 557597
+  - 557861
+  - 555552
   # - 555877
   # - 556210
   # - 556455
