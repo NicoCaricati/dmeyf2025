@@ -91,7 +91,8 @@ def undersample_clientes(df: pd.DataFrame, ratio: float, semilla: int = 555557) 
         logger.warning("⚠️ Ratio inválido. Se devuelve el DataFrame original.")
         return df.copy()
 
-    df_filtrado = df[~df["foto_mes"].isin([202107, 202108]) & df["target"].isin([0, 1])].copy()
+    # df_filtrado = df[~df["foto_mes"].isin([202108, 202109]) & df["target"].isin([0, 1])].copy()
+    df_filtrado = df.copy()
 
     clientes_con_target1 = df_filtrado.groupby("numero_de_cliente")["target"].max()
     clientes_con_target1 = clientes_con_target1[clientes_con_target1 == 1].index
