@@ -1,12 +1,12 @@
 #yaml
-STUDY_NAME: Modelo Final US 0.05 sobre 3 meses y 5 Semillas sin Lamdas - Optimizacion
+STUDY_NAME: Modelo Final US 0.2 sobre 3 meses y 5 Semillas sin Lamdas - Optimizacion
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
   DATA_PATH: ../../../datasets/competencia_04_crudo.csv.gz
-  UNDERSAMPLING: 0.03
-  UNDERSAMPLING_OPTIMIZACION: 0.025
-  UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE: 0.025
+  UNDERSAMPLING: 0.2
+  UNDERSAMPLING_OPTIMIZACION: 0.2
+  UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE: 0.2
   UNDERSAMPLING_MODELO_FINAL: 1  
   FINAL_PREDIC: 202106
   FINAL_PREDIC_JUNE: 202106
@@ -53,14 +53,14 @@ competencia01:
       max: 0.8
       min: 0.25
       type: float
-    # lambda_l1:
-    #   max: 5.0
-    #   min: 0.0
-    #   type: float
-    # lambda_l2:
-    #   max: 5.0
-    #   min: 0.0
-    #   type: float
+    lambda_l1:
+      max: 5.0
+      min: 0.0
+      type: float
+    lambda_l2:
+      max: 5.0
+      min: 0.0
+      type: float
     learning_rate:
       max: 0.2
       min: 0.005
