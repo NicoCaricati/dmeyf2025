@@ -542,8 +542,8 @@ def objetivo_ganancia_por_meses(trial, df, undersampling=0.2) -> float:
     # --- Validar en abril y junio ---
     for mes, grupos_train, mes_predic in [
         ("abril", FINAL_TRAINING_GROUPS_APRIL, FINAL_PREDIC_APRIL),
-        ("junio", FINAL_TRAINING_GROUPS_JUNE, FINAL_PREDIC_JUNE),
-        ("julio", FINAL_TRAINING_GROUPS_JULIO, FINAL_PREDIC_JULIO),
+        # ("junio", FINAL_TRAINING_GROUPS_JUNE, FINAL_PREDIC_JUNE),
+        # ("julio", FINAL_TRAINING_GROUPS_JULIO, FINAL_PREDIC_JULIO),
     ]:
         logger.info(f"=== OPTIMIZACIÓN VALIDANDO EN {mes.upper()} ===")
 
