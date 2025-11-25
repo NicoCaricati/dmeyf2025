@@ -32,7 +32,7 @@ logger.info("Iniciando programa de optimización con log fechado")
 from features import feature_engineering_lag, feature_engineering_delta, feature_engineering_regr_slope_window, feature_engineering_ratio, feature_engineering_tc_total, generar_ctrx_features, feature_engineering_cpayroll_trx_corregida, feature_engineering_mpayroll_corregida, variables_aux,feature_engineering_robust_by_month_polars,ajustar_por_ipc, detectar_grupo_excluido, detectar_variable_excluida, imputar_ceros_por_mes_anterior, generar_cambios_de_pendiente_multiples_fast, feature_engineering_delta_max, feature_engineering_delta_mean, imputar_ceros_por_promedio, transformar_a_percentil_rank, transformar_a_grupos_percentiles
 from loader import cargar_datos, convertir_clase_ternaria_a_target
 from optimization import *
-from best_params import cargar_mejores_hiperparametros, obtener_estadisticas_optuna, 
+from best_params import cargar_mejores_hiperparametros, obtener_estadisticas_optuna
 from final_training import *
 from output_manager import guardar_predicciones_finales
 from test import *
