@@ -123,12 +123,7 @@ def main():
 
         df_fe = feature_engineering_tc_total(df_fe)
         df_fe = variables_aux(df_fe)
-        # Excluyo las variables no corregidas          
-        cols_ajustar_ipc = [
-            c for c in df_fe.columns
-            if c.startswith(('m', 'Visa_m', 'Master_m','TC_Total_m')) and 'dolares' not in c
-        ]
-        df_fe = transformar_a_percentil_rank(df_fe, cols_ajustar_ipc, columna_mes='foto_mes')
+        # Excluyo las variables no corregidas 
 
         columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target","target_to_calculate_gan"]
         columnas_para_fe_regresiones = [
@@ -136,6 +131,13 @@ def main():
             if c.startswith(('m', 'Visa_m', 'Master_m','TC_Total_m','Visa_F', 'Visa_f','Master_F', 'Master_f')) 
             and c not in columnas_a_excluir
         ]
+        # cols_ajustar_ipc = [
+        #     c for c in df_fe.columns
+        #     if c.startswith(('m', 'Visa_m', 'Master_m','TC_Total_m')) and 'dolares' not in c
+        # ]
+        df_fe = transformar_a_percentil_rank(df_fe, columnas_para_fe_regresiones, columna_mes='foto_mes')
+
+
         
         columnas_para_fe_deltas = [
             c for c in df_fe.columns
@@ -266,7 +268,7 @@ def main():
     clientes_predict_abril = df_predict_abril["numero_de_cliente"].values
     
     # Entrenar modelos por grupo y semilla
-    modelos_por_grupo_abril = entrenar_modelos_por_grupo_y_semilla(grupos_datos_abril, mejores_params)
+    modelos_por_grupo_abril = entrenar_modelos_por_grupo_y_semilla_y_parametros(grupos_datos_abril, mejores_params)
     
     # Generar predicciones finales (ahora con mes)
     resultados_abril = generar_predicciones_finales(
@@ -304,7 +306,7 @@ def main():
     clientes_predict_mayo = df_predict_mayo["numero_de_cliente"].values
     
     # Entrenar modelos por grupo y semilla
-    modelos_por_grupo_mayo = entrenar_modelos_por_grupo_y_semilla(grupos_datos_mayo, mejores_params)
+    modelos_por_grupo_mayo = entrenar_modelos_por_grupo_y_semilla_y_parametros(grupos_datos_mayo, mejores_params)
     
     # Generar predicciones finales (ahora con mes)
     resultados_mayo = generar_predicciones_finales(
@@ -343,7 +345,7 @@ def main():
     clientes_predict_junio = df_predict_junio["numero_de_cliente"].values
     
     # Entrenar modelos por grupo y semilla
-    modelos_por_grupo_junio = entrenar_modelos_por_grupo_y_semilla(grupos_datos_junio, mejores_params)
+    modelos_por_grupo_junio = entrenar_modelos_por_grupo_y_semilla_y_parametros(grupos_datos_junio, mejores_params)
     
     # Generar predicciones finales (ahora con mes)
     resultados_junio = generar_predicciones_finales(
@@ -382,7 +384,7 @@ def main():
     clientes_predict_julio = df_predict_julio["numero_de_cliente"].values
     
     # Entrenar modelos por grupo y semilla
-    modelos_por_grupo_julio = entrenar_modelos_por_grupo_y_semilla(grupos_datos_julio, mejores_params)
+    modelos_por_grupo_julio = entrenar_modelos_por_grupo_y_semilla_y_parametros(grupos_datos_julio, mejores_params)
     
     # Generar predicciones finales (ahora con mes)
     resultados_julio = generar_predicciones_finales(

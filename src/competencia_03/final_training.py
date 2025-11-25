@@ -538,50 +538,50 @@ def preparar_datos_entrenamiento_por_grupos_por_semilla(
 
 
 
-# def entrenar_modelos_por_grupo_y_semilla(
-#     grupos_datos: dict[str, dict[int, tuple[pd.DataFrame, pd.Series]]],
-#     mejores_params: dict
-# ) -> dict[str, list[lgb.Booster]]:
-#     modelos_por_grupo = {}
-
-#     for nombre_grupo, semillas_dict in grupos_datos.items():
-#         modelos_por_grupo[nombre_grupo] = []
-
-#         for seed, (X_train, y_train) in semillas_dict.items():
-#             logger.info(f"Entrenando grupo '{nombre_grupo}' con semilla {seed}")
-#             params = {
-#                 'objective': 'binary',
-#                 'metric': 'None',
-#                 'boosting_type': 'gbdt',
-#                 'first_metric_only': True,
-#                 'boost_from_average': True,
-#                 'feature_pre_filter': False,
-#                 'max_bin': 31,
-#                 'seed': seed,
-#                 'verbose': -1,
-#                 **mejores_params
-#             }
-
-#             lgb_train = lgb.Dataset(X_train, label=y_train)
-
-#             modelo = lgb.train(
-#                 params,
-#                 lgb_train,
-#                 valid_sets=[lgb_train],
-#                 feval=ganancia_evaluator,
-#                 callbacks=[
-#                     lgb.early_stopping(stopping_rounds=100),
-#                     lgb.log_evaluation(period=100)
-#                 ]
-#             )
-
-#             modelos_por_grupo[nombre_grupo].append(modelo)
-
-#     logger.info(f"✅ Entrenamiento completado: {sum(len(m) for m in modelos_por_grupo.values())} modelos generados.")
-#     return modelos_por_grupo
-
-
 def entrenar_modelos_por_grupo_y_semilla(
+    grupos_datos: dict[str, dict[int, tuple[pd.DataFrame, pd.Series]]],
+    mejores_params: dict
+) -> dict[str, list[lgb.Booster]]:
+    modelos_por_grupo = {}
+
+    for nombre_grupo, semillas_dict in grupos_datos.items():
+        modelos_por_grupo[nombre_grupo] = []
+
+        for seed, (X_train, y_train) in semillas_dict.items():
+            logger.info(f"Entrenando grupo '{nombre_grupo}' con semilla {seed}")
+            params = {
+                'objective': 'binary',
+                'metric': 'None',
+                'boosting_type': 'gbdt',
+                'first_metric_only': True,
+                'boost_from_average': True,
+                'feature_pre_filter': False,
+                'max_bin': 31,
+                'seed': seed,
+                'verbose': -1,
+                **mejores_params
+            }
+
+            lgb_train = lgb.Dataset(X_train, label=y_train)
+
+            modelo = lgb.train(
+                params,
+                lgb_train,
+                valid_sets=[lgb_train],
+                feval=ganancia_evaluator,
+                callbacks=[
+                    lgb.early_stopping(stopping_rounds=100),
+                    lgb.log_evaluation(period=100)
+                ]
+            )
+
+            modelos_por_grupo[nombre_grupo].append(modelo)
+
+    logger.info(f"✅ Entrenamiento completado: {sum(len(m) for m in modelos_por_grupo.values())} modelos generados.")
+    return modelos_por_grupo
+
+
+def entrenar_modelos_por_grupo_y_semilla_y_parametros(
     grupos_datos: dict[str, dict[int, tuple[pd.DataFrame, pd.Series]]],
     mejores_params_list: list[dict]
 ) -> dict[str, list[lgb.Booster]]:
