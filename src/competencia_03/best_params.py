@@ -4,56 +4,56 @@ from config import STUDY_NAME
 
 logger = logging.getLogger(__name__)
 
-def cargar_mejores_hiperparametros(archivo_base: str = None) -> dict:
-    """
-    Carga los mejores hiperparámetros desde el archivo JSON de iteraciones de Optuna.
+# def cargar_mejores_hiperparametros(archivo_base: str = None) -> dict:
+#     """
+#     Carga los mejores hiperparámetros desde el archivo JSON de iteraciones de Optuna.
   
-    Args:
-        archivo_base: Nombre base del archivo (si es None, usa STUDY_NAME)
+#     Args:
+#         archivo_base: Nombre base del archivo (si es None, usa STUDY_NAME)
   
-    Returns:
-        dict: Mejores hiperparámetros encontrados
-    """
-    if archivo_base is None:
-        archivo_base = STUDY_NAME
+#     Returns:
+#         dict: Mejores hiperparámetros encontrados
+#     """
+#     if archivo_base is None:
+#         archivo_base = STUDY_NAME
         
-    logger.info("Cargando el json con los mejores hiperparametros")
+#     logger.info("Cargando el json con los mejores hiperparametros")
   
-    archivo = f"resultados/{archivo_base}_iteraciones.json"
+#     archivo = f"resultados/{archivo_base}_iteraciones.json"
   
-    try:
-        with open(archivo, 'r') as f:
-            iteraciones = json.load(f)
+#     try:
+#         with open(archivo, 'r') as f:
+#             iteraciones = json.load(f)
   
-        if not iteraciones:
-            raise ValueError("No se encontraron iteraciones en el archivo")
+#         if not iteraciones:
+#             raise ValueError("No se encontraron iteraciones en el archivo")
   
-        # Encontrar la iteración con mayor ganancia
-        mejor_iteracion = max(iteraciones, key=lambda x: x['ganancia'])
+#         # Encontrar la iteración con mayor ganancia
+#         mejor_iteracion = max(iteraciones, key=lambda x: x['ganancia'])
         
-        # Construir el diccionario de hiperparámetros
-        mejores_params = {
-            k: v for k, v in mejor_iteracion.items()
-            if k not in ['trial_number', 'ganancia']
-        }
+#         # Construir el diccionario de hiperparámetros
+#         mejores_params = {
+#             k: v for k, v in mejor_iteracion.items()
+#             if k not in ['trial_number', 'ganancia']
+#         }
         
-        mejor_ganancia = mejor_iteracion['ganancia']
+#         mejor_ganancia = mejor_iteracion['ganancia']
 
   
-        logger.info(f"Mejores hiperparámetros cargados desde {archivo}")
-        logger.info(f"Mejor ganancia encontrada: {mejor_ganancia:,.0f}")
-        logger.info(f"Trial número: {mejor_iteracion['trial_number']}")
-        logger.info(f"Parámetros: {mejores_params}")
+#         logger.info(f"Mejores hiperparámetros cargados desde {archivo}")
+#         logger.info(f"Mejor ganancia encontrada: {mejor_ganancia:,.0f}")
+#         logger.info(f"Trial número: {mejor_iteracion['trial_number']}")
+#         logger.info(f"Parámetros: {mejores_params}")
   
-        return mejores_params
+#         return mejores_params
   
-    except FileNotFoundError:
-        logger.error(f"No se encontró el archivo {archivo}")
-        logger.error("Asegúrate de haber ejecutado la optimización con Optuna primero")
-        raise
-    except Exception as e:
-        logger.error(f"Error al cargar mejores hiperparámetros: {e}")
-        raise
+#     except FileNotFoundError:
+#         logger.error(f"No se encontró el archivo {archivo}")
+#         logger.error("Asegúrate de haber ejecutado la optimización con Optuna primero")
+#         raise
+#     except Exception as e:
+#         logger.error(f"Error al cargar mejores hiperparámetros: {e}")
+#         raise
 
 def obtener_estadisticas_optuna(archivo_base=None):
     """
@@ -93,4 +93,56 @@ def obtener_estadisticas_optuna(archivo_base=None):
   
     except Exception as e:
         logger.error(f"Error al obtener estadísticas: {e}")
+        raise
+
+
+
+
+def cargar_mejores_hiperparametros(archivo_base: str = None, top_k: int = 20) -> list[dict]:
+    """
+    Carga los hiperparámetros de los top_k mejores modelos desde el archivo JSON de iteraciones de Optuna.
+  
+    Args:
+        archivo_base: Nombre base del archivo (si es None, usa STUDY_NAME)
+        top_k: cantidad de mejores modelos a devolver
+  
+    Returns:
+        list[dict]: Lista con los hiperparámetros de los top_k mejores modelos
+    """
+    if archivo_base is None:
+        archivo_base = STUDY_NAME
+        
+    logger.info("Cargando el json con los mejores hiperparámetros")
+  
+    archivo = f"resultados/{archivo_base}_iteraciones.json"
+  
+    try:
+        with open(archivo, 'r') as f:
+            iteraciones = json.load(f)
+  
+        if not iteraciones:
+            raise ValueError("No se encontraron iteraciones en el archivo")
+  
+        # Ordenar todas las iteraciones por ganancia (descendente)
+        iteraciones_ordenadas = sorted(iteraciones, key=lambda x: x['ganancia'], reverse=True)
+        
+        # Seleccionar las top_k
+        mejores_iteraciones = iteraciones_ordenadas[:top_k]
+        
+        # Construir lista de diccionarios de hiperparámetros
+        mejores_params = []
+        for it in mejores_iteraciones:
+            params = {k: v for k, v in it.items() if k not in ['trial_number', 'ganancia']}
+            mejores_params.append(params)
+            logger.info(f"Trial {it['trial_number']} con ganancia {it['ganancia']:,.0f} -> {params}")
+  
+        logger.info(f"✅ Se cargaron los {len(mejores_params)} mejores conjuntos de hiperparámetros desde {archivo}")
+        return mejores_params
+  
+    except FileNotFoundError:
+        logger.error(f"No se encontró el archivo {archivo}")
+        logger.error("Asegúrate de haber ejecutado la optimización con Optuna primero")
+        raise
+    except Exception as e:
+        logger.error(f"Error al cargar mejores hiperparámetros: {e}")
         raise
