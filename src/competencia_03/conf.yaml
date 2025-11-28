@@ -1,5 +1,5 @@
 #yaml
-STUDY_NAME: Mejores Hiperpara de 0.03 Opti - Semillerio de 100
+STUDY_NAME: Dataset que venia usando
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
