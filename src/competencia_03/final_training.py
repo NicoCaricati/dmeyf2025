@@ -412,7 +412,6 @@ def preparar_datos_entrenamiento_por_grupos(
     for nombre_grupo, meses in grupos.items():
         df_grupo = df[df["foto_mes"].isin(meses)]
         df_sampleado = undersample_clientes(df_grupo, ratio=undersampling_ratio, semilla=semilla_unica)
-
         X_train = df_sampleado.drop(columns=["target", "target_to_calculate_gan"])
         y_train = df_sampleado["target"]
         grupos_datos[nombre_grupo] = (X_train, y_train)
@@ -511,32 +510,6 @@ def entrenar_modelos_por_grupo(grupos_datos: dict[str, tuple[pd.DataFrame, pd.Se
 
     logger.info(f"✅ Entrenamiento completado: {sum(len(m) for m in modelos_por_grupo.values())} modelos generados.")
     return modelos_por_grupo
-
-
-
-def preparar_datos_entrenamiento_por_grupos_por_semilla(
-    df: pd.DataFrame,
-    grupos: dict[str, list[int]],
-    final_predic: int,
-    undersampling_ratio: float = 0.2,
-    semillas: list[int] = [555557]
-) -> dict[str, dict[int, tuple[pd.DataFrame, pd.Series]]]:
-    grupos_datos = {}
-
-    for nombre_grupo, meses in grupos.items():
-        df_grupo = df[df["foto_mes"].isin(meses)]
-        grupos_datos[nombre_grupo] = {}
-
-        for seed in semillas:
-            df_sampleado = undersample_clientes(df_grupo, ratio=undersampling_ratio, semilla=seed)
-            X_train = df_sampleado.drop(columns=["target", "target_to_calculate_gan"])
-            y_train = df_sampleado["target"]
-            grupos_datos[nombre_grupo][seed] = (X_train, y_train)
-
-            logger.info(f"Grupo '{nombre_grupo}' con semilla {seed}: {len(X_train):,} registros")
-
-    logger.info(f"✅ Datos preparados para {len(grupos_datos)} grupos y {len(semillas)} semillas por grupo.")
-    return grupos_datos
 
 
 
@@ -856,13 +829,6 @@ def generar_predicciones_finales(
         "top_k_grupos": df_topk_grupos,
         "ganancias": df_ganancias
     }
-
-
-
-
-
-
-
 
 
 
