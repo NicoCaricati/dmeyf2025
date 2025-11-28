@@ -261,22 +261,14 @@ def main():
     # )
 
   
-    # === 06 Entrenar modelo final (distintos periodos) ===
+  # === 06 Entrenar modelo final (distintos periodos) ===
     
     # Entrenamiento en Abril
     logger.info("=== ENTRENAMIENTO FINAL ABRIL ===")
     
-    df_filtrado_abril = filtrar_por_antiguedad(
-        df_fe,
-        meses_grupo=FINAL_TRAINING_GROUPS_APRIL,
-        columna_antiguedad="cliente_antiguedad",
-        umbral=12,
-        condicion="menor"   # quedarme con clientes < 12 meses
-    )
-        
     # Preparar datos por grupo y semilla con undersampling
     grupos_datos_abril = preparar_datos_entrenamiento_por_grupos_por_semilla(
-        df_filtrado_abril,
+        df_fe,
         FINAL_TRAINING_GROUPS_APRIL,
         FINAL_PREDIC_APRIL,
         undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
@@ -481,6 +473,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 
 
