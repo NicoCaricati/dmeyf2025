@@ -272,7 +272,7 @@ def main():
         FINAL_TRAINING_GROUPS_APRIL,
         FINAL_PREDIC_APRIL,
         undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-        semillas=SEMILLA
+        semilla_unica=SEMILLA
     )
     
     # Preparar datos de predicción
