@@ -281,7 +281,7 @@ def main():
     clientes_predict_abril = df_predict_abril["numero_de_cliente"].values
     
     # Entrenar modelos por grupo y semilla
-    modelos_por_grupo_abril = entrenar_modelos_por_grupo_y_semillas(grupos_datos_abril, mejores_params,SEMILLA)
+    modelos_por_grupo_abril = entrenar_modelos_por_grupo_y_semillas(grupos_datos_abril, mejores_params,555557)
     
     # Generar predicciones finales (ahora con mes)
     resultados_abril = generar_predicciones_finales(
