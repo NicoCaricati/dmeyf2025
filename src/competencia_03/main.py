@@ -267,7 +267,7 @@ def main():
     logger.info("=== ENTRENAMIENTO FINAL ABRIL ===")
     
     # Preparar datos por grupo y semilla con undersampling
-    grupos_datos_abril = preparar_datos_entrenamiento_por_grupos_por_semilla(
+    grupos_datos_abril = preparar_datos_entrenamiento_por_grupos(
         df_fe,
         FINAL_TRAINING_GROUPS_APRIL,
         FINAL_PREDIC_APRIL,
@@ -281,7 +281,7 @@ def main():
     clientes_predict_abril = df_predict_abril["numero_de_cliente"].values
     
     # Entrenar modelos por grupo y semilla
-    modelos_por_grupo_abril = entrenar_modelos_por_grupo_y_semilla_y_parametros(grupos_datos_abril, mejores_params)
+    modelos_por_grupo_abril = entrenar_modelos_por_grupo_y_semillas(grupos_datos_abril, mejores_params,SEMILLA)
     
     # Generar predicciones finales (ahora con mes)
     resultados_abril = generar_predicciones_finales(
