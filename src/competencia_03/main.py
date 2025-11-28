@@ -178,12 +178,12 @@ def main():
     
     logger.info("⏳ CSV cargado o creado, ahora ejecutando optimización...")
 
-    # Filtrar clientes con antigüedad menor a 12 meses
-    df_fe = df_fe[df_fe["cliente_antiguedad"] < 12]
-            df_fe.to_parquet(
-            os.path.join(BUCKET_NAME, "data","df_fe - Completo - Antiguedad menor a 12.parquet"),
-            compression='snappy'
-        )
+    # # Filtrar clientes con antigüedad menor a 12 meses
+    # df_fe = df_fe[df_fe["cliente_antiguedad"] < 12]
+    #         df_fe.to_parquet(
+    #         os.path.join(BUCKET_NAME, "data","df_fe - Completo - Antiguedad menor a 12.parquet"),
+    #         compression='snappy'
+    #     )
 
 
     # Me quedo de los meses de entrenamiento con los clientes de antiguedad < 5 
