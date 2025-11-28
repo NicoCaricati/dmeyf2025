@@ -19,6 +19,7 @@
  Opti con toda la muestra, o toda la muestra en solo un mes
 Notebook para analizar las corridas (json)
 Graficos copados para ver ganancias
+xdxdxd
 
 
 
