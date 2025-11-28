@@ -1,5 +1,5 @@
 #yaml
-STUDY_NAME: Dataset que venia usando
+STUDY_NAME: Solo Variables actuales
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000

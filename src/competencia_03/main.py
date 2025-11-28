@@ -99,12 +99,12 @@ def main():
         # logger.info(f"Después de undersampling: {df_fe.shape}")
 
 
-        # Supongamos que ya tenés tu DataFrame "dataset"
-        df_fe["ctrx_quarter_normalizado"] = df_fe["ctrx_quarter"].astype(float)
+        # # Supongamos que ya tenés tu DataFrame "dataset"
+        # df_fe["ctrx_quarter_normalizado"] = df_fe["ctrx_quarter"].astype(float)
         
-        df_fe.loc[df_fe["cliente_antiguedad"] == 1, "ctrx_quarter_normalizado"] *= 5.0
-        df_fe.loc[df_fe["cliente_antiguedad"] == 2, "ctrx_quarter_normalizado"] *= 2.0
-        df_fe.loc[df_fe["cliente_antiguedad"] == 3, "ctrx_quarter_normalizado"] *= 1.2
+        # df_fe.loc[df_fe["cliente_antiguedad"] == 1, "ctrx_quarter_normalizado"] *= 5.0
+        # df_fe.loc[df_fe["cliente_antiguedad"] == 2, "ctrx_quarter_normalizado"] *= 2.0
+        # df_fe.loc[df_fe["cliente_antiguedad"] == 3, "ctrx_quarter_normalizado"] *= 1.2
 
     
         # # 2. Feature Engineering
@@ -149,22 +149,22 @@ def main():
         # for i in (1,2):
         #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
 
-        df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=3, ventana_larga=6)
-        df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
+        # df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=3, ventana_larga=6)
+        # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
 
-        # df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=6, ventana_larga=12)
+        # # df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=6, ventana_larga=12)
 
         # for i in (2,3,6,8,10,12,15):
         #     df_fe = feature_engineering_regr_slope_window(df_fe, columnas=columnas_para_fe_regresiones, ventana = i)
         #     df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
-        for i in (2,3):
-            df_fe = feature_engineering_delta(df_fe, columnas=columnas_para_fe_deltas, cant_delta = i)
-        df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
-        for i in (4,8):
-            # df_fe = feature_engineering_delta_max(df_fe, columnas=columnas_para_fe_deltas, ventana=i)
-            df_fe = feature_engineering_delta_mean(df_fe, columnas=columnas_para_fe_deltas, ventana=i)
+        # for i in (2,3):
+        #     df_fe = feature_engineering_delta(df_fe, columnas=columnas_para_fe_deltas, cant_delta = i)
+        # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
+        # for i in (4,8):
+        #     # df_fe = feature_engineering_delta_max(df_fe, columnas=columnas_para_fe_deltas, ventana=i)
+        #     df_fe = feature_engineering_delta_mean(df_fe, columnas=columnas_para_fe_deltas, ventana=i)
         
-        df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
+        # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
 
         
         logger.info(f"Feature Engineering completado: {df_fe.shape}")
