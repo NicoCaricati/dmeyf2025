@@ -316,114 +316,76 @@ def main():
     # )
     
     # ensamble_abril.append(grupos_datos_abril_clientes_nuevos_sin_historia)
-
+    
     logger.info("=== PREPARO ENTRENAMIENTO FINAL ABRIL ===")
-
-        # === Preparar datos de predicción Abril ===
+    
+    # === Preparar datos de predicción Abril ===
     logger.info("=== PREPARO DATOS DE PREDICCIÓN ABRIL ===")
     
     # Filtrar el dataframe base por el mes de predicción
     df_predict_abril = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_APRIL]
-    
-    # Si también querés predicciones con el dataset sin historia:
     df_predict_abril_sin_historia = df_fe_sin_historia[df_fe_sin_historia["foto_mes"] == FINAL_PREDIC_APRIL]
     
-    # Variables de entrada (X) y clientes
-    X_predict_abril = df_predict_abril.drop(columns=["target", "target_to_calculate_gan"])
-    clientes_predict_abril = df_predict_abril["numero_de_cliente"].values
-    
-    # Para el dataset sin historia
-    X_predict_abril_sin_historia = df_predict_abril_sin_historia.drop(columns=["target", "target_to_calculate_gan"])
-    clientes_predict_abril_sin_historia = df_predict_abril_sin_historia["numero_de_cliente"].values
-    
     ensamble_abril = []
-
+    
     # Dataset completo
-    preparar_y_append(df_fe, "df_completo",
-                    FINAL_TRAINING_GROUPS_APRIL,
-                    FINAL_PREDIC_APRIL,
-                    UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-                    SEMILLA,
-                    ensamble_abril)
-
+    preparar_y_append(df_fe, "df_completo", FINAL_TRAINING_GROUPS_APRIL,
+                      FINAL_PREDIC_APRIL, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_abril)
+    
     # Clientes antiguos
-    df_fe_abril_clientes_antiguos = filtrar_por_antiguedad(
-        df_fe,
-        FINAL_TRAINING_GROUPS_APRIL,
-        columna_antiguedad="cliente_antiguedad",
-        umbral=12,
-        condicion="mayor"
-    )
-    preparar_y_append(df_fe_abril_clientes_antiguos, "clientes_antiguos",
-                    FINAL_TRAINING_GROUPS_APRIL,
-                    FINAL_PREDIC_APRIL,
-                    UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-                    SEMILLA,
-                    ensamble_abril)
-
+    df_fe_abril_clientes_antiguos = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_APRIL,
+                                                           columna_antiguedad="cliente_antiguedad",
+                                                           umbral=12, condicion="mayor")
+    preparar_y_append(df_fe_abril_clientes_antiguos, "clientes_antiguos", FINAL_TRAINING_GROUPS_APRIL,
+                      FINAL_PREDIC_APRIL, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_abril)
+    
     # Clientes nuevos
-    df_fe_abril_clientes_nuevos = filtrar_por_antiguedad(
-        df_fe,
-        FINAL_TRAINING_GROUPS_APRIL,
-        columna_antiguedad="cliente_antiguedad",
-        umbral=12,
-        condicion="menor"
-    )
-    preparar_y_append(df_fe_abril_clientes_nuevos, "clientes_nuevos",
-                    FINAL_TRAINING_GROUPS_APRIL,
-                    FINAL_PREDIC_APRIL,
-                    UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-                    SEMILLA,
-                    ensamble_abril)
-
+    df_fe_abril_clientes_nuevos = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_APRIL,
+                                                         columna_antiguedad="cliente_antiguedad",
+                                                         umbral=12, condicion="menor")
+    preparar_y_append(df_fe_abril_clientes_nuevos, "clientes_nuevos", FINAL_TRAINING_GROUPS_APRIL,
+                      FINAL_PREDIC_APRIL, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_abril)
+    
     # Dataset sin historia
-    preparar_y_append(df_fe_sin_historia, "df_completo_sin_historia",
-                    FINAL_TRAINING_GROUPS_APRIL,
-                    FINAL_PREDIC_APRIL,
-                    UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-                    SEMILLA,
-                    ensamble_abril)
-
+    preparar_y_append(df_fe_sin_historia, "df_completo_sin_historia", FINAL_TRAINING_GROUPS_APRIL,
+                      FINAL_PREDIC_APRIL, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_abril)
+    
     # Clientes antiguos sin historia
-    df_fe_sin_historia_abril_clientes_antiguos = filtrar_por_antiguedad(
-        df_fe_sin_historia,
-        FINAL_TRAINING_GROUPS_APRIL,
-        columna_antiguedad="cliente_antiguedad",
-        umbral=12,
-        condicion="mayor"
-    )
-    preparar_y_append(df_fe_sin_historia_abril_clientes_antiguos, "clientes_antiguos_sin_historia",
-                    FINAL_TRAINING_GROUPS_APRIL,
-                    FINAL_PREDIC_APRIL,
-                    UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-                    SEMILLA,
-                    ensamble_abril)
-
+    df_fe_sin_historia_abril_clientes_antiguos = filtrar_por_antiguedad(df_fe_sin_historia, FINAL_TRAINING_GROUPS_APRIL,
+                                                                        columna_antiguedad="cliente_antiguedad",
+                                                                        umbral=12, condicion="mayor")
+    preparar_y_append(df_fe_sin_historia_abril_clientes_antiguos, "clientes_antiguos_sin_historia", FINAL_TRAINING_GROUPS_APRIL,
+                      FINAL_PREDIC_APRIL, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_abril)
+    
     # Clientes nuevos sin historia
-    df_fe_sin_historia_abril_clientes_nuevos = filtrar_por_antiguedad(
-        df_fe_sin_historia,
-        FINAL_TRAINING_GROUPS_APRIL,
-        columna_antiguedad="cliente_antiguedad",
-        umbral=12,
-        condicion="menor"
-    )
-    preparar_y_append(df_fe_sin_historia_abril_clientes_nuevos, "clientes_nuevos_sin_historia",
-                    FINAL_TRAINING_GROUPS_APRIL,
-                    FINAL_PREDIC_APRIL,
-                    UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-                    SEMILLA,
-                    ensamble_abril)
-  
+    df_fe_sin_historia_abril_clientes_nuevos = filtrar_por_antiguedad(df_fe_sin_historia, FINAL_TRAINING_GROUPS_APRIL,
+                                                                      columna_antiguedad="cliente_antiguedad",
+                                                                      umbral=12, condicion="menor")
+    preparar_y_append(df_fe_sin_historia_abril_clientes_nuevos, "clientes_nuevos_sin_historia", FINAL_TRAINING_GROUPS_APRIL,
+                      FINAL_PREDIC_APRIL, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_abril)
+    
     logger.info("=== ENTRENAMIENTO FINAL ABRIL ===")
-
+    
     # Entrenar y predecir cada dataset del ensamble
     predicciones_por_dataset = []
     ganancias_totales = []
     
     for nombre_dataset, grupos_datos in ensamble_abril:
+        # Elegir el df_predict correcto según el dataset
+        if "sin_historia" in nombre_dataset:
+            df_predict = df_predict_abril_sin_historia
+        else:
+            df_predict = df_predict_abril
+    
         resultados, ganancias, clientes_predict = entrenar_y_predecir_dataset(
-            df_predict_abril,  # df filtrado para predicción
-            grupos_datos,
+            df_predict,              # siempre todos los registros del mes
+            grupos_datos,            # entrenado en subset
             FINAL_PREDIC_APRIL,
             mejores_params,
             semillas=[SEMILLA],
@@ -433,13 +395,13 @@ def main():
         ganancias_totales.extend(ganancias)
     
     # === Ensamble final ===
-    # Promedio de probabilidades de todos los grupos
     preds_sum = np.zeros(len(clientes_predict), dtype=np.float32)
     for resultados in predicciones_por_dataset:
         for _, preds in resultados.items():
             preds_sum += preds
     
-    y_pred_global = preds_sum / sum(len(r) for r in predicciones_por_dataset)
+    n_preds = sum(len(r) for r in predicciones_por_dataset)
+    y_pred_global = preds_sum / n_preds
     
     # Ranking global
     df_topk_global = pd.DataFrame({
@@ -450,8 +412,12 @@ def main():
     df_topk_global.loc[:TOP_K-1, "predict"] = 1
     df_topk_global.to_csv(f"predict/{STUDY_NAME}_predicciones_global_{FINAL_PREDIC_APRIL}.csv", index=False)
     
-    # Ranking por grupos (promedio entre grupos)
-    preds_por_grupo = sum([sum(r.values()) for r in predicciones_por_dataset]) / len(predicciones_por_dataset)
+    # Ranking por grupos
+    all_preds = []
+    for resultados in predicciones_por_dataset:
+        all_preds.extend(resultados.values())
+    preds_por_grupo = sum(all_preds) / len(all_preds)
+    
     df_topk_grupos = pd.DataFrame({
         "numero_de_cliente": clientes_predict,
         "probabilidad": preds_por_grupo
@@ -460,7 +426,7 @@ def main():
     df_topk_grupos.loc[:TOP_K-1, "predict"] = 1
     df_topk_grupos.to_csv(f"predict/{STUDY_NAME}_predicciones_grupos_{FINAL_PREDIC_APRIL}.csv", index=False)
     
-    # Ganancias globales y por grupos
+    # Ganancias
     ganancia_global = calcular_ganancia_top_k(df_predict_abril["target_to_calculate_gan"].values, y_pred_global)
     ganancia_grupos = calcular_ganancia_top_k(df_predict_abril["target_to_calculate_gan"].values, preds_por_grupo)
     
@@ -479,10 +445,10 @@ def main():
         "ganancia_test": float(ganancia_grupos)
     })
     
-    # Guardar archivo de ganancias
     df_ganancias = pd.DataFrame(ganancias_totales)
     df_ganancias.to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_APRIL}.csv", index=False)
     logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_APRIL}.csv")
+
 
 
     # # Entrenamiento en Mayo

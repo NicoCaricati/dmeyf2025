@@ -1,5 +1,5 @@
 #yaml
-STUDY_NAME: Test de Ensambles Variados (Abril)
+STUDY_NAME: Test de Ensambles Variados (Abril) V2
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
