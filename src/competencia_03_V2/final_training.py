@@ -897,3 +897,40 @@ def preparar_y_append(df, nombre,
     )
     lista_ensamble.append((nombre, grupos_datos))
 
+
+
+def entrenar_y_predecir_dataset(df, grupos, predic, mejores_params, semillas, nombre_dataset):
+    """
+    Entrena modelos por grupo y semilla sobre un dataset y devuelve predicciones y ganancias.
+    """
+    modelos = entrenar_modelos_por_grupo_y_semillas(grupos, mejores_params, semillas)
+    X_predict = df.drop(columns=["target", "target_to_calculate_gan"])
+    clientes_predict = df["numero_de_cliente"].values
+    y_true = df["target_to_calculate_gan"].values
+
+    
+    resultados = {}
+    ganancias = []
+
+    for nombre_grupo, modelos_grupo in modelos.items():
+        preds_grupo = np.zeros(len(X_predict), dtype=np.float32)
+
+        for i, modelo in enumerate(modelos_grupo, start=1):
+            y_pred_proba = modelo.predict(X_predict, num_iteration=modelo.best_iteration)
+            preds_grupo += y_pred_proba
+
+            # Ganancia individual
+            ganancia_test = calcular_ganancia_top_k(y_true, y_pred_proba)
+            ganancias.append({
+                "mes": predic,
+                "dataset": nombre_dataset,
+                "grupo": nombre_grupo,
+                "modelo_id": f"{nombre_dataset}_{nombre_grupo}_seed{i}",
+                "ganancia_test": float(ganancia_test)
+            })
+
+        preds_grupo /= len(modelos_grupo)
+        resultados[f"{nombre_dataset}_{nombre_grupo}"] = preds_grupo
+
+    return resultados, ganancias, clientes_predict
+

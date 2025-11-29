@@ -317,8 +317,25 @@ def main():
     
     # ensamble_abril.append(grupos_datos_abril_clientes_nuevos_sin_historia)
 
-    logger.info("=== ENTRENAMIENTO FINAL ABRIL ===")
+    logger.info("=== PREPARO ENTRENAMIENTO FINAL ABRIL ===")
 
+        # === Preparar datos de predicción Abril ===
+    logger.info("=== PREPARO DATOS DE PREDICCIÓN ABRIL ===")
+    
+    # Filtrar el dataframe base por el mes de predicción
+    df_predict_abril = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_APRIL]
+    
+    # Si también querés predicciones con el dataset sin historia:
+    df_predict_abril_sin_historia = df_fe_sin_historia[df_fe_sin_historia["foto_mes"] == FINAL_PREDIC_APRIL]
+    
+    # Variables de entrada (X) y clientes
+    X_predict_abril = df_predict_abril.drop(columns=["target", "target_to_calculate_gan"])
+    clientes_predict_abril = df_predict_abril["numero_de_cliente"].values
+    
+    # Para el dataset sin historia
+    X_predict_abril_sin_historia = df_predict_abril_sin_historia.drop(columns=["target", "target_to_calculate_gan"])
+    clientes_predict_abril_sin_historia = df_predict_abril_sin_historia["numero_de_cliente"].values
+    
     ensamble_abril = []
 
     # Dataset completo
@@ -397,42 +414,74 @@ def main():
                     SEMILLA,
                     ensamble_abril)
   
+    logger.info("=== ENTRENAMIENTO FINAL ABRIL ===")
 
-    # Preparar datos de predicción
-    df_predict_abril = df_fe_april[df_fe_april["foto_mes"] == FINAL_PREDIC_APRIL]
-    X_predict_abril = df_predict_abril.drop(columns=["target", "target_to_calculate_gan"])
-    clientes_predict_abril = df_predict_abril["numero_de_cliente"].values
-
-    # Entrenar modelos para cada dataset del ensamble
-    modelos_por_grupo_abril = {}
-
+    # Entrenar y predecir cada dataset del ensamble
+    predicciones_por_dataset = []
+    ganancias_totales = []
+    
     for nombre_dataset, grupos_datos in ensamble_abril:
-        logger.info(f"=== Entrenando modelos para dataset: {nombre_dataset} ===")
-        modelos_dataset = entrenar_modelos_por_grupo_y_semillas(
+        resultados, ganancias, clientes_predict = entrenar_y_predecir_dataset(
+            df_predict_abril,  # df filtrado para predicción
             grupos_datos,
+            FINAL_PREDIC_APRIL,
             mejores_params,
-            semillas=[SEMILLA]   # podés pasar lista de semillas si querés más diversidad
+            semillas=[SEMILLA],
+            nombre_dataset=nombre_dataset
         )
-        # Guardamos los modelos con prefijo del dataset para diferenciarlos
-        for nombre_grupo, modelos in modelos_dataset.items():
-            modelos_por_grupo_abril[f"{nombre_dataset}_{nombre_grupo}"] = modelos
-
-    # Generar predicciones finales (ahora con ensamble completo)
-    resultados_abril = generar_predicciones_finales(
-        modelos_por_grupo_abril,
-        X_predict_abril,
-        clientes_predict_abril,
-        df_predict_abril,
-        top_k=TOP_K,
-        mes=FINAL_PREDIC_APRIL
-    )
-
-    # Guardar predicciones
-    guardar_predicciones_finales({"top_k": resultados_abril["top_k_global"]}, f"{FINAL_PREDIC_APRIL}_global")
-    guardar_predicciones_finales({"top_k": resultados_abril["top_k_grupos"]}, f"{FINAL_PREDIC_APRIL}_grupos")
-
-    # Guardar ganancias
-    resultados_abril["ganancias"].to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_APRIL}.csv", index=False)
+        predicciones_por_dataset.append(resultados)
+        ganancias_totales.extend(ganancias)
+    
+    # === Ensamble final ===
+    # Promedio de probabilidades de todos los grupos
+    preds_sum = np.zeros(len(clientes_predict), dtype=np.float32)
+    for resultados in predicciones_por_dataset:
+        for _, preds in resultados.items():
+            preds_sum += preds
+    
+    y_pred_global = preds_sum / sum(len(r) for r in predicciones_por_dataset)
+    
+    # Ranking global
+    df_topk_global = pd.DataFrame({
+        "numero_de_cliente": clientes_predict,
+        "probabilidad": y_pred_global
+    }).sort_values("probabilidad", ascending=False, ignore_index=True)
+    df_topk_global["predict"] = 0
+    df_topk_global.loc[:TOP_K-1, "predict"] = 1
+    df_topk_global.to_csv(f"predict/{STUDY_NAME}_predicciones_global_{FINAL_PREDIC_APRIL}.csv", index=False)
+    
+    # Ranking por grupos (promedio entre grupos)
+    preds_por_grupo = sum([sum(r.values()) for r in predicciones_por_dataset]) / len(predicciones_por_dataset)
+    df_topk_grupos = pd.DataFrame({
+        "numero_de_cliente": clientes_predict,
+        "probabilidad": preds_por_grupo
+    }).sort_values("probabilidad", ascending=False, ignore_index=True)
+    df_topk_grupos["predict"] = 0
+    df_topk_grupos.loc[:TOP_K-1, "predict"] = 1
+    df_topk_grupos.to_csv(f"predict/{STUDY_NAME}_predicciones_grupos_{FINAL_PREDIC_APRIL}.csv", index=False)
+    
+    # Ganancias globales y por grupos
+    ganancia_global = calcular_ganancia_top_k(df_predict_abril["target_to_calculate_gan"].values, y_pred_global)
+    ganancia_grupos = calcular_ganancia_top_k(df_predict_abril["target_to_calculate_gan"].values, preds_por_grupo)
+    
+    ganancias_totales.append({
+        "mes": FINAL_PREDIC_APRIL,
+        "dataset": "ENSAMBLE",
+        "grupo": "GLOBAL",
+        "modelo_id": "ensamble_global",
+        "ganancia_test": float(ganancia_global)
+    })
+    ganancias_totales.append({
+        "mes": FINAL_PREDIC_APRIL,
+        "dataset": "ENSAMBLE",
+        "grupo": "GRUPOS",
+        "modelo_id": "ensamble_grupos",
+        "ganancia_test": float(ganancia_grupos)
+    })
+    
+    # Guardar archivo de ganancias
+    df_ganancias = pd.DataFrame(ganancias_totales)
+    df_ganancias.to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_APRIL}.csv", index=False)
     logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_APRIL}.csv")
 
 
