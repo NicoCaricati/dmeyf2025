@@ -228,20 +228,12 @@ def main():
     # Cargar mejores hiperparámetros
 
     # mejores_params = cargar_mejores_hiperparametros()
-
-    # mejores_params = {'bagging_fraction': 0.648239786, 'feature_fraction': 0.338110921, 'lambda_l1': 3.152084178, 'lambda_l2': 2.623895465, 'learning_rate': 0.074681467, 'min_data_in_leaf': 10, 'num_boost_round': 496, 'num_leaves': 26} # Opti sin US
-    # mejores_params = {'num_leaves': 86, 'learning_rate': 0.04515219676722008, 'min_data_in_leaf': 45, 'feature_fraction': 0.2783670269042045, 'bagging_fraction': 0.68927175577007, 'lambda_l1': 1.4668038650423412, 'lambda_l2': 4.8010252173774495, 'num_boost_round': 507} # Opti con 0.2 de US
-    # mejores_params = {'num_leaves': 71, 'learning_rate': 0.005943961863023024, 'min_data_in_leaf': 88, 'feature_fraction': 0.6094884732441374, 'bagging_fraction': 0.30532645375787404, 'lambda_l1': 0.1442564185202138, 'lambda_l2': 1.9492290528756926, 'num_boost_round': 497} # Opti con 0.5 de US
-    # mejores_params =  {'num_leaves': 106, 'learning_rate': 0.05318395463346495, 'min_data_in_leaf': 4, 'feature_fraction': 0.49759556652323156, 'bagging_fraction': 0.7176155814161423, 'lambda_l1': 4.792320092280481, 'lambda_l2': 2.275425835398769, 'num_boost_round': 679} # Opti con 0.05 de US
     
     # Nueva Opti de 0.2
-    # mejores_params = {'num_leaves': 121, 'learning_rate': 0.08944748172892189, 'min_data_in_leaf': 47, 'feature_fraction': 0.5831901957235187, 'bagging_fraction': 0.9395824062687965, 'lambda_l1': 4.4131882397060185, 'lambda_l2': 2.385519727758512, 'num_boost_round': 818}
-    # mejores_params = {'num_leaves': 121, 'learning_rate': 0.08944748172892189, 'min_data_in_leaf': 47, 'feature_fraction': 0.5831901957235187, 'bagging_fraction': 0.9395824062687965, 'num_boost_round': 818}
 
+    mejores_params = {'bagging_fraction': 0.6714999873184199, 'feature_fraction': 0.31776519651631674, 'lambda_l1': 0.2944267005943108, 'lambda_l2': 2.4490808003374225, 'learning_rate': 0.03518640034343286, 'min_data_in_leaf': 47, 'neg_bagging_fraction': 0.16338893024243595, 'num_boost_round': 778, 'num_leaves': 84, 'pos_bagging_fraction': 0.40622347584093277} # Opti Nueva
 
-    # mejores_params = {'bagging_fraction': 0.6714999873184199, 'feature_fraction': 0.31776519651631674, 'lambda_l1': 0.2944267005943108, 'lambda_l2': 2.4490808003374225, 'learning_rate': 0.03518640034343286, 'min_data_in_leaf': 47, 'neg_bagging_fraction': 0.16338893024243595, 'num_boost_round': 778, 'num_leaves': 84, 'pos_bagging_fraction': 0.40622347584093277} # Opti Nueva
-
-    mejores_params = {'bagging_fraction': 0.6714999873184199, 'feature_fraction': 0.31776519651631674, 'learning_rate': 0.03518640034343286, 'min_data_in_leaf': 47, 'neg_bagging_fraction': 0.16338893024243595, 'num_boost_round': 778, 'num_leaves': 84, 'pos_bagging_fraction': 0.40622347584093277} # Opti Nueva sin lambas
+    # mejores_params = {'bagging_fraction': 0.6714999873184199, 'feature_fraction': 0.31776519651631674, 'learning_rate': 0.03518640034343286, 'min_data_in_leaf': 47, 'neg_bagging_fraction': 0.16338893024243595, 'num_boost_round': 778, 'num_leaves': 84, 'pos_bagging_fraction': 0.40622347584093277} # Opti Nueva sin lambas
     
 
 
@@ -265,10 +257,12 @@ def main():
     
     # Entrenamiento en Abril
     logger.info("=== ENTRENAMIENTO FINAL ABRIL ===")
+
+    df_fe_april = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_APRIL, columna_antiguedad="cliente_antiguedad", umbral=12, condicion="menor")    
     
     # Preparar datos por grupo y semilla con undersampling
     grupos_datos_abril = preparar_datos_entrenamiento_por_grupos(
-        df_fe,
+        df_fe_april,
         FINAL_TRAINING_GROUPS_APRIL,
         FINAL_PREDIC_APRIL,
         undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
@@ -276,7 +270,7 @@ def main():
     )
     
     # Preparar datos de predicción
-    df_predict_abril = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_APRIL]
+    df_predict_abril = df_fe_april[df_fe_april["foto_mes"] == FINAL_PREDIC_APRIL]
     X_predict_abril = df_predict_abril.drop(columns=["target", "target_to_calculate_gan"])
     clientes_predict_abril = df_predict_abril["numero_de_cliente"].values
     
@@ -303,10 +297,12 @@ def main():
 
     # Entrenamiento en Mayo
     logger.info("=== ENTRENAMIENTO FINAL MAYO ===")
+
+    df_fe_mayo = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_MAYO, columna_antiguedad="cliente_antiguedad", umbral=12, condicion="menor")    
     
     # Preparar datos por grupo y semilla con undersampling
     grupos_datos_mayo = preparar_datos_entrenamiento_por_grupos(
-        df_fe,
+        df_fe_mayo,
         FINAL_TRAINING_GROUPS_MAYO,
         FINAL_PREDIC_MAYO,
         undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
@@ -314,7 +310,7 @@ def main():
     )
     
     # Preparar datos de predicción
-    df_predict_mayo = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_MAYO]
+    df_predict_mayo = df_fe_mayo[df_fe_mayo["foto_mes"] == FINAL_PREDIC_MAYO]
     X_predict_mayo = df_predict_mayo.drop(columns=["target", "target_to_calculate_gan"])
     clientes_predict_mayo = df_predict_mayo["numero_de_cliente"].values
     
@@ -342,10 +338,12 @@ def main():
     
     # Entrenamiento en Junio
     logger.info("=== ENTRENAMIENTO FINAL JUNIO ===")
+
+    df_fe_junio = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_JUNE, columna_antiguedad="cliente_antiguedad", umbral=12, condicion="menor")   
     
     # Preparar datos por grupo y semilla con undersampling
     grupos_datos_junio = preparar_datos_entrenamiento_por_grupos(
-        df_fe,
+        df_fe_junio,
         FINAL_TRAINING_GROUPS_JUNE,
         FINAL_PREDIC_JUNE,
         undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
@@ -353,7 +351,7 @@ def main():
     )
     
     # Preparar datos de predicción
-    df_predict_junio = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_JUNE]
+    df_predict_junio = df_fe_junio[df_fe_junio["foto_mes"] == FINAL_PREDIC_JUNE]
     X_predict_junio = df_predict_junio.drop(columns=["target", "target_to_calculate_gan"])
     clientes_predict_junio = df_predict_junio["numero_de_cliente"].values
     
@@ -382,9 +380,11 @@ def main():
     # Entrenamiento en Julio
     logger.info("=== ENTRENAMIENTO FINAL JULIO ===")
     
+    df_fe_julio = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_JULIO, columna_antiguedad="cliente_antiguedad", umbral=12, condicion="menor")   
+    
     # Preparar datos por grupo y semilla con undersampling
     grupos_datos_julio = preparar_datos_entrenamiento_por_grupos(
-        df_fe,
+        df_fe_julio,
         FINAL_TRAINING_GROUPS_JULIO,
         FINAL_PREDIC_JULIO,
         undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
@@ -392,7 +392,7 @@ def main():
     )
     
     # Preparar datos de predicción
-    df_predict_julio = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_JULIO]
+    df_predict_julio = df_fe_julio[df_fe_julio["foto_mes"] == FINAL_PREDIC_JULIO]
     X_predict_julio = df_predict_julio.drop(columns=["target", "target_to_calculate_gan"])
     clientes_predict_julio = df_predict_julio["numero_de_cliente"].values
     

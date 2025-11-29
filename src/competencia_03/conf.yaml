@@ -1,5 +1,5 @@
 #yaml
-STUDY_NAME: Modelo con antiguedades menores a 12
+STUDY_NAME: Modelo con antiguedades mayores a 12
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
