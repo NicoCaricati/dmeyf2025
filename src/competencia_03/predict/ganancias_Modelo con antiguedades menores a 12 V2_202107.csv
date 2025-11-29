@@ -1,0 +1,13 @@
+mes,grupo,modelo_id,ganancia_test
+202107,final_training_julio,final_training_julio_seed1,420000000.0
+202107,final_training_julio,final_training_julio_seed2,424800000.0
+202107,final_training_julio,final_training_julio_seed3,416800000.0
+202107,final_training_julio,final_training_julio_seed4,423200000.0
+202107,final_training_julio,final_training_julio_seed5,429600000.0
+202107,final_training_julio,final_training_julio_seed6,423200000.0
+202107,final_training_julio,final_training_julio_seed7,424800000.0
+202107,final_training_julio,final_training_julio_seed8,420000000.0
+202107,final_training_julio,final_training_julio_seed9,429600000.0
+202107,final_training_julio,final_training_julio_seed10,427200000.0
+202107,GLOBAL,ensamble_global,427200000.0
+202107,GRUPOS,ensamble_grupos,427200000.0
