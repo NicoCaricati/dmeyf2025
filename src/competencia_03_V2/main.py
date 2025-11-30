@@ -319,9 +319,6 @@ def main():
     
     logger.info("=== PREPARO ENTRENAMIENTO FINAL ABRIL ===")
     
-    # === Preparar datos de predicción Abril ===
-    logger.info("=== PREPARO DATOS DE PREDICCIÓN ABRIL ===")
-    
     # Filtrar el dataframe base por el mes de predicción
     df_predict_abril = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_APRIL]
     df_predict_abril_sin_historia = df_fe_sin_historia[df_fe_sin_historia["foto_mes"] == FINAL_PREDIC_APRIL]
@@ -470,168 +467,459 @@ def main():
 
 
 
-    # # Entrenamiento en Mayo
-    # logger.info("=== ENTRENAMIENTO FINAL MAYO ===")
+    logger.info("=== PREPARO ENTRENAMIENTO FINAL MAYO ===")
+    
+    df_predict_mayo = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_MAYO]
+    df_predict_mayo_sin_historia = df_fe_sin_historia[df_fe_sin_historia["foto_mes"] == FINAL_PREDIC_MAYO]
+    
+    logger.info(f"df_predict_mayo shape: {df_predict_mayo.shape}")
+    logger.info(f"df_predict_mayo_sin_historia shape: {df_predict_mayo_sin_historia.shape}")
+    
+    ensamble_mayo = []
+    
+    # Dataset completo
+    logger.info(f"df_completo shape: {df_fe.shape}")
+    preparar_y_append(df_fe, "df_completo", FINAL_TRAINING_GROUPS_MAYO,
+                      FINAL_PREDIC_MAYO, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_mayo)
+    
+    # Clientes antiguos
+    df_fe_mayo_clientes_antiguos = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_MAYO["final_training_mayo"],
+                                                          columna_antiguedad="cliente_antiguedad",
+                                                          umbral=12, condicion="mayor")
+    preparar_y_append(df_fe_mayo_clientes_antiguos, "clientes_antiguos", FINAL_TRAINING_GROUPS_MAYO,
+                      FINAL_PREDIC_MAYO, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_mayo)
+    
+    logger.info(f"clientes_antiguos shape: {df_fe_mayo_clientes_antiguos.shape}")
+    logger.info(f"clientes_antiguos antigüedad stats:\n{df_fe_mayo_clientes_antiguos['cliente_antiguedad'].describe()}")
+    
+    # Clientes nuevos
+    df_fe_mayo_clientes_nuevos = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_MAYO["final_training_mayo"],
+                                                        columna_antiguedad="cliente_antiguedad",
+                                                        umbral=12, condicion="menor")
+    preparar_y_append(df_fe_mayo_clientes_nuevos, "clientes_nuevos", FINAL_TRAINING_GROUPS_MAYO,
+                      FINAL_PREDIC_MAYO, 1,
+                      SEMILLA, ensamble_mayo)
+    
+    logger.info(f"clientes_nuevos shape: {df_fe_mayo_clientes_nuevos.shape}")
+    logger.info(f"clientes_nuevos antigüedad stats:\n{df_fe_mayo_clientes_nuevos['cliente_antiguedad'].describe()}")
+    
+    # Dataset sin historia
+    logger.info(f"df_completo_sin_historia shape: {df_fe_sin_historia.shape}")
+    preparar_y_append(df_fe_sin_historia, "df_completo_sin_historia", FINAL_TRAINING_GROUPS_MAYO,
+                      FINAL_PREDIC_MAYO, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_mayo)
+    
+    # Clientes antiguos sin historia
+    df_fe_sin_historia_mayo_clientes_antiguos = filtrar_por_antiguedad(df_fe_sin_historia, FINAL_TRAINING_GROUPS_MAYO["final_training_mayo"],
+                                                                       columna_antiguedad="cliente_antiguedad",
+                                                                       umbral=12, condicion="mayor")
+    preparar_y_append(df_fe_sin_historia_mayo_clientes_antiguos, "clientes_antiguos_sin_historia", FINAL_TRAINING_GROUPS_MAYO,
+                      FINAL_PREDIC_MAYO, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_mayo)
+    
+    logger.info(f"clientes_antiguos_sin_historia shape: {df_fe_sin_historia_mayo_clientes_antiguos.shape}")
+    
+    # Clientes nuevos sin historia
+    df_fe_sin_historia_mayo_clientes_nuevos = filtrar_por_antiguedad(df_fe_sin_historia, FINAL_TRAINING_GROUPS_MAYO["final_training_mayo"],
+                                                                     columna_antiguedad="cliente_antiguedad",
+                                                                     umbral=12, condicion="menor")
+    preparar_y_append(df_fe_sin_historia_mayo_clientes_nuevos, "clientes_nuevos_sin_historia", FINAL_TRAINING_GROUPS_MAYO,
+                      FINAL_PREDIC_MAYO, 1,
+                      SEMILLA, ensamble_mayo)
+    
+    logger.info(f"clientes_nuevos_sin_historia shape: {df_fe_sin_historia_mayo_clientes_nuevos.shape}")
 
-    # df_fe_mayo = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_MAYO, columna_antiguedad="cliente_antiguedad", umbral=12, condicion="mayor")    
-    
-    # # Preparar datos por grupo y semilla con undersampling
-    # grupos_datos_mayo = preparar_datos_entrenamiento_por_grupos(
-    #     df_fe_mayo,
-    #     FINAL_TRAINING_GROUPS_MAYO,
-    #     FINAL_PREDIC_MAYO,
-    #     undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-    #     semilla_unica=SEMILLA
-    # )
-    
-    # # Preparar datos de predicción
-    # df_predict_mayo = df_fe_mayo[df_fe_mayo["foto_mes"] == FINAL_PREDIC_MAYO]
-    # X_predict_mayo = df_predict_mayo.drop(columns=["target", "target_to_calculate_gan"])
-    # clientes_predict_mayo = df_predict_mayo["numero_de_cliente"].values
-    
-    # # Entrenar modelos por grupo y semilla
-    # modelos_por_grupo_mayo = entrenar_modelos_por_grupo_y_semillas(grupos_datos_mayo, mejores_params, SEMILLA)
-    
-    # # Generar predicciones finales (ahora con mes)
-    # resultados_mayo = generar_predicciones_finales(
-    #     modelos_por_grupo_mayo,
-    #     X_predict_mayo,
-    #     clientes_predict_mayo,
-    #     df_predict_mayo,
-    #     top_k=TOP_K,
-    #     mes=FINAL_PREDIC_MAYO
-    # )
-    
-    # # Guardar predicciones
-    # guardar_predicciones_finales({"top_k": resultados_mayo["top_k_global"]}, f"{FINAL_PREDIC_MAYO}_global")
-    # guardar_predicciones_finales({"top_k": resultados_mayo["top_k_grupos"]}, f"{FINAL_PREDIC_MAYO}_grupos")
-    
-    # # Guardar ganancias
-    # resultados_mayo["ganancias"].to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_MAYO}.csv", index=False)
-    # logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_MAYO}.csv")
+# Luego el bloque de entrenamiento y ensamble es idéntico al de Abril, cambiando FINAL_PREDIC_APRIL → FINAL_PREDIC_MAYO
 
+    logger.info("=== ENTRENAMIENTO FINAL MAYO ===")
     
-    # # Entrenamiento en Junio
-    # logger.info("=== ENTRENAMIENTO FINAL JUNIO ===")
-
-    # df_fe_junio = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_JUNE, columna_antiguedad="cliente_antiguedad", umbral=12, condicion="mayor")   
+    # Entrenar y predecir cada dataset del ensamble
+    predicciones_por_dataset = []
+    ganancias_totales = []
     
-    # # Preparar datos por grupo y semilla con undersampling
-    # grupos_datos_junio = preparar_datos_entrenamiento_por_grupos(
-    #     df_fe_junio,
-    #     FINAL_TRAINING_GROUPS_JUNE,
-    #     FINAL_PREDIC_JUNE,
-    #     undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-    #     semilla_unica=SEMILLA
-    # )
+    for nombre_dataset, grupos_datos in ensamble_mayo:
+        # Elegir el df_predict correcto según el dataset
+        if "sin_historia" in nombre_dataset:
+            df_predict = df_predict_mayo_sin_historia
+        else:
+            df_predict = df_predict_mayo
     
-    # # Preparar datos de predicción
-    # df_predict_junio = df_fe_junio[df_fe_junio["foto_mes"] == FINAL_PREDIC_JUNE]
-    # X_predict_junio = df_predict_junio.drop(columns=["target", "target_to_calculate_gan"])
-    # clientes_predict_junio = df_predict_junio["numero_de_cliente"].values
+        resultados, ganancias, clientes_predict = entrenar_y_predecir_dataset(
+            df_predict,              # siempre todos los registros del mes
+            grupos_datos,            # entrenado en subset
+            FINAL_PREDIC_MAYO,
+            mejores_params,
+            semillas=[SEMILLA],
+            nombre_dataset=nombre_dataset
+        )
+        predicciones_por_dataset.append(resultados)
+        ganancias_totales.extend(ganancias)
     
-    # # Entrenar modelos por grupo y semilla
-    # modelos_por_grupo_junio = entrenar_modelos_por_grupo_y_semillas(grupos_datos_junio, mejores_params, SEMILLA)
+    # === Ensamble final ===
+    preds_sum = np.zeros(len(clientes_predict), dtype=np.float32)
+    for resultados in predicciones_por_dataset:
+        for _, preds in resultados.items():
+            preds_sum += preds
     
-    # # Generar predicciones finales (ahora con mes)
-    # resultados_junio = generar_predicciones_finales(
-    #     modelos_por_grupo_junio,
-    #     X_predict_junio,
-    #     clientes_predict_junio,
-    #     df_predict_junio,
-    #     top_k=TOP_K,
-    #     mes=FINAL_PREDIC_JUNE
-    # )
+    n_preds = sum(len(r) for r in predicciones_por_dataset)
+    y_pred_global = preds_sum / n_preds
     
-    # # Guardar predicciones
-    # guardar_predicciones_finales({"top_k": resultados_junio["top_k_global"]}, f"{FINAL_PREDIC_JUNE}_global")
-    # guardar_predicciones_finales({"top_k": resultados_junio["top_k_grupos"]}, f"{FINAL_PREDIC_JUNE}_grupos")
+    # Ranking global
+    df_topk_global = pd.DataFrame({
+        "numero_de_cliente": clientes_predict,
+        "probabilidad": y_pred_global
+    }).sort_values("probabilidad", ascending=False, ignore_index=True)
+    df_topk_global["predict"] = 0
+    df_topk_global.loc[:TOP_K-1, "predict"] = 1
+    df_topk_global.to_csv(f"predict/{STUDY_NAME}_predicciones_global_{FINAL_PREDIC_MAYO}.csv", index=False)
     
-    # # Guardar ganancias
-    # resultados_junio["ganancias"].to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JUNE}.csv", index=False)
-    # logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JUNE}.csv")
-
+    # Ranking por grupos
+    all_preds = []
+    for resultados in predicciones_por_dataset:
+        all_preds.extend(resultados.values())
+    preds_por_grupo = sum(all_preds) / len(all_preds)
     
-    # # Entrenamiento en Julio
-    # logger.info("=== ENTRENAMIENTO FINAL JULIO ===")
+    df_topk_grupos = pd.DataFrame({
+        "numero_de_cliente": clientes_predict,
+        "probabilidad": preds_por_grupo
+    }).sort_values("probabilidad", ascending=False, ignore_index=True)
+    df_topk_grupos["predict"] = 0
+    df_topk_grupos.loc[:TOP_K-1, "predict"] = 1
+    df_topk_grupos.to_csv(f"predict/{STUDY_NAME}_predicciones_grupos_{FINAL_PREDIC_MAYO}.csv", index=False)
     
-    # df_fe_julio = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_JULIO, columna_antiguedad="cliente_antiguedad", umbral=12, condicion="mayor")   
+    # Ganancias
+    ganancia_global = calcular_ganancia_top_k(df_predict_mayo["target_to_calculate_gan"].values, y_pred_global)
+    ganancia_grupos = calcular_ganancia_top_k(df_predict_mayo["target_to_calculate_gan"].values, preds_por_grupo)
     
-    # # Preparar datos por grupo y semilla con undersampling
-    # grupos_datos_julio = preparar_datos_entrenamiento_por_grupos(
-    #     df_fe_julio,
-    #     FINAL_TRAINING_GROUPS_JULIO,
-    #     FINAL_PREDIC_JULIO,
-    #     undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-    #     semilla_unica=SEMILLA
-    # )
+    ganancias_totales.append({
+        "mes": FINAL_PREDIC_MAYO,
+        "dataset": "ENSAMBLE",
+        "grupo": "GLOBAL",
+        "modelo_id": "ensamble_global",
+        "ganancia_test": float(ganancia_global)
+    })
+    ganancias_totales.append({
+        "mes": FINAL_PREDIC_MAYO,
+        "dataset": "ENSAMBLE",
+        "grupo": "GRUPOS",
+        "modelo_id": "ensamble_grupos",
+        "ganancia_test": float(ganancia_grupos)
+    })
     
-    # # Preparar datos de predicción
-    # df_predict_julio = df_fe_julio[df_fe_julio["foto_mes"] == FINAL_PREDIC_JULIO]
-    # X_predict_julio = df_predict_julio.drop(columns=["target", "target_to_calculate_gan"])
-    # clientes_predict_julio = df_predict_julio["numero_de_cliente"].values
-    
-    # # Entrenar modelos por grupo y semilla
-    # modelos_por_grupo_julio = entrenar_modelos_por_grupo_y_semillas(grupos_datos_julio, mejores_params, SEMILLA)
-    
-    # # Generar predicciones finales (ahora con mes)
-    # resultados_julio = generar_predicciones_finales(
-    #     modelos_por_grupo_julio,
-    #     X_predict_julio,
-    #     clientes_predict_julio,
-    #     df_predict_julio,
-    #     top_k=TOP_K,
-    #     mes=FINAL_PREDIC_JULIO
-    # )
-    
-    # # Guardar predicciones
-    # guardar_predicciones_finales({"top_k": resultados_julio["top_k_global"]}, f"{FINAL_PREDIC_JULIO}_global")
-    # guardar_predicciones_finales({"top_k": resultados_julio["top_k_grupos"]}, f"{FINAL_PREDIC_JULIO}_grupos")
-    
-    # # Guardar ganancias
-    # resultados_julio["ganancias"].to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JULIO}.csv", index=False)
-    # logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JULIO}.csv")
-
+    df_ganancias = pd.DataFrame(ganancias_totales)
+    df_ganancias.to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_MAYO}.csv", index=False)
+    logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_MAYO}.csv")
 
 
     
-    # # Entrenamiento en Agosto
-    # logger.info("=== ENTRENAMIENTO FINAL AGOSTO ===")
+     logger.info("=== PREPARO ENTRENAMIENTO FINAL JUNIO ===")
     
-    # # Preparar datos por grupo y semilla con undersampling
-    # grupos_datos_agosto = preparar_datos_entrenamiento_por_grupos_por_semilla(
-    #     df_fe,
-    #     FINAL_TRAINING_GROUPS_AGOSTO,
-    #     FINAL_PREDIC_AGOSTO,
-    #     undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-    #     semillas=SEMILLA
-    # )
+    df_predict_junio = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_JUNE]
+    df_predict_junio_sin_historia = df_fe_sin_historia[df_fe_sin_historia["foto_mes"] == FINAL_PREDIC_JUNE]
     
-    # # Preparar datos de predicción
-    # df_predict_agosto = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_AGOSTO]
-    # X_predict_agosto = df_predict_agosto.drop(columns=["target", "target_to_calculate_gan"])
-    # clientes_predict_agosto = df_predict_agosto["numero_de_cliente"].values
+    logger.info(f"df_predict_junio shape: {df_predict_junio.shape}")
+    logger.info(f"df_predict_junio_sin_historia shape: {df_predict_junio_sin_historia.shape}")
     
-    # # Entrenar modelos por grupo y semilla
-    # modelos_por_grupo_agosto = entrenar_modelos_por_grupo_y_semilla(grupos_datos_agosto, mejores_params)
+    ensamble_junio = []
     
-    # # Generar predicciones finales (ahora con mes)
-    # resultados_agosto = generar_predicciones_finales(
-    #     modelos_por_grupo_agosto,
-    #     X_predict_agosto,
-    #     clientes_predict_agosto,
-    #     df_predict_agosto,
-    #     top_k=TOP_K,
-    #     mes=FINAL_PREDIC_AGOSTO
-    # )
+    # Dataset completo
+    logger.info(f"df_completo shape: {df_fe.shape}")
+    preparar_y_append(df_fe, "df_completo", FINAL_TRAINING_GROUPS_JUNE,
+                      FINAL_PREDIC_JUNE, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_junio)
     
-    # # Guardar predicciones
-    # guardar_predicciones_finales({"top_k": resultados_agosto["top_k_global"]}, f"{FINAL_PREDIC_AGOSTO}_global")
-    # guardar_predicciones_finales({"top_k": resultados_agosto["top_k_grupos"]}, f"{FINAL_PREDIC_AGOSTO}_grupos")
+    # Clientes antiguos
+    df_fe_junio_clientes_antiguos = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_JUNE["final_training_june"],
+                                                           columna_antiguedad="cliente_antiguedad",
+                                                           umbral=12, condicion="mayor")
+    preparar_y_append(df_fe_junio_clientes_antiguos, "clientes_antiguos", FINAL_TRAINING_GROUPS_JUNE,
+                      FINAL_PREDIC_JUNE, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_junio)
     
-    # # Guardar ganancias
-    # resultados_agosto["ganancias"].to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_AGOSTO}.csv", index=False)
-    # logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_AGOSTO}.csv")
+    logger.info(f"clientes_antiguos shape: {df_fe_junio_clientes_antiguos.shape}")
+    
+    # Clientes nuevos
+    df_fe_junio_clientes_nuevos = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_JUNE["final_training_june"],
+                                                         columna_antiguedad="cliente_antiguedad",
+                                                         umbral=12, condicion="menor")
+    preparar_y_append(df_fe_junio_clientes_nuevos, "clientes_nuevos", FINAL_TRAINING_GROUPS_JUNE,
+                      FINAL_PREDIC_JUNE, 1,
+                      SEMILLA, ensamble_junio)
+    
+    logger.info(f"clientes_nuevos shape: {df_fe_junio_clientes_nuevos.shape}")
+    
+    # Dataset sin historia
+    logger.info(f"df_completo_sin_historia shape: {df_fe_sin_historia.shape}")
+    preparar_y_append(df_fe_sin_historia, "df_completo_sin_historia", FINAL_TRAINING_GROUPS_JUNE,
+                      FINAL_PREDIC_JUNE, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_junio)
+    
+    # Clientes antiguos sin historia
+    df_fe_sin_historia_junio_clientes_antiguos = filtrar_por_antiguedad(df_fe_sin_historia, FINAL_TRAINING_GROUPS_JUNE["final_training_june"],
+                                                                        columna_antiguedad="cliente_antiguedad",
+                                                                        umbral=12, condicion="mayor")
+    preparar_y_append(df_fe_sin_historia_junio_clientes_antiguos, "clientes_antiguos_sin_historia", FINAL_TRAINING_GROUPS_JUNE,
+                      FINAL_PREDIC_JUNE, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_junio)
+    
+    logger.info(f"clientes_antiguos_sin_historia shape: {df_fe_sin_historia_junio_clientes_antiguos.shape}")
+    
+    # Clientes nuevos sin historia
+    df_fe_sin_historia_junio_clientes_nuevos = filtrar_por_antiguedad(df_fe_sin_historia, FINAL_TRAINING_GROUPS_JUNE["final_training_june"],
+                                                                      columna_antiguedad="cliente_antiguedad",
+                                                                      umbral=12, condicion="menor")
+    preparar_y_append(df_fe_sin_historia_junio_clientes_nuevos, "clientes_nuevos_sin_historia", FINAL_TRAINING_GROUPS_JUNE,
+                      FINAL_PREDIC_JUNE, 1,
+                      SEMILLA, ensamble_junio)
+
+    logger.info("=== ENTRENAMIENTO FINAL JUNIO ===")
+    
+    # Entrenar y predecir cada dataset del ensamble
+    predicciones_por_dataset = []
+    ganancias_totales = []
+    
+    for nombre_dataset, grupos_datos in ensamble_junio:
+        # Elegir el df_predict correcto según el dataset
+        if "sin_historia" in nombre_dataset:
+            df_predict = df_predict_junio_sin_historia
+        else:
+            df_predict = df_predict_junio
+    
+        resultados, ganancias, clientes_predict = entrenar_y_predecir_dataset(
+            df_predict,              # siempre todos los registros del mes
+            grupos_datos,            # entrenado en subset
+            FINAL_PREDIC_JUNE,
+            mejores_params,
+            semillas=[SEMILLA],
+            nombre_dataset=nombre_dataset
+        )
+        predicciones_por_dataset.append(resultados)
+        ganancias_totales.extend(ganancias)
+    
+    # === Ensamble final ===
+    preds_sum = np.zeros(len(clientes_predict), dtype=np.float32)
+    for resultados in predicciones_por_dataset:
+        for _, preds in resultados.items():
+            preds_sum += preds
+    
+    n_preds = sum(len(r) for r in predicciones_por_dataset)
+    y_pred_global = preds_sum / n_preds
+    
+    # Ranking global
+    df_topk_global = pd.DataFrame({
+        "numero_de_cliente": clientes_predict,
+        "probabilidad": y_pred_global
+    }).sort_values("probabilidad", ascending=False, ignore_index=True)
+    df_topk_global["predict"] = 0
+    df_topk_global.loc[:TOP_K-1, "predict"] = 1
+    df_topk_global.to_csv(f"predict/{STUDY_NAME}_predicciones_global_{FINAL_PREDIC_JUNE}.csv", index=False)
+    
+    # Ranking por grupos
+    all_preds = []
+    for resultados in predicciones_por_dataset:
+        all_preds.extend(resultados.values())
+    preds_por_grupo = sum(all_preds) / len(all_preds)
+    
+    df_topk_grupos = pd.DataFrame({
+        "numero_de_cliente": clientes_predict,
+        "probabilidad": preds_por_grupo
+    }).sort_values("probabilidad", ascending=False, ignore_index=True)
+    df_topk_grupos["predict"] = 0
+    df_topk_grupos.loc[:TOP_K-1, "predict"] = 1
+    df_topk_grupos.to_csv(f"predict/{STUDY_NAME}_predicciones_grupos_{FINAL_PREDIC_JUNE}.csv", index=False)
+    
+    # Ganancias
+    ganancia_global = calcular_ganancia_top_k(df_predict_junio["target_to_calculate_gan"].values, y_pred_global)
+    ganancia_grupos = calcular_ganancia_top_k(df_predict_junio["target_to_calculate_gan"].values, preds_por_grupo)
+    
+    ganancias_totales.append({
+        "mes": FINAL_PREDIC_JUNE,
+        "dataset": "ENSAMBLE",
+        "grupo": "GLOBAL",
+        "modelo_id": "ensamble_global",
+        "ganancia_test": float(ganancia_global)
+    })
+    ganancias_totales.append({
+        "mes": FINAL_PREDIC_JUNE,
+        "dataset": "ENSAMBLE",
+        "grupo": "GRUPOS",
+        "modelo_id": "ensamble_grupos",
+        "ganancia_test": float(ganancia_grupos)
+    })
+    
+    df_ganancias = pd.DataFrame(ganancias_totales)
+    df_ganancias.to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JUNE}.csv", index=False)
+    logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JUNE}.csv")
+
+   logger.info("=== PREPARO ENTRENAMIENTO FINAL JULIO ===")
+
+    df_predict_julio = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_JULIO]
+    df_predict_julio_sin_historia = df_fe_sin_historia[df_fe_sin_historia["foto_mes"] == FINAL_PREDIC_JULIO]
+    
+    logger.info(f"df_predict_julio shape: {df_predict_julio.shape}")
+    logger.info(f"df_predict_julio_sin_historia shape: {df_predict_julio_sin_historia.shape}")
+    
+    ensamble_julio = []
+    
+    # Dataset completo
+    logger.info(f"df_completo shape: {df_fe.shape}")
+    preparar_y_append(df_fe, "df_completo", FINAL_TRAINING_GROUPS_JULIO,
+                      FINAL_PREDIC_JULIO, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_julio)
+    
+    # Clientes antiguos
+    df_fe_julio_clientes_antiguos = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_JULIO["final_training_julio"],
+                                                           columna_antiguedad="cliente_antiguedad",
+                                                           umbral=12, condicion="mayor")
+    preparar_y_append(df_fe_julio_clientes_antiguos, "clientes_antiguos", FINAL_TRAINING_GROUPS_JULIO,
+                      FINAL_PREDIC_JULIO, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_julio)
+    
+    logger.info(f"clientes_antiguos shape: {df_fe_julio_clientes_antiguos.shape}")
+    logger.info(f"clientes_antiguos antigüedad stats:\n{df_fe_julio_clientes_antiguos['cliente_antiguedad'].describe()}")
+    
+    # Clientes nuevos
+    df_fe_julio_clientes_nuevos = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_JULIO["final_training_julio"],
+                                                         columna_antiguedad="cliente_antiguedad",
+                                                         umbral=12, condicion="menor")
+    preparar_y_append(df_fe_julio_clientes_nuevos, "clientes_nuevos", FINAL_TRAINING_GROUPS_JULIO,
+                      FINAL_PREDIC_JULIO, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_julio)
+    
+    logger.info(f"clientes_nuevos shape: {df_fe_julio_clientes_nuevos.shape}")
+    logger.info(f"clientes_nuevos antigüedad stats:\n{df_fe_julio_clientes_nuevos['cliente_antiguedad'].describe()}")
+    
+    # Dataset sin historia
+    logger.info(f"df_completo_sin_historia shape: {df_fe_sin_historia.shape}")
+    preparar_y_append(df_fe_sin_historia, "df_completo_sin_historia", FINAL_TRAINING_GROUPS_JULIO,
+                      FINAL_PREDIC_JULIO, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_julio)
+    
+    # Clientes antiguos sin historia
+    df_fe_sin_historia_julio_clientes_antiguos = filtrar_por_antiguedad(df_fe_sin_historia, FINAL_TRAINING_GROUPS_JULIO["final_training_julio"],
+                                                                        columna_antiguedad="cliente_antiguedad",
+                                                                        umbral=12, condicion="mayor")
+    preparar_y_append(df_fe_sin_historia_julio_clientes_antiguos, "clientes_antiguos_sin_historia", FINAL_TRAINING_GROUPS_JULIO,
+                      FINAL_PREDIC_JULIO, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_julio)
+    
+    logger.info(f"clientes_antiguos_sin_historia shape: {df_fe_sin_historia_julio_clientes_antiguos.shape}")
+    
+    # Clientes nuevos sin historia
+    df_fe_sin_historia_julio_clientes_nuevos = filtrar_por_antiguedad(df_fe_sin_historia, FINAL_TRAINING_GROUPS_JULIO["final_training_julio"],
+                                                                      columna_antiguedad="cliente_antiguedad",
+                                                                      umbral=12, condicion="menor")
+    preparar_y_append(df_fe_sin_historia_julio_clientes_nuevos, "clientes_nuevos_sin_historia", FINAL_TRAINING_GROUPS_JULIO,
+                      FINAL_PREDIC_JULIO, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      SEMILLA, ensamble_julio)
+    
+    logger.info(f"clientes_nuevos_sin_historia shape: {df_fe_sin_historia_julio_clientes_nuevos.shape}")
+    
+    logger.info("=== ENTRENAMIENTO FINAL JULIO ===")
+    
+    predicciones_por_dataset = []
+    ganancias_totales = []
+    
+    for nombre_dataset, grupos_datos in ensamble_julio:
+        if "sin_historia" in nombre_dataset:
+            df_predict = df_predict_julio_sin_historia
+        else:
+            df_predict = df_predict_julio
+    
+        resultados, ganancias, clientes_predict = entrenar_y_predecir_dataset(
+            df_predict,
+            grupos_datos,
+            FINAL_PREDIC_JULIO,
+            mejores_params,
+            semillas=[SEMILLA],
+            nombre_dataset=nombre_dataset
+        )
+        predicciones_por_dataset.append(resultados)
+        ganancias_totales.extend(ganancias)
+
+
+    logger.info("=== ENTRENAMIENTO FINAL JULIO ===")
+    
+    # Entrenar y predecir cada dataset del ensamble
+    predicciones_por_dataset = []
+    ganancias_totales = []
+    
+    for nombre_dataset, grupos_datos in ensamble_abril:
+        # Elegir el df_predict correcto según el dataset
+        if "sin_historia" in nombre_dataset:
+            df_predict = df_predict_julio_sin_historia
+        else:
+            df_predict = df_predict_julio
+    
+        resultados, ganancias, clientes_predict = entrenar_y_predecir_dataset(
+            df_predict,              # siempre todos los registros del mes
+            grupos_datos,            # entrenado en subset
+            FINAL_PREDIC_JULIO,
+            mejores_params,
+            semillas=[SEMILLA],
+            nombre_dataset=nombre_dataset
+        )
+        predicciones_por_dataset.append(resultados)
+        ganancias_totales.extend(ganancias)
+    
+    # === Ensamble final ===
+    preds_sum = np.zeros(len(clientes_predict), dtype=np.float32)
+    for resultados in predicciones_por_dataset:
+        for _, preds in resultados.items():
+            preds_sum += preds
+    
+    n_preds = sum(len(r) for r in predicciones_por_dataset)
+    y_pred_global = preds_sum / n_preds
+    
+    # Ranking global
+    df_topk_global = pd.DataFrame({
+        "numero_de_cliente": clientes_predict,
+        "probabilidad": y_pred_global
+    }).sort_values("probabilidad", ascending=False, ignore_index=True)
+    df_topk_global["predict"] = 0
+    df_topk_global.loc[:TOP_K-1, "predict"] = 1
+    df_topk_global.to_csv(f"predict/{STUDY_NAME}_predicciones_global_{FINAL_PREDIC_JULIO}.csv", index=False)
+    
+    # Ranking por grupos
+    all_preds = []
+    for resultados in predicciones_por_dataset:
+        all_preds.extend(resultados.values())
+    preds_por_grupo = sum(all_preds) / len(all_preds)
+    
+    df_topk_grupos = pd.DataFrame({
+        "numero_de_cliente": clientes_predict,
+        "probabilidad": preds_por_grupo
+    }).sort_values("probabilidad", ascending=False, ignore_index=True)
+    df_topk_grupos["predict"] = 0
+    df_topk_grupos.loc[:TOP_K-1, "predict"] = 1
+    df_topk_grupos.to_csv(f"predict/{STUDY_NAME}_predicciones_grupos_{FINAL_PREDIC_JULIO}.csv", index=False)
+    
+    # Ganancias
+    ganancia_global = calcular_ganancia_top_k(df_predict_julio["target_to_calculate_gan"].values, y_pred_global)
+    ganancia_grupos = calcular_ganancia_top_k(df_predict_julio["target_to_calculate_gan"].values, preds_por_grupo)
+    
+    ganancias_totales.append({
+        "mes": FINAL_PREDIC_JULIO,
+        "dataset": "ENSAMBLE",
+        "grupo": "GLOBAL",
+        "modelo_id": "ensamble_global",
+        "ganancia_test": float(ganancia_global)
+    })
+    ganancias_totales.append({
+        "mes": FINAL_PREDIC_JULIO,
+        "dataset": "ENSAMBLE",
+        "grupo": "GRUPOS",
+        "modelo_id": "ensamble_grupos",
+        "ganancia_test": float(ganancia_grupos)
+    })
+    
+    df_ganancias = pd.DataFrame(ganancias_totales)
+    df_ganancias.to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JULIO}.csv", index=False)
+    logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JULIO}.csv")
+
+
 
     # Resumen final
     logger.info("=== RESUMEN FINAL ===")
