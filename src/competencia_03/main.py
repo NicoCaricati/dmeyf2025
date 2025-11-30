@@ -1,6 +1,5 @@
 # main
-# main
-# main
+
 
 import logging
 from datetime import datetime
@@ -39,7 +38,7 @@ from output_manager import guardar_predicciones_finales
 from test import *
 from grafico_test import *
 from evaluar_meses_test import evaluar_meses_test
-from undersampling import undersample_clientes, filtrar_por_antiguedad
+from undersampling import undersample_clientes
 from analisis_optuna import *
 
 
@@ -72,8 +71,7 @@ def main():
     crear_snapshot_modelo(STUDY_NAME)
 
     # path_parquet = os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.parquet")
-    path_parquet = "../../../buckets/b1/Compe_02/data/df_fe - Completo.parquet"
-
+    path_parquet = "../../../buckets/b1/Compe_02/data/df_feModelo Final US 0.03 20 Semillas - Uso Meses Corridos - Optimizacion.parquet"
 
     if os.path.exists(path_parquet):
         logger.info("✅ df_fe.parquet encontrado")
@@ -100,12 +98,12 @@ def main():
         # logger.info(f"Después de undersampling: {df_fe.shape}")
 
 
-        # # Supongamos que ya tenés tu DataFrame "dataset"
-        # df_fe["ctrx_quarter_normalizado"] = df_fe["ctrx_quarter"].astype(float)
+        # Supongamos que ya tenés tu DataFrame "dataset"
+        df_fe["ctrx_quarter_normalizado"] = df_fe["ctrx_quarter"].astype(float)
         
-        # df_fe.loc[df_fe["cliente_antiguedad"] == 1, "ctrx_quarter_normalizado"] *= 5.0
-        # df_fe.loc[df_fe["cliente_antiguedad"] == 2, "ctrx_quarter_normalizado"] *= 2.0
-        # df_fe.loc[df_fe["cliente_antiguedad"] == 3, "ctrx_quarter_normalizado"] *= 1.2
+        df_fe.loc[df_fe["cliente_antiguedad"] == 1, "ctrx_quarter_normalizado"] *= 5.0
+        df_fe.loc[df_fe["cliente_antiguedad"] == 2, "ctrx_quarter_normalizado"] *= 2.0
+        df_fe.loc[df_fe["cliente_antiguedad"] == 3, "ctrx_quarter_normalizado"] *= 1.2
 
     
         # # 2. Feature Engineering
@@ -125,7 +123,12 @@ def main():
 
         df_fe = feature_engineering_tc_total(df_fe)
         df_fe = variables_aux(df_fe)
-        # Excluyo las variables no corregidas 
+        # Excluyo las variables no corregidas          
+        cols_ajustar_ipc = [
+            c for c in df_fe.columns
+            if c.startswith(('m', 'Visa_m', 'Master_m','TC_Total_m')) and 'dolares' not in c
+        ]
+        df_fe = transformar_a_percentil_rank(df_fe, cols_ajustar_ipc, columna_mes='foto_mes')
 
         columnas_a_excluir = ["foto_mes","cliente_edad","numero_de_cliente","target","target_to_calculate_gan"]
         columnas_para_fe_regresiones = [
@@ -133,13 +136,6 @@ def main():
             if c.startswith(('m', 'Visa_m', 'Master_m','TC_Total_m','Visa_F', 'Visa_f','Master_F', 'Master_f')) 
             and c not in columnas_a_excluir
         ]
-        # cols_ajustar_ipc = [
-        #     c for c in df_fe.columns
-        #     if c.startswith(('m', 'Visa_m', 'Master_m','TC_Total_m')) and 'dolares' not in c
-        # ]
-        df_fe = transformar_a_percentil_rank(df_fe, columnas_para_fe_regresiones, columna_mes='foto_mes')
-
-
         
         columnas_para_fe_deltas = [
             c for c in df_fe.columns
@@ -147,51 +143,43 @@ def main():
             and c not in columnas_a_excluir
         ]
         df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
-        # for i in (1,2):
-        #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
+        for i in (1,2,3):
+            df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
 
-        # df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=3, ventana_larga=6)
-        # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
+        df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=3, ventana_larga=6)
+        df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
+        df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=6, ventana_larga=12)
+        df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
 
-        # # df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=6, ventana_larga=12)
+        # df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=6, ventana_larga=12)
 
         # for i in (2,3,6,8,10,12,15):
         #     df_fe = feature_engineering_regr_slope_window(df_fe, columnas=columnas_para_fe_regresiones, ventana = i)
         #     df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
-        # for i in (2,3):
-        #     df_fe = feature_engineering_delta(df_fe, columnas=columnas_para_fe_deltas, cant_delta = i)
-        # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
-        # for i in (4,8):
-        #     # df_fe = feature_engineering_delta_max(df_fe, columnas=columnas_para_fe_deltas, ventana=i)
-        #     df_fe = feature_engineering_delta_mean(df_fe, columnas=columnas_para_fe_deltas, ventana=i)
+        for i in (2,3):
+            df_fe = feature_engineering_delta(df_fe, columnas=columnas_para_fe_deltas, cant_delta = i)
+        df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
+        for i in (4,8):
+            # df_fe = feature_engineering_delta_max(df_fe, columnas=columnas_para_fe_deltas, ventana=i)
+            df_fe = feature_engineering_delta_mean(df_fe, columnas=columnas_para_fe_deltas, ventana=i)
         
-        # df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
+        df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
 
         
         logger.info(f"Feature Engineering completado: {df_fe.shape}")
         
     
-        # df_fe.to_parquet(
-        #     os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.parquet"),
-        #     compression='snappy'
-        # )
+        df_fe.to_parquet(
+            os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.parquet"),
+            compression='snappy'
+        )
     
     logger.info("⏳ CSV cargado o creado, ahora ejecutando optimización...")
 
-    # # Filtrar clientes con antigüedad menor a 12 meses
-    # df_fe = df_fe[df_fe["cliente_antiguedad"] < 12]
-    #         df_fe.to_parquet(
-    #         os.path.join(BUCKET_NAME, "data","df_fe - Completo - Antiguedad menor a 12.parquet"),
-    #         compression='snappy'
-    #     )
 
-
-    # Me quedo de los meses de entrenamiento con los clientes de antiguedad < 5 
-
-
-    # # 4. Ejecutar optimización (función simple)
+    # 4. Ejecutar optimización (función simple)
     
-    # study = optimizar(df_fe, n_trials=25,study_name = STUDY_NAME ,undersampling = UNDERSAMPLING_OPTIMIZACION)
+    # study = optimizar(df_fe, n_trials=50,study_name = STUDY_NAME ,undersampling = UNDERSAMPLING_OPTIMIZACION)
   
     # # 5. Análisis adicional
     # logger.info("=== ANÁLISIS DE RESULTADOS ===")
@@ -228,17 +216,22 @@ def main():
     # Cargar mejores hiperparámetros
 
     # mejores_params = cargar_mejores_hiperparametros()
+
+    # mejores_params = {'bagging_fraction': 0.648239786, 'feature_fraction': 0.338110921, 'lambda_l1': 3.152084178, 'lambda_l2': 2.623895465, 'learning_rate': 0.074681467, 'min_data_in_leaf': 10, 'num_boost_round': 496, 'num_leaves': 26} # Opti sin US
+    # mejores_params = {'num_leaves': 86, 'learning_rate': 0.04515219676722008, 'min_data_in_leaf': 45, 'feature_fraction': 0.2783670269042045, 'bagging_fraction': 0.68927175577007, 'lambda_l1': 1.4668038650423412, 'lambda_l2': 4.8010252173774495, 'num_boost_round': 507} # Opti con 0.2 de US
+    # mejores_params = {'num_leaves': 71, 'learning_rate': 0.005943961863023024, 'min_data_in_leaf': 88, 'feature_fraction': 0.6094884732441374, 'bagging_fraction': 0.30532645375787404, 'lambda_l1': 0.1442564185202138, 'lambda_l2': 1.9492290528756926, 'num_boost_round': 497} # Opti con 0.5 de US
+    # mejores_params =  {'num_leaves': 106, 'learning_rate': 0.05318395463346495, 'min_data_in_leaf': 4, 'feature_fraction': 0.49759556652323156, 'bagging_fraction': 0.7176155814161423, 'lambda_l1': 4.792320092280481, 'lambda_l2': 2.275425835398769, 'num_boost_round': 679} # Opti con 0.05 de US
     
     # Nueva Opti de 0.2
+    # mejores_params = {'num_leaves': 121, 'learning_rate': 0.08944748172892189, 'min_data_in_leaf': 47, 'feature_fraction': 0.5831901957235187, 'bagging_fraction': 0.9395824062687965, 'lambda_l1': 4.4131882397060185, 'lambda_l2': 2.385519727758512, 'num_boost_round': 818}
+    # mejores_params = {'num_leaves': 121, 'learning_rate': 0.08944748172892189, 'min_data_in_leaf': 47, 'feature_fraction': 0.5831901957235187, 'bagging_fraction': 0.9395824062687965, 'num_boost_round': 818}
+
 
     mejores_params = {'bagging_fraction': 0.6714999873184199, 'feature_fraction': 0.31776519651631674, 'lambda_l1': 0.2944267005943108, 'lambda_l2': 2.4490808003374225, 'learning_rate': 0.03518640034343286, 'min_data_in_leaf': 47, 'neg_bagging_fraction': 0.16338893024243595, 'num_boost_round': 778, 'num_leaves': 84, 'pos_bagging_fraction': 0.40622347584093277} # Opti Nueva
-
-    # mejores_params = {'bagging_fraction': 0.6714999873184199, 'feature_fraction': 0.31776519651631674, 'learning_rate': 0.03518640034343286, 'min_data_in_leaf': 47, 'neg_bagging_fraction': 0.16338893024243595, 'num_boost_round': 778, 'num_leaves': 84, 'pos_bagging_fraction': 0.40622347584093277} # Opti Nueva sin lambas
     
 
 
     # logger.info("=== EVALUACIÓN EN CONJUNTO DE TEST ===")
-
 
     # df_fe_under = undersample_clientes(df_fe, UNDERSAMPLING, 555557)
     # df_fe_under = df_fe_under.select_dtypes(include=["number", "bool"]).copy()
@@ -253,69 +246,65 @@ def main():
     # )
 
   
-  # === 06 Entrenar modelo final (distintos periodos) ===
+    # === 06 Entrenar modelo final (distintos periodos) ===
     
-    # # Entrenamiento en Abril
-    # logger.info("=== ENTRENAMIENTO FINAL ABRIL ===")
-
-    # df_fe_april = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_APRIL, columna_antiguedad="cliente_antiguedad", umbral=12, condicion="mayor")    
+    # Entrenamiento en Abril
+    logger.info("=== ENTRENAMIENTO FINAL ABRIL ===")
     
-    # # Preparar datos por grupo y semilla con undersampling
-    # grupos_datos_abril = preparar_datos_entrenamiento_por_grupos(
-    #     df_fe_april,
-    #     FINAL_TRAINING_GROUPS_APRIL,
-    #     FINAL_PREDIC_APRIL,
-    #     undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-    #     semilla_unica=SEMILLA
-    # )
+    # Preparar datos por grupo y semilla con undersampling
+    grupos_datos_abril = preparar_datos_entrenamiento_por_grupos_por_semilla(
+        df_fe,
+        FINAL_TRAINING_GROUPS_APRIL,
+        FINAL_PREDIC_APRIL,
+        undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+        semillas=SEMILLA
+    )
     
-    # # Preparar datos de predicción
-    # df_predict_abril = df_fe_april[df_fe_april["foto_mes"] == FINAL_PREDIC_APRIL]
-    # X_predict_abril = df_predict_abril.drop(columns=["target", "target_to_calculate_gan"])
-    # clientes_predict_abril = df_predict_abril["numero_de_cliente"].values
+    # Preparar datos de predicción
+    df_predict_abril = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_APRIL]
+    X_predict_abril = df_predict_abril.drop(columns=["target", "target_to_calculate_gan"])
+    clientes_predict_abril = df_predict_abril["numero_de_cliente"].values
     
-    # # Entrenar modelos por grupo y semilla
-    # modelos_por_grupo_abril = entrenar_modelos_por_grupo_y_semillas(grupos_datos_abril, mejores_params,SEMILLA)
+    # Entrenar modelos por grupo y semilla
+    modelos_por_grupo_abril = entrenar_modelos_por_grupo_y_semilla(grupos_datos_abril, mejores_params)
     
-    # # Generar predicciones finales (ahora con mes)
-    # resultados_abril = generar_predicciones_finales(
-    #     modelos_por_grupo_abril,
-    #     X_predict_abril,
-    #     clientes_predict_abril,
-    #     df_predict_abril,
-    #     top_k=TOP_K,
-    #     mes=FINAL_PREDIC_APRIL
-    # )
+    # Generar predicciones finales (ahora con mes)
+    resultados_abril = generar_predicciones_finales(
+        modelos_por_grupo_abril,
+        X_predict_abril,
+        clientes_predict_abril,
+        df_predict_abril,
+        top_k=TOP_K,
+        mes=FINAL_PREDIC_APRIL
+    )
     
-    # # Guardar predicciones
-    # guardar_predicciones_finales({"top_k": resultados_abril["top_k_global"]}, f"{FINAL_PREDIC_APRIL}_global")
-    # guardar_predicciones_finales({"top_k": resultados_abril["top_k_grupos"]}, f"{FINAL_PREDIC_APRIL}_grupos")
+    # Guardar predicciones
+    guardar_predicciones_finales({"top_k": resultados_abril["top_k_global"]}, f"{FINAL_PREDIC_APRIL}_global")
+    guardar_predicciones_finales({"top_k": resultados_abril["top_k_grupos"]}, f"{FINAL_PREDIC_APRIL}_grupos")
     
-    # # Guardar ganancias
-    # resultados_abril["ganancias"].to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_APRIL}.csv", index=False)
-    # logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_APRIL}.csv")
+    # Guardar ganancias
+    resultados_abril["ganancias"].to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_APRIL}.csv", index=False)
+    logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_APRIL}.csv")
 
     # # Entrenamiento en Mayo
     # logger.info("=== ENTRENAMIENTO FINAL MAYO ===")
-
-    # df_fe_mayo = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_MAYO, columna_antiguedad="cliente_antiguedad", umbral=12, condicion="mayor")    
     
     # # Preparar datos por grupo y semilla con undersampling
-    # grupos_datos_mayo = preparar_datos_entrenamiento_por_grupos(
-    #     df_fe_mayo,
+    # grupos_datos_mayo = preparar_datos_entrenamiento_por_grupos_por_semilla(
+    #     df_fe,
     #     FINAL_TRAINING_GROUPS_MAYO,
     #     FINAL_PREDIC_MAYO,
     #     undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-    #     semilla_unica=SEMILLA
+    #     semillas=SEMILLA
     # )
     
     # # Preparar datos de predicción
-    # df_predict_mayo = df_fe_mayo[df_fe_mayo["foto_mes"] == FINAL_PREDIC_MAYO]
+    # df_predict_mayo = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_MAYO]
     # X_predict_mayo = df_predict_mayo.drop(columns=["target", "target_to_calculate_gan"])
     # clientes_predict_mayo = df_predict_mayo["numero_de_cliente"].values
     
     # # Entrenar modelos por grupo y semilla
-    # modelos_por_grupo_mayo = entrenar_modelos_por_grupo_y_semillas(grupos_datos_mayo, mejores_params, SEMILLA)
+    # modelos_por_grupo_mayo = entrenar_modelos_por_grupo_y_semilla(grupos_datos_mayo, mejores_params)
     
     # # Generar predicciones finales (ahora con mes)
     # resultados_mayo = generar_predicciones_finales(
@@ -336,27 +325,28 @@ def main():
     # logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_MAYO}.csv")
 
     
+    
+        
+    
     # # Entrenamiento en Junio
     # logger.info("=== ENTRENAMIENTO FINAL JUNIO ===")
-
-    # df_fe_junio = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_JUNE, columna_antiguedad="cliente_antiguedad", umbral=12, condicion="mayor")   
     
     # # Preparar datos por grupo y semilla con undersampling
-    # grupos_datos_junio = preparar_datos_entrenamiento_por_grupos(
-    #     df_fe_junio,
+    # grupos_datos_junio = preparar_datos_entrenamiento_por_grupos_por_semilla(
+    #     df_fe,
     #     FINAL_TRAINING_GROUPS_JUNE,
     #     FINAL_PREDIC_JUNE,
     #     undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-    #     semilla_unica=SEMILLA
+    #     semillas=SEMILLA
     # )
     
     # # Preparar datos de predicción
-    # df_predict_junio = df_fe_junio[df_fe_junio["foto_mes"] == FINAL_PREDIC_JUNE]
+    # df_predict_junio = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_JUNE]
     # X_predict_junio = df_predict_junio.drop(columns=["target", "target_to_calculate_gan"])
     # clientes_predict_junio = df_predict_junio["numero_de_cliente"].values
     
     # # Entrenar modelos por grupo y semilla
-    # modelos_por_grupo_junio = entrenar_modelos_por_grupo_y_semillas(grupos_datos_junio, mejores_params, SEMILLA)
+    # modelos_por_grupo_junio = entrenar_modelos_por_grupo_y_semilla(grupos_datos_junio, mejores_params)
     
     # # Generar predicciones finales (ahora con mes)
     # resultados_junio = generar_predicciones_finales(
@@ -377,45 +367,43 @@ def main():
     # logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JUNE}.csv")
 
     
-    # Entrenamiento en Julio
-    logger.info("=== ENTRENAMIENTO FINAL JULIO ===")
+    # # Entrenamiento en Julio
+    # logger.info("=== ENTRENAMIENTO FINAL JULIO ===")
     
-    df_fe_julio = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_JULIO, columna_antiguedad="cliente_antiguedad", umbral=12, condicion="mayor")   
+    # # Preparar datos por grupo y semilla con undersampling
+    # grupos_datos_julio = preparar_datos_entrenamiento_por_grupos_por_semilla(
+    #     df_fe,
+    #     FINAL_TRAINING_GROUPS_JULIO,
+    #     FINAL_PREDIC_JULIO,
+    #     undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+    #     semillas=SEMILLA
+    # )
     
-    # Preparar datos por grupo y semilla con undersampling
-    grupos_datos_julio = preparar_datos_entrenamiento_por_grupos(
-        df_fe_julio,
-        FINAL_TRAINING_GROUPS_JULIO,
-        FINAL_PREDIC_JULIO,
-        undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-        semilla_unica=SEMILLA
-    )
+    # # Preparar datos de predicción
+    # df_predict_julio = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_JULIO]
+    # X_predict_julio = df_predict_julio.drop(columns=["target", "target_to_calculate_gan"])
+    # clientes_predict_julio = df_predict_julio["numero_de_cliente"].values
     
-    # Preparar datos de predicción
-    df_predict_julio = df_fe_julio[df_fe_julio["foto_mes"] == FINAL_PREDIC_JULIO]
-    X_predict_julio = df_predict_julio.drop(columns=["target", "target_to_calculate_gan"])
-    clientes_predict_julio = df_predict_julio["numero_de_cliente"].values
+    # # Entrenar modelos por grupo y semilla
+    # modelos_por_grupo_julio = entrenar_modelos_por_grupo_y_semilla(grupos_datos_julio, mejores_params)
     
-    # Entrenar modelos por grupo y semilla
-    modelos_por_grupo_julio = entrenar_modelos_por_grupo_y_semillas(grupos_datos_julio, mejores_params, SEMILLA)
+    # # Generar predicciones finales (ahora con mes)
+    # resultados_julio = generar_predicciones_finales(
+    #     modelos_por_grupo_julio,
+    #     X_predict_julio,
+    #     clientes_predict_julio,
+    #     df_predict_julio,
+    #     top_k=TOP_K,
+    #     mes=FINAL_PREDIC_JULIO
+    # )
     
-    # Generar predicciones finales (ahora con mes)
-    resultados_julio = generar_predicciones_finales(
-        modelos_por_grupo_julio,
-        X_predict_julio,
-        clientes_predict_julio,
-        df_predict_julio,
-        top_k=TOP_K,
-        mes=FINAL_PREDIC_JULIO
-    )
+    # # Guardar predicciones
+    # guardar_predicciones_finales({"top_k": resultados_julio["top_k_global"]}, f"{FINAL_PREDIC_JULIO}_global")
+    # guardar_predicciones_finales({"top_k": resultados_julio["top_k_grupos"]}, f"{FINAL_PREDIC_JULIO}_grupos")
     
-    # Guardar predicciones
-    guardar_predicciones_finales({"top_k": resultados_julio["top_k_global"]}, f"{FINAL_PREDIC_JULIO}_global")
-    guardar_predicciones_finales({"top_k": resultados_julio["top_k_grupos"]}, f"{FINAL_PREDIC_JULIO}_grupos")
-    
-    # Guardar ganancias
-    resultados_julio["ganancias"].to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JULIO}.csv", index=False)
-    logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JULIO}.csv")
+    # # Guardar ganancias
+    # resultados_julio["ganancias"].to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JULIO}.csv", index=False)
+    # logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JULIO}.csv")
 
 
 
@@ -473,7 +461,6 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
 
 
