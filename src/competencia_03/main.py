@@ -143,9 +143,6 @@ def main():
             and c not in columnas_a_excluir
         ]
         df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
-        for i in (1,2,3):
-            df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
-
         df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=3, ventana_larga=6)
         df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
         df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=6, ventana_larga=12)
@@ -164,6 +161,10 @@ def main():
             df_fe = feature_engineering_delta_mean(df_fe, columnas=columnas_para_fe_deltas, ventana=i)
         
         df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
+
+        for i in (1,2,3):
+            df_fe = feature_engineering_lag(df_fe, columnas=columnas_para_fe_deltas, cant_lag=i)
+
 
         
         logger.info(f"Feature Engineering completado: {df_fe.shape}")
