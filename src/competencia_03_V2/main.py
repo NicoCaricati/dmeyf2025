@@ -753,7 +753,7 @@ def main():
     df_ganancias.to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JUNE}.csv", index=False)
     logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JUNE}.csv")
 
-   logger.info("=== PREPARO ENTRENAMIENTO FINAL JULIO ===")
+    logger.info("=== PREPARO ENTRENAMIENTO FINAL JULIO ===")
 
     df_predict_julio = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_JULIO]
     df_predict_julio_sin_historia = df_fe_sin_historia[df_fe_sin_historia["foto_mes"] == FINAL_PREDIC_JULIO]
