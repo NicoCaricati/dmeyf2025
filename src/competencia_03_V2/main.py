@@ -325,8 +325,14 @@ def main():
     # Filtrar el dataframe base por el mes de predicción
     df_predict_abril = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_APRIL]
     df_predict_abril_sin_historia = df_fe_sin_historia[df_fe_sin_historia["foto_mes"] == FINAL_PREDIC_APRIL]
+
+    logger.info(f"df_predict_abril shape: {df_predict_abril.shape}")
+    logger.info(f"df_predict_abril_sin_historia shape: {df_predict_abril_sin_historia.shape}")
     
     ensamble_abril = []
+
+    # Dataset completo
+    logger.info(f"df_completo shape: {df_fe.shape}")
     
     # Dataset completo
     preparar_y_append(df_fe, "df_completo", FINAL_TRAINING_GROUPS_APRIL,
@@ -341,6 +347,9 @@ def main():
                       FINAL_PREDIC_APRIL, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
                       SEMILLA, ensamble_abril)
     
+    logger.info(f"clientes_antiguos shape: {df_fe_abril_clientes_antiguos.shape}")
+    logger.info(f"clientes_antiguos antigüedad stats:\n{df_fe_abril_clientes_antiguos['cliente_antiguedad'].describe()}")
+
     # Clientes nuevos
     df_fe_abril_clientes_nuevos = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_APRIL,
                                                          columna_antiguedad="cliente_antiguedad",
@@ -349,7 +358,13 @@ def main():
                       FINAL_PREDIC_APRIL, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
                       SEMILLA, ensamble_abril)
     
+    logger.info(f"clientes_nuevos shape: {df_fe_abril_clientes_nuevos.shape}")
+    logger.info(f"clientes_nuevos antigüedad stats:\n{df_fe_abril_clientes_nuevos['cliente_antiguedad'].describe()}")
+
+
     # Dataset sin historia
+
+    logger.info(f"df_completo_sin_historia shape: {df_fe_sin_historia.shape}")
     preparar_y_append(df_fe_sin_historia, "df_completo_sin_historia", FINAL_TRAINING_GROUPS_APRIL,
                       FINAL_PREDIC_APRIL, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
                       SEMILLA, ensamble_abril)
@@ -362,6 +377,8 @@ def main():
                       FINAL_PREDIC_APRIL, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
                       SEMILLA, ensamble_abril)
     
+    logger.info(f"clientes_antiguos_sin_historia shape: {df_fe_sin_historia_abril_clientes_antiguos.shape}")
+    
     # Clientes nuevos sin historia
     df_fe_sin_historia_abril_clientes_nuevos = filtrar_por_antiguedad(df_fe_sin_historia, FINAL_TRAINING_GROUPS_APRIL,
                                                                       columna_antiguedad="cliente_antiguedad",
@@ -369,6 +386,8 @@ def main():
     preparar_y_append(df_fe_sin_historia_abril_clientes_nuevos, "clientes_nuevos_sin_historia", FINAL_TRAINING_GROUPS_APRIL,
                       FINAL_PREDIC_APRIL, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
                       SEMILLA, ensamble_abril)
+    
+    logger.info(f"clientes_nuevos_sin_historia shape: {df_fe_sin_historia_abril_clientes_nuevos.shape}")
     
     logger.info("=== ENTRENAMIENTO FINAL ABRIL ===")
     

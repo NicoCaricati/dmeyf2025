@@ -111,6 +111,7 @@ def undersample_clientes(df: pd.DataFrame, ratio: float, semilla: int = 555557) 
 
 def filtrar_por_antiguedad(df, meses_grupo, columna_antiguedad="cliente_antiguedad", 
                            umbral=12, condicion="menor"):
+    
     """
     Filtra el DataFrame solo en los meses indicados en meses_grupo,
     aplicando la condición sobre la columna de antigüedad.
@@ -135,19 +136,19 @@ def filtrar_por_antiguedad(df, meses_grupo, columna_antiguedad="cliente_antigued
         DataFrame filtrado: los meses en meses_grupo se filtran por antigüedad,
         el resto de los meses se mantienen sin cambios.
     """
-    # Copia para no modificar el original
     df_filtrado = df.copy()
-    
+    logger.info(f"[filtrar_por_antiguedad] condicion={condicion}, umbral={umbral}, meses={meses_grupo}")
+
     if condicion == "menor":
-        mask = (df_filtrado["foto_mes"].isin(meses_grupo)) & (df_filtrado[columna_antiguedad] >= umbral)
-    elif condicion == "mayor":
         mask = (df_filtrado["foto_mes"].isin(meses_grupo)) & (df_filtrado[columna_antiguedad] < umbral)
+    elif condicion == "mayor":
+        mask = (df_filtrado["foto_mes"].isin(meses_grupo)) & (df_filtrado[columna_antiguedad] >= umbral)
     else:
         raise ValueError("La condición debe ser 'menor' o 'mayor'")
-    
-    # Elimina solo las filas que no cumplen la condición en los meses del grupo
-    df_filtrado = df_filtrado[~mask]
-    
-    return df_filtrado
+
+    df_result = df_filtrado[mask | (~df_filtrado["foto_mes"].isin(meses_grupo))]
+    logger.info(f"[filtrar_por_antiguedad] resultado shape: {df_result.shape}")
+    logger.info(f"[filtrar_por_antiguedad] antigüedad stats:\n{df_result[columna_antiguedad].describe()}")
+    return df_result
 
 
