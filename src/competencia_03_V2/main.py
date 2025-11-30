@@ -355,7 +355,7 @@ def main():
                                                          columna_antiguedad="cliente_antiguedad",
                                                          umbral=12, condicion="menor")
     preparar_y_append(df_fe_abril_clientes_nuevos, "clientes_nuevos", FINAL_TRAINING_GROUPS_APRIL,
-                      FINAL_PREDIC_APRIL, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      FINAL_PREDIC_APRIL, 1,
                       SEMILLA, ensamble_abril)
     
     logger.info(f"clientes_nuevos shape: {df_fe_abril_clientes_nuevos.shape}")
@@ -384,7 +384,7 @@ def main():
                                                                       columna_antiguedad="cliente_antiguedad",
                                                                       umbral=12, condicion="menor")
     preparar_y_append(df_fe_sin_historia_abril_clientes_nuevos, "clientes_nuevos_sin_historia", FINAL_TRAINING_GROUPS_APRIL,
-                      FINAL_PREDIC_APRIL, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      FINAL_PREDIC_APRIL, 1,
                       SEMILLA, ensamble_abril)
     
     logger.info(f"clientes_nuevos_sin_historia shape: {df_fe_sin_historia_abril_clientes_nuevos.shape}")
