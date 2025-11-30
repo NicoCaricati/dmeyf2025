@@ -785,7 +785,7 @@ def main():
                                                          columna_antiguedad="cliente_antiguedad",
                                                          umbral=12, condicion="menor")
     preparar_y_append(df_fe_julio_clientes_nuevos, "clientes_nuevos", FINAL_TRAINING_GROUPS_JULIO,
-                      FINAL_PREDIC_JULIO, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      FINAL_PREDIC_JULIO, 1,
                       SEMILLA, ensamble_julio)
     
     logger.info(f"clientes_nuevos shape: {df_fe_julio_clientes_nuevos.shape}")
@@ -812,33 +812,11 @@ def main():
                                                                       columna_antiguedad="cliente_antiguedad",
                                                                       umbral=12, condicion="menor")
     preparar_y_append(df_fe_sin_historia_julio_clientes_nuevos, "clientes_nuevos_sin_historia", FINAL_TRAINING_GROUPS_JULIO,
-                      FINAL_PREDIC_JULIO, UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+                      FINAL_PREDIC_JULIO, 1,
                       SEMILLA, ensamble_julio)
     
     logger.info(f"clientes_nuevos_sin_historia shape: {df_fe_sin_historia_julio_clientes_nuevos.shape}")
     
-    logger.info("=== ENTRENAMIENTO FINAL JULIO ===")
-    
-    predicciones_por_dataset = []
-    ganancias_totales = []
-    
-    for nombre_dataset, grupos_datos in ensamble_julio:
-        if "sin_historia" in nombre_dataset:
-            df_predict = df_predict_julio_sin_historia
-        else:
-            df_predict = df_predict_julio
-    
-        resultados, ganancias, clientes_predict = entrenar_y_predecir_dataset(
-            df_predict,
-            grupos_datos,
-            FINAL_PREDIC_JULIO,
-            mejores_params,
-            semillas=[SEMILLA],
-            nombre_dataset=nombre_dataset
-        )
-        predicciones_por_dataset.append(resultados)
-        ganancias_totales.extend(ganancias)
-
 
     logger.info("=== ENTRENAMIENTO FINAL JULIO ===")
     
@@ -846,7 +824,7 @@ def main():
     predicciones_por_dataset = []
     ganancias_totales = []
     
-    for nombre_dataset, grupos_datos in ensamble_abril:
+    for nombre_dataset, grupos_datos in ensamble_julio:
         # Elegir el df_predict correcto según el dataset
         if "sin_historia" in nombre_dataset:
             df_predict = df_predict_julio_sin_historia
