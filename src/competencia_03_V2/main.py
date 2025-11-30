@@ -340,7 +340,7 @@ def main():
                       SEMILLA, ensamble_abril)
     
     # Clientes antiguos
-    df_fe_abril_clientes_antiguos = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_APRIL,
+    df_fe_abril_clientes_antiguos = filtrar_por_antiguedad(df_fe,  FINAL_TRAINING_GROUPS_APRIL["final_training_april"],
                                                            columna_antiguedad="cliente_antiguedad",
                                                            umbral=12, condicion="mayor")
     preparar_y_append(df_fe_abril_clientes_antiguos, "clientes_antiguos", FINAL_TRAINING_GROUPS_APRIL,
@@ -351,7 +351,7 @@ def main():
     logger.info(f"clientes_antiguos antigüedad stats:\n{df_fe_abril_clientes_antiguos['cliente_antiguedad'].describe()}")
 
     # Clientes nuevos
-    df_fe_abril_clientes_nuevos = filtrar_por_antiguedad(df_fe, FINAL_TRAINING_GROUPS_APRIL,
+    df_fe_abril_clientes_nuevos = filtrar_por_antiguedad(df_fe,  FINAL_TRAINING_GROUPS_APRIL["final_training_april"],
                                                          columna_antiguedad="cliente_antiguedad",
                                                          umbral=12, condicion="menor")
     preparar_y_append(df_fe_abril_clientes_nuevos, "clientes_nuevos", FINAL_TRAINING_GROUPS_APRIL,
@@ -370,7 +370,7 @@ def main():
                       SEMILLA, ensamble_abril)
     
     # Clientes antiguos sin historia
-    df_fe_sin_historia_abril_clientes_antiguos = filtrar_por_antiguedad(df_fe_sin_historia, FINAL_TRAINING_GROUPS_APRIL,
+    df_fe_sin_historia_abril_clientes_antiguos = filtrar_por_antiguedad(df_fe_sin_historia,  FINAL_TRAINING_GROUPS_APRIL["final_training_april"],
                                                                         columna_antiguedad="cliente_antiguedad",
                                                                         umbral=12, condicion="mayor")
     preparar_y_append(df_fe_sin_historia_abril_clientes_antiguos, "clientes_antiguos_sin_historia", FINAL_TRAINING_GROUPS_APRIL,
@@ -380,7 +380,7 @@ def main():
     logger.info(f"clientes_antiguos_sin_historia shape: {df_fe_sin_historia_abril_clientes_antiguos.shape}")
     
     # Clientes nuevos sin historia
-    df_fe_sin_historia_abril_clientes_nuevos = filtrar_por_antiguedad(df_fe_sin_historia, FINAL_TRAINING_GROUPS_APRIL,
+    df_fe_sin_historia_abril_clientes_nuevos = filtrar_por_antiguedad(df_fe_sin_historia,  FINAL_TRAINING_GROUPS_APRIL["final_training_april"],
                                                                       columna_antiguedad="cliente_antiguedad",
                                                                       umbral=12, condicion="menor")
     preparar_y_append(df_fe_sin_historia_abril_clientes_nuevos, "clientes_nuevos_sin_historia", FINAL_TRAINING_GROUPS_APRIL,
