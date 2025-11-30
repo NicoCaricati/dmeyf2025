@@ -614,7 +614,7 @@ def main():
 
 
     
-     logger.info("=== PREPARO ENTRENAMIENTO FINAL JUNIO ===")
+    logger.info("=== PREPARO ENTRENAMIENTO FINAL JUNIO ===")
     
     df_predict_junio = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_JUNE]
     df_predict_junio_sin_historia = df_fe_sin_historia[df_fe_sin_historia["foto_mes"] == FINAL_PREDIC_JUNE]
