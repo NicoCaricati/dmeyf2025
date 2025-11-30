@@ -404,7 +404,7 @@ def main():
             grupos_datos,            # entrenado en subset
             FINAL_PREDIC_APRIL,
             mejores_params,
-            semillas=[SEMILLA],
+            semillas=SEMILLA,
             nombre_dataset=nombre_dataset
         )
         predicciones_por_dataset.append(resultados)
@@ -551,7 +551,7 @@ def main():
             grupos_datos,            # entrenado en subset
             FINAL_PREDIC_MAYO,
             mejores_params,
-            semillas=[SEMILLA],
+            semillas=SEMILLA,
             nombre_dataset=nombre_dataset
         )
         predicciones_por_dataset.append(resultados)
@@ -692,7 +692,7 @@ def main():
             grupos_datos,            # entrenado en subset
             FINAL_PREDIC_JUNE,
             mejores_params,
-            semillas=[SEMILLA],
+            semillas=SEMILLA,
             nombre_dataset=nombre_dataset
         )
         predicciones_por_dataset.append(resultados)
@@ -836,7 +836,7 @@ def main():
             grupos_datos,            # entrenado en subset
             FINAL_PREDIC_JULIO,
             mejores_params,
-            semillas=[SEMILLA],
+            semillas=SEMILLA,
             nombre_dataset=nombre_dataset
         )
         predicciones_por_dataset.append(resultados)
