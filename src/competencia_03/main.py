@@ -99,11 +99,11 @@ def main():
 
 
         # Supongamos que ya tenés tu DataFrame "dataset"
-        df_fe["ctrx_quarter_normalizado"] = df_fe["ctrx_quarter"].astype(float)
+        # df_fe["ctrx_quarter_normalizado"] = df_fe["ctrx_quarter"].astype(float)
         
-        df_fe.loc[df_fe["cliente_antiguedad"] == 1, "ctrx_quarter_normalizado"] *= 5.0
-        df_fe.loc[df_fe["cliente_antiguedad"] == 2, "ctrx_quarter_normalizado"] *= 2.0
-        df_fe.loc[df_fe["cliente_antiguedad"] == 3, "ctrx_quarter_normalizado"] *= 1.2
+        # df_fe.loc[df_fe["cliente_antiguedad"] == 1, "ctrx_quarter_normalizado"] *= 5.0
+        # df_fe.loc[df_fe["cliente_antiguedad"] == 2, "ctrx_quarter_normalizado"] *= 2.0
+        # df_fe.loc[df_fe["cliente_antiguedad"] == 3, "ctrx_quarter_normalizado"] *= 1.2
 
         df_fe["mpayroll_edad"] = df_fe["mpayroll"] / df_fe["cliente_edad"]
 
@@ -121,7 +121,7 @@ def main():
         df_fe = df_fe.drop(columns=['ccomisiones_otras','internet'])
         
         # # Agrego Variables para controlar mejor continuidad
-        df_fe = generar_ctrx_features(df_fe)        
+        # df_fe = generar_ctrx_features(df_fe)        
 
         df_fe = feature_engineering_tc_total(df_fe)
         df_fe = variables_aux(df_fe)
