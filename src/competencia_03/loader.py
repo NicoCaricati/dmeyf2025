@@ -99,8 +99,6 @@ def cargar_datos(path: str) -> pd.DataFrame | None:
                            OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) AS periodo1,
                        LEAD((CAST(foto_mes/100 AS INTEGER) * 12 + foto_mes % 100), 2) 
                            OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) AS periodo2
-                       # LEAD((CAST(foto_mes/100 AS INTEGER) * 12 + foto_mes % 100), 3) 
-                       #     OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) AS periodo3    
                 FROM competencia_01_crudo
             )
             SELECT numero_de_cliente,
