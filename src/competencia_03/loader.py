@@ -106,7 +106,6 @@ def cargar_datos(path: str) -> pd.DataFrame | None:
                    CASE 
                        WHEN periodo1 IS NULL OR periodo0 + 1 < periodo1 THEN 'BAJA+1'
                        WHEN periodo2 IS NULL OR periodo0 + 2 < periodo2 THEN 'BAJA+2'
-                       # WHEN periodo3 IS NULL OR periodo0 + 3 < periodo3 THEN 'BAJA+3'
                        ELSE 'CONTINUA'
                    END AS target
             FROM base
