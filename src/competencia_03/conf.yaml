@@ -1,10 +1,10 @@
 #yaml
-STUDY_NAME: Modelo Final US 0.2 8 Semillas y Saco mas variables - Agrego a Target Baja3 y Lags
+STUDY_NAME: Modelo Final US 0.2 8 Semillas - Distinto FE
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
   DATA_PATH: ../../../datasets/competencia_04_crudo.csv.gz
-  UNDERSAMPLING: 0.03
+  UNDERSAMPLING: 0.2
   UNDERSAMPLING_OPTIMIZACION: 0.2
   UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE: 0.2
   UNDERSAMPLING_MODELO_FINAL: 1  
@@ -210,12 +210,12 @@ competencia01:
   - 555557
   - 555871
   - 556219
-  # - 556459
-  # - 556691
-  # - 556903
-  # - 557159
-  # - 557399
-  # - 557597
+  - 556459
+  - 556691
+  - 556903
+  - 557159
+  - 557399
+  - 557597
   # - 557861
   # - 555552
   # - 555877
@@ -258,7 +258,7 @@ competencia01:
     - 202101
     - 202102
     - 202103
-    # - 202104
+    - 202104
   FINAL_TRAINING_GROUPS_APRIL:
     final_training_april:  
     - 201901
@@ -286,7 +286,7 @@ competencia01:
     - 202011
     - 202012
     - 202101
-    # - 202102
+    - 202102
   FINAL_TRAINING_GROUPS_AGOSTO:
     final_training_august:  
     - 201901
@@ -318,7 +318,7 @@ competencia01:
     - 202103
     - 202104
     - 202105    
-    # - 202106
+    - 202106
   FINAL_TRAINING_GROUPS_JULIO:
     final_training_julio:  
     - 201901
@@ -349,7 +349,7 @@ competencia01:
     - 202102
     - 202103
     - 202104
-    # - 202105  
+    - 202105  
   FINAL_TRAINING_GROUPS_MAYO:
     final_training_mayo:  
     - 201901
@@ -378,5 +378,5 @@ competencia01:
     - 202012
     - 202101
     - 202102
-    # - 202103 
+    - 202103 
 

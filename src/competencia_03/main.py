@@ -105,6 +105,8 @@ def main():
         df_fe.loc[df_fe["cliente_antiguedad"] == 2, "ctrx_quarter_normalizado"] *= 2.0
         df_fe.loc[df_fe["cliente_antiguedad"] == 3, "ctrx_quarter_normalizado"] *= 1.2
 
+        df_fe["mpayroll_edad"] = df_fe["mpayroll"] / df_fe["cliente_edad"]
+
     
         # # 2. Feature Engineering
         # # Excluyo meses problematicos
@@ -119,7 +121,7 @@ def main():
         df_fe = df_fe.drop(columns=['ccomisiones_otras','internet'])
         
         # # Agrego Variables para controlar mejor continuidad
-        # df_fe = generar_ctrx_features(df_fe)        
+        df_fe = generar_ctrx_features(df_fe)        
 
         df_fe = feature_engineering_tc_total(df_fe)
         df_fe = variables_aux(df_fe)
@@ -162,8 +164,8 @@ def main():
         
         df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
 
-        for i in (1,2,3):
-            df_fe = feature_engineering_lag(df_fe, columnas=columnas_para_fe_deltas, cant_lag=i)
+        # for i in (1,2,3):
+        #     df_fe = feature_engineering_lag(df_fe, columnas=columnas_para_fe_deltas, cant_lag=i)
 
 
         

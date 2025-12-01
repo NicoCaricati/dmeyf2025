@@ -98,9 +98,9 @@ def cargar_datos(path: str) -> pd.DataFrame | None:
                        LEAD((CAST(foto_mes/100 AS INTEGER) * 12 + foto_mes % 100), 1) 
                            OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) AS periodo1,
                        LEAD((CAST(foto_mes/100 AS INTEGER) * 12 + foto_mes % 100), 2) 
-                           OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) AS periodo2,
-                       LEAD((CAST(foto_mes/100 AS INTEGER) * 12 + foto_mes % 100), 3) 
-                           OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) AS periodo3    
+                           OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) AS periodo2
+                       # LEAD((CAST(foto_mes/100 AS INTEGER) * 12 + foto_mes % 100), 3) 
+                       #     OVER (PARTITION BY numero_de_cliente ORDER BY foto_mes) AS periodo3    
                 FROM competencia_01_crudo
             )
             SELECT numero_de_cliente,
@@ -108,7 +108,7 @@ def cargar_datos(path: str) -> pd.DataFrame | None:
                    CASE 
                        WHEN periodo1 IS NULL OR periodo0 + 1 < periodo1 THEN 'BAJA+1'
                        WHEN periodo2 IS NULL OR periodo0 + 2 < periodo2 THEN 'BAJA+2'
-                       WHEN periodo3 IS NULL OR periodo0 + 3 < periodo3 THEN 'BAJA+3'
+                       # WHEN periodo3 IS NULL OR periodo0 + 3 < periodo3 THEN 'BAJA+3'
                        ELSE 'CONTINUA'
                    END AS target
             FROM base
@@ -160,14 +160,14 @@ def convertir_clase_ternaria_a_target(df: pd.DataFrame) -> pd.DataFrame:
     n_continua_orig = (df_result['target'] == 'CONTINUA').sum()
     n_baja1_orig = (df_result['target'] == 'BAJA+1').sum()
     n_baja2_orig = (df_result['target'] == 'BAJA+2').sum()
-    n_baja3_orig = (df_result['target'] == 'BAJA+3').sum()
+    # n_baja3_orig = (df_result['target'] == 'BAJA+3').sum()
     
   
     # Convertir clase_ternaria a binario en el mismo atributo
     df_result['target_to_calculate_gan'] = df_result['target'].map({
         'CONTINUA': 0,
         'BAJA+1': 0,
-        'BAJA+3': 0,
+        # 'BAJA+3': 0
         'BAJA+2': 1
     })
   
@@ -175,7 +175,7 @@ def convertir_clase_ternaria_a_target(df: pd.DataFrame) -> pd.DataFrame:
     df_result['target'] = df_result['target'].map({
         'CONTINUA': 0,
         'BAJA+1': 1,
-        'BAJA+3': 1,
+        # 'BAJA+3': 1,
         'BAJA+2': 1
     })
 
