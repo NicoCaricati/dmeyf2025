@@ -258,7 +258,7 @@ competencia01:
     - 202101
     - 202102
     - 202103
-    - 202104
+    # - 202104
   FINAL_TRAINING_GROUPS_APRIL:
     final_training_april:  
     - 201901
@@ -286,7 +286,7 @@ competencia01:
     - 202011
     - 202012
     - 202101
-    - 202102
+    # - 202102
   FINAL_TRAINING_GROUPS_AGOSTO:
     final_training_august:  
     - 201901
@@ -318,7 +318,7 @@ competencia01:
     - 202103
     - 202104
     - 202105    
-    - 202106
+    # - 202106
   FINAL_TRAINING_GROUPS_JULIO:
     final_training_julio:  
     - 201901
@@ -349,7 +349,7 @@ competencia01:
     - 202102
     - 202103
     - 202104
-    - 202105  
+    # - 202105  
   FINAL_TRAINING_GROUPS_MAYO:
     final_training_mayo:  
     - 201901
@@ -378,5 +378,5 @@ competencia01:
     - 202012
     - 202101
     - 202102
-    - 202103 
+    # - 202103 
 
