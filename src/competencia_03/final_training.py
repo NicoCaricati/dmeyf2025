@@ -558,6 +558,7 @@ def entrenar_modelos_por_grupo_y_semilla(
                 'max_bin': 31,
                 'seed': seed,
                 'verbose': -1,
+                'bagging_freq': 1,
                 **mejores_params
             }
 
