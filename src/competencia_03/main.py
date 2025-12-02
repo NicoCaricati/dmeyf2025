@@ -70,8 +70,8 @@ def main():
 
     crear_snapshot_modelo(STUDY_NAME)
 
-    path_parquet = os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.parquet")
-    # path_parquet = "../../../buckets/b1/Compe_02/data/df_fe - Completo.parquet"
+    # path_parquet = os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.parquet")
+    path_parquet = "../../../buckets/b1/Compe_02/data/df_feModelo Final US 0.03 20 Semillas - Uso Meses Corridos - Optimizacion.parquet"
 
     if os.path.exists(path_parquet):
         logger.info("✅ df_fe.parquet encontrado")
@@ -99,13 +99,13 @@ def main():
 
 
         # Supongamos que ya tenés tu DataFrame "dataset"
-        # df_fe["ctrx_quarter_normalizado"] = df_fe["ctrx_quarter"].astype(float)
+        df_fe["ctrx_quarter_normalizado"] = df_fe["ctrx_quarter"].astype(float)
         
-        # df_fe.loc[df_fe["cliente_antiguedad"] == 1, "ctrx_quarter_normalizado"] *= 5.0
-        # df_fe.loc[df_fe["cliente_antiguedad"] == 2, "ctrx_quarter_normalizado"] *= 2.0
-        # df_fe.loc[df_fe["cliente_antiguedad"] == 3, "ctrx_quarter_normalizado"] *= 1.2
+        df_fe.loc[df_fe["cliente_antiguedad"] == 1, "ctrx_quarter_normalizado"] *= 5.0
+        df_fe.loc[df_fe["cliente_antiguedad"] == 2, "ctrx_quarter_normalizado"] *= 2.0
+        df_fe.loc[df_fe["cliente_antiguedad"] == 3, "ctrx_quarter_normalizado"] *= 1.2
 
-        df_fe["mpayroll_edad"] = df_fe["mpayroll"] / df_fe["cliente_edad"]
+        
 
     
         # # 2. Feature Engineering
@@ -145,9 +145,10 @@ def main():
             and c not in columnas_a_excluir
         ]
         df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})
+        # for i in (1,2):
+        #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
+
         df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=3, ventana_larga=6)
-        df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
-        df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=6, ventana_larga=12)
         df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
 
         # df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=6, ventana_larga=12)
@@ -164,10 +165,6 @@ def main():
         
         df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
 
-        # for i in (1,2,3):
-        #     df_fe = feature_engineering_lag(df_fe, columnas=columnas_para_fe_deltas, cant_lag=i)
-
-
         
         logger.info(f"Feature Engineering completado: {df_fe.shape}")
         
@@ -175,8 +172,7 @@ def main():
         df_fe.to_parquet(
             os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.parquet"),
             compression='snappy'
-        )
-    
+        )    
     logger.info("⏳ CSV cargado o creado, ahora ejecutando optimización...")
 
 
@@ -231,8 +227,6 @@ def main():
 
 
     mejores_params = {'bagging_fraction': 0.6714999873184199, 'feature_fraction': 0.31776519651631674, 'lambda_l1': 0.2944267005943108, 'lambda_l2': 2.4490808003374225, 'learning_rate': 0.03518640034343286, 'min_data_in_leaf': 47, 'neg_bagging_fraction': 0.16338893024243595, 'num_boost_round': 778, 'num_leaves': 84, 'pos_bagging_fraction': 0.40622347584093277} # Opti Nueva
-
-    df_fe = df_fe.drop(columns=['cprestamos_personales','cprestamos_prendarios'])
     
 
 
@@ -333,82 +327,82 @@ def main():
     
         
     
-    # Entrenamiento en Junio
-    logger.info("=== ENTRENAMIENTO FINAL JUNIO ===")
+    # # Entrenamiento en Junio
+    # logger.info("=== ENTRENAMIENTO FINAL JUNIO ===")
     
-    # Preparar datos por grupo y semilla con undersampling
-    grupos_datos_junio = preparar_datos_entrenamiento_por_grupos_por_semilla(
-        df_fe,
-        FINAL_TRAINING_GROUPS_JUNE,
-        FINAL_PREDIC_JUNE,
-        undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-        semillas=SEMILLA
-    )
+    # # Preparar datos por grupo y semilla con undersampling
+    # grupos_datos_junio = preparar_datos_entrenamiento_por_grupos_por_semilla(
+    #     df_fe,
+    #     FINAL_TRAINING_GROUPS_JUNE,
+    #     FINAL_PREDIC_JUNE,
+    #     undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+    #     semillas=SEMILLA
+    # )
     
-    # Preparar datos de predicción
-    df_predict_junio = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_JUNE]
-    X_predict_junio = df_predict_junio.drop(columns=["target", "target_to_calculate_gan"])
-    clientes_predict_junio = df_predict_junio["numero_de_cliente"].values
+    # # Preparar datos de predicción
+    # df_predict_junio = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_JUNE]
+    # X_predict_junio = df_predict_junio.drop(columns=["target", "target_to_calculate_gan"])
+    # clientes_predict_junio = df_predict_junio["numero_de_cliente"].values
     
-    # Entrenar modelos por grupo y semilla
-    modelos_por_grupo_junio = entrenar_modelos_por_grupo_y_semilla(grupos_datos_junio, mejores_params)
+    # # Entrenar modelos por grupo y semilla
+    # modelos_por_grupo_junio = entrenar_modelos_por_grupo_y_semilla(grupos_datos_junio, mejores_params)
     
-    # Generar predicciones finales (ahora con mes)
-    resultados_junio = generar_predicciones_finales(
-        modelos_por_grupo_junio,
-        X_predict_junio,
-        clientes_predict_junio,
-        df_predict_junio,
-        top_k=TOP_K,
-        mes=FINAL_PREDIC_JUNE
-    )
+    # # Generar predicciones finales (ahora con mes)
+    # resultados_junio = generar_predicciones_finales(
+    #     modelos_por_grupo_junio,
+    #     X_predict_junio,
+    #     clientes_predict_junio,
+    #     df_predict_junio,
+    #     top_k=TOP_K,
+    #     mes=FINAL_PREDIC_JUNE
+    # )
     
-    # Guardar predicciones
-    guardar_predicciones_finales({"top_k": resultados_junio["top_k_global"]}, f"{FINAL_PREDIC_JUNE}_global")
-    guardar_predicciones_finales({"top_k": resultados_junio["top_k_grupos"]}, f"{FINAL_PREDIC_JUNE}_grupos")
+    # # Guardar predicciones
+    # guardar_predicciones_finales({"top_k": resultados_junio["top_k_global"]}, f"{FINAL_PREDIC_JUNE}_global")
+    # guardar_predicciones_finales({"top_k": resultados_junio["top_k_grupos"]}, f"{FINAL_PREDIC_JUNE}_grupos")
     
-    # Guardar ganancias
-    resultados_junio["ganancias"].to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JUNE}.csv", index=False)
-    logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JUNE}.csv")
+    # # Guardar ganancias
+    # resultados_junio["ganancias"].to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JUNE}.csv", index=False)
+    # logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JUNE}.csv")
 
     
-    # Entrenamiento en Julio
-    logger.info("=== ENTRENAMIENTO FINAL JULIO ===")
+    # # Entrenamiento en Julio
+    # logger.info("=== ENTRENAMIENTO FINAL JULIO ===")
     
-    # Preparar datos por grupo y semilla con undersampling
-    grupos_datos_julio = preparar_datos_entrenamiento_por_grupos_por_semilla(
-        df_fe,
-        FINAL_TRAINING_GROUPS_JULIO,
-        FINAL_PREDIC_JULIO,
-        undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
-        semillas=SEMILLA
-    )
+    # # Preparar datos por grupo y semilla con undersampling
+    # grupos_datos_julio = preparar_datos_entrenamiento_por_grupos_por_semilla(
+    #     df_fe,
+    #     FINAL_TRAINING_GROUPS_JULIO,
+    #     FINAL_PREDIC_JULIO,
+    #     undersampling_ratio=UNDERSAMPLING_ENTRENAMIENTO_ENSAMBLE,
+    #     semillas=SEMILLA
+    # )
     
-    # Preparar datos de predicción
-    df_predict_julio = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_JULIO]
-    X_predict_julio = df_predict_julio.drop(columns=["target", "target_to_calculate_gan"])
-    clientes_predict_julio = df_predict_julio["numero_de_cliente"].values
+    # # Preparar datos de predicción
+    # df_predict_julio = df_fe[df_fe["foto_mes"] == FINAL_PREDIC_JULIO]
+    # X_predict_julio = df_predict_julio.drop(columns=["target", "target_to_calculate_gan"])
+    # clientes_predict_julio = df_predict_julio["numero_de_cliente"].values
     
-    # Entrenar modelos por grupo y semilla
-    modelos_por_grupo_julio = entrenar_modelos_por_grupo_y_semilla(grupos_datos_julio, mejores_params)
+    # # Entrenar modelos por grupo y semilla
+    # modelos_por_grupo_julio = entrenar_modelos_por_grupo_y_semilla(grupos_datos_julio, mejores_params)
     
-    # Generar predicciones finales (ahora con mes)
-    resultados_julio = generar_predicciones_finales(
-        modelos_por_grupo_julio,
-        X_predict_julio,
-        clientes_predict_julio,
-        df_predict_julio,
-        top_k=TOP_K,
-        mes=FINAL_PREDIC_JULIO
-    )
+    # # Generar predicciones finales (ahora con mes)
+    # resultados_julio = generar_predicciones_finales(
+    #     modelos_por_grupo_julio,
+    #     X_predict_julio,
+    #     clientes_predict_julio,
+    #     df_predict_julio,
+    #     top_k=TOP_K,
+    #     mes=FINAL_PREDIC_JULIO
+    # )
     
-    # Guardar predicciones
-    guardar_predicciones_finales({"top_k": resultados_julio["top_k_global"]}, f"{FINAL_PREDIC_JULIO}_global")
-    guardar_predicciones_finales({"top_k": resultados_julio["top_k_grupos"]}, f"{FINAL_PREDIC_JULIO}_grupos")
+    # # Guardar predicciones
+    # guardar_predicciones_finales({"top_k": resultados_julio["top_k_global"]}, f"{FINAL_PREDIC_JULIO}_global")
+    # guardar_predicciones_finales({"top_k": resultados_julio["top_k_grupos"]}, f"{FINAL_PREDIC_JULIO}_grupos")
     
-    # Guardar ganancias
-    resultados_julio["ganancias"].to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JULIO}.csv", index=False)
-    logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JULIO}.csv")
+    # # Guardar ganancias
+    # resultados_julio["ganancias"].to_csv(f"predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JULIO}.csv", index=False)
+    # logger.info(f"✅ CSV de ganancias guardado: predict/ganancias_{STUDY_NAME}_{FINAL_PREDIC_JULIO}.csv")
 
 
 
