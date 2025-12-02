@@ -146,6 +146,7 @@ def main():
         #     df_fe = feature_engineering_lag(df_fe, columnas=atributos, cant_lag=i)
 
         df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=3, ventana_larga=6)
+        df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=1, ventana_larga=3)
         df_fe = df_fe.astype({col: "float32" for col in df_fe.select_dtypes("float").columns})  
 
         # df_fe = generar_cambios_de_pendiente_multiples_fast(df_fe, columnas=columnas_para_fe_regresiones, ventana_corta=6, ventana_larga=12)
