@@ -1,5 +1,5 @@
 #yaml
-STUDY_NAME: Repito Modelo Final US 0.2 8 Semillas - Corrijo bagging_freq
+STUDY_NAME: Optimizacion Corrigiendo el Codigo
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
