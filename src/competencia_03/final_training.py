@@ -567,6 +567,7 @@ def entrenar_modelos_por_grupo_y_semilla(
                 params,
                 lgb_train,
                 valid_sets=[lgb_train],
+                num_boost_round=mejores_params['num_boost_round'],
                 feval=ganancia_evaluator,
                 callbacks=[
                     lgb.early_stopping(stopping_rounds=100),
