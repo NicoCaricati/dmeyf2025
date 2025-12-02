@@ -70,8 +70,8 @@ def main():
 
     crear_snapshot_modelo(STUDY_NAME)
 
-    # path_parquet = os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.parquet")
-    path_parquet = "../../../buckets/b1/Compe_02/data/df_feModelo Final US 0.03 20 Semillas - Uso Meses Corridos - Optimizacion.parquet"
+    path_parquet = os.path.join(BUCKET_NAME, "data", f"df_fe{STUDY_NAME}.parquet")
+    # path_parquet = "../../../buckets/b1/Compe_02/data/df_feModelo Final US 0.03 20 Semillas - Uso Meses Corridos - Optimizacion.parquet"
 
     if os.path.exists(path_parquet):
         logger.info("✅ df_fe.parquet encontrado")
@@ -104,9 +104,6 @@ def main():
         df_fe.loc[df_fe["cliente_antiguedad"] == 1, "ctrx_quarter_normalizado"] *= 5.0
         df_fe.loc[df_fe["cliente_antiguedad"] == 2, "ctrx_quarter_normalizado"] *= 2.0
         df_fe.loc[df_fe["cliente_antiguedad"] == 3, "ctrx_quarter_normalizado"] *= 1.2
-
-        
-
     
         # # 2. Feature Engineering
         # # Excluyo meses problematicos
@@ -266,17 +263,25 @@ def main():
     
     # Entrenar modelos por grupo y semilla
     modelos_por_grupo_abril = entrenar_modelos_por_grupo_y_semilla(grupos_datos_abril, mejores_params)
+
     
-    # Generar predicciones finales (ahora con mes)
-    resultados_abril = generar_predicciones_finales(
-        modelos_por_grupo_abril,
-        X_predict_abril,
-        clientes_predict_abril,
-        df_predict_abril,
-        top_k=TOP_K,
-        mes=FINAL_PREDIC_APRIL
-    )
-    
+    # Guardar importancia de features SOLO para la primera semilla de cada grupo
+    for grupo, modelos in modelos_por_grupo_abril.items():
+        if modelos:  # asegurarse de que haya modelos
+            primer_modelo = modelos[0]  # tomar el de la primera semilla
+            logger.info(f"📊 Guardando importancia de features para grupo {grupo}, primera semilla")
+            feature_importance(primer_modelo)
+        
+        # Generar predicciones finales (ahora con mes)
+        resultados_abril = generar_predicciones_finales(
+            modelos_por_grupo_abril,
+            X_predict_abril,
+            clientes_predict_abril,
+            df_predict_abril,
+            top_k=TOP_K,
+            mes=FINAL_PREDIC_APRIL
+        )
+        
     # Guardar predicciones
     guardar_predicciones_finales({"top_k": resultados_abril["top_k_global"]}, f"{FINAL_PREDIC_APRIL}_global")
     guardar_predicciones_finales({"top_k": resultados_abril["top_k_grupos"]}, f"{FINAL_PREDIC_APRIL}_grupos")
