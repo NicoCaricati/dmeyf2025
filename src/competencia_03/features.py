@@ -1279,3 +1279,68 @@ def transformar_a_grupos_percentiles(
     df_out = con.execute(query).fetchdf()
     con.close()
     return df_out
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+def imputar_ceros_por_na(df: pd.DataFrame, columnas_no_imputar: list[str] = []) -> pd.DataFrame:
+    import logging
+    import numpy as np
+    import pandas as pd
+
+    logger = logging.getLogger(__name__)
+    df = df.copy()
+
+    if 'foto_mes' not in df.columns or 'numero_de_cliente' not in df.columns:
+        raise ValueError("El DataFrame debe contener las columnas 'foto_mes' y 'numero_de_cliente'")
+
+    df['foto_mes'] = pd.to_numeric(df['foto_mes'], errors='coerce').astype('Int64')
+    assert df['foto_mes'].notna().all(), "Hay valores nulos en foto_mes"
+
+    df = df.sort_values(['numero_de_cliente', 'foto_mes'])
+
+    columnas = [col for col in df.columns if col not in ['numero_de_cliente', 'foto_mes'] + columnas_no_imputar]
+
+    imputaciones = {}
+
+    for col in columnas:
+        # Detectar meses donde TODOS los valores son cero
+        meses_con_ceros = df.groupby('foto_mes')[col].agg(lambda x: (x == 0).all())
+        meses_a_imputar = meses_con_ceros[meses_con_ceros == True].index.tolist()
+
+        if meses_a_imputar:
+            imputaciones[col] = meses_a_imputar
+
+        dtype_original = df[col].dtype
+
+        # Convertir a float si era entero (porque NaN no es válido en Int64 puro)
+        if pd.api.types.is_integer_dtype(dtype_original):
+            df[col] = df[col].astype(float)
+
+        # Reemplazar ceros por NaN en los meses detectados
+        for mes in meses_a_imputar:
+            mask_mes = (df['foto_mes'] == mes) & (df[col] == 0)
+            df.loc[mask_mes, col] = np.nan
+
+        # Si era entero originalmente, decidir si volver a Int64
+        if pd.api.types.is_integer_dtype(dtype_original):
+            if np.allclose(df[col].dropna() % 1, 0):  # todos enteros
+                df[col] = df[col].round().astype("Int64")
+            else:
+                logger.info(f"Columna '{col}' se mantiene en float porque la imputación generó decimales")
+
+    for col, semanas in imputaciones.items():
+        logger.info(f"Imputación realizada en columna '{col}' para semanas: {semanas}")
+
+    return df
