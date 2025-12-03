@@ -11,7 +11,7 @@ competencia01:
   FINAL_PREDIC: 202106
   FINAL_PREDIC_JUNE: 202106
   FINAL_PREDIC_APRIL: 202104
-  FINAL_PREDIC_AGOSTO: 202108 
+  FINAL_PREDIC_SEPTIEMBRE: 202109 
   FINAL_PREDIC_MAYO: 202105
   FINAL_PREDIC_JULIO: 202107
   FINAL_TRAIN:
@@ -210,8 +210,8 @@ competencia01:
   - 555557
   - 555871
   - 556219
-  - 556459
-  - 556691
+  # - 556459
+  # - 556691
   # - 556903
   # - 557159
   # - 557399
@@ -287,8 +287,8 @@ competencia01:
     - 202012
     - 202101
     - 202102
-  FINAL_TRAINING_GROUPS_AGOSTO:
-    final_training_august:  
+  FINAL_TRAINING_GROUPS_SEPTIEMBRE:
+    final_training_septiembre:  
     - 201901
     - 201902
     - 201903
@@ -319,6 +319,7 @@ competencia01:
     - 202104
     - 202105    
     - 202106
+    - 202107
   FINAL_TRAINING_GROUPS_JULIO:
     final_training_julio:  
     - 201901
