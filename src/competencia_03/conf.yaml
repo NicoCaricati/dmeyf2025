@@ -1,5 +1,5 @@
 #yaml
-STUDY_NAME: Optimizacion Corrigiendo el Codigo - Mejor Modelo (US 0.2) - 25 Semillas
+STUDY_NAME: Optimizacion Corrigiendo el Codigo - Mejor Modelo (US 0.2) - 15 Semillas
 competencia01:
   BUCKET_NAME: ../../../buckets/b1/Compe_02
   COSTO_ESTIMULO: 20000
@@ -222,18 +222,13 @@ competencia01:
   - 556210
   - 556455
   - 556697
-  - 556905
-  - 557156
-  - 557392
-  - 557593
-  - 557860
-    - 1
-    - 2
-    - 3
-    - 4
-    - 5
+  # - 556905
+  # - 557156
+  # - 557392
+  # - 557593
+  # - 557860
 
-  TOP_K: 10000
+  TOP_K: 11000
   UMBRAL: 0.015
   FINAL_TRAINING_GROUPS_JUNE:
     final_training_june:  
