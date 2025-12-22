@@ -1,0 +1,4 @@
+study_name,foto_mes_test,ganancia_test,predicciones_positivas,porcentaje_positivas,ganancia_optima_promedio,clientes_optimos
+Pruebo sacando variables_V2__sin_tarjetas_pagos,202104,2147480000.0,8721,5.336621424812444,348620000.0,10760
+Pruebo sacando variables_V2__sin_tarjetas_pagos,202105,2147480000.0,8825,5.383822300310523,189840000.0,8303
+Pruebo sacando variables_V2__sin_tarjetas_pagos,202106,2147320000.0,9814,5.9727471350410495,328360000.0,12789

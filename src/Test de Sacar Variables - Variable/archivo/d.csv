@@ -1,0 +1,4 @@
+study_name,foto_mes_test,ganancia_test,predicciones_positivas,porcentaje_positivas,ganancia_optima_promedio,clientes_optimos
+Pruebo sacando variables_V2__sin_payroll,202104,2147480000.0,8460,5.176908296515684,338880000.0,8583
+Pruebo sacando variables_V2__sin_payroll,202105,2147480000.0,8797,5.366740484513504,177560000.0,8661
+Pruebo sacando variables_V2__sin_payroll,202106,2147480000.0,9621,5.8552883825382045,310920000.0,13065

@@ -1,0 +1,261 @@
+STUDY_NAME: "Pruebo sacando variables"
+
+competencia01:
+  DATA_PATH: "../../../datasets/competencia_02_crudo.csv.gz"
+  BUCKET_NAME: "../../../buckets/b1/Compe_02"
+  # SEMILLA: [5555571, 1]
+  SEMILLA: [555557, 555871, 556219, 556459, 556691, 556903, 557159, 557399, 557597, 557861]
+  # SEMILLA: [555557, 555871, 556219, 556459, 556691]
+  MESES_EVALUACION:
+    202106:
+      train: [202012, 202101, 202102, 202103, 202104]
+    202105:
+      train: [202011, 202012, 202101, 202102, 202103]
+    202104:
+      train: [202010, 202011, 202012, 202101, 202102]
+    # 202103:
+    #   train: [202009, 202010, 202011, 202012, 202101]
+  MES_TRAIN: [2021, 202102]
+  MES_VALIDACION: 202103
+  MESES_OPTIMIZACION: [2021, 202102, 202103, 202104]
+  MES_TEST: 202104
+  GANANCIA_ACIERTO: 780000
+  COSTO_ESTIMULO: 20000
+  FINAL_TRAIN: [202101, 202102, 202103, 202104]
+  FINAL_PREDIC: 202106
+  UMBRAL: 0.015
+  TOP_K: 11750
+  HYPERPARAM_RANGES:
+    num_leaves:
+      min: 20
+      max: 250
+      type: int
+    learning_rate:
+      min: 0.005
+      max: 0.06
+      type: float
+    min_data_in_leaf:
+      min: 10
+      max: 1000
+      type: int
+    feature_fraction:
+      min: 0.30
+      max: 1.0
+      type: float
+    bagging_fraction:
+      min: 0.25
+      max: 1.0
+      type: float
+    num_boost_round:
+      min: 300
+      max: 2000
+      type: int
+    lambda_l1:
+      min: 0.0
+      max: 5.0
+      type: float
+    lambda_l2:
+      min: 0.0
+      max: 5.0
+      type: float
+
+  GRUPOS_VARIABLES:
+    tarjetas_consumos:
+      - Master_cconsumos
+      - Master_mconsumospesos
+      - Master_mconsumosdolares
+      - Master_mconsumototal
+      - Visa_cconsumos
+      - Visa_mconsumospesos
+      - Visa_mconsumosdolares
+      - Visa_mconsumototal
+
+    tarjetas_saldos:
+      - Master_msaldopesos
+      - Master_msaldodolares
+      - Master_msaldototal
+      - Visa_msaldopesos
+      - Visa_msaldodolares
+      - Visa_msaldototal
+
+    tarjetas_pagos:
+      - Master_mpagospesos
+      - Master_mpagosdolares
+      - Master_mpagado
+      - Master_mpagominimo
+      - Visa_mpagospesos
+      - Visa_mpagosdolares
+      - Visa_mpagado
+      - Visa_mpagominimo
+
+    tarjetas_adelantos:
+      - Master_cadelantosefectivo
+      - Master_madelantopesos
+      - Master_madelantodolares
+      - Visa_cadelantosefectivo
+      - Visa_madelantopesos
+      - Visa_madelantodolares
+
+    tarjetas_limites:
+      - Master_mfinanciacion_limite
+      - Master_mlimitecompra
+      - Visa_mfinanciacion_limite
+      - Visa_mlimitecompra
+
+    tarjetas_fechas_y_estado:
+      - Master_fechaalta
+      - Master_Fvencimiento
+      - Master_fultimo_cierre
+      - Master_Finiciomora
+      - Visa_fechaalta
+      - Visa_Fvencimiento
+      - Visa_fultimo_cierre
+      - Visa_Finiciomora
+      - Master_delinquency
+      - Master_status
+      - Visa_delinquency
+      - Visa_status
+
+    tarjeta_master:
+      - ctarjeta_master
+      - ctarjeta_master_transacciones
+      - ctarjeta_master_debitos_automaticos
+      - mtarjeta_master_debitos_automaticos
+      - mttarjeta_master_debitos_automaticos
+      - ctarjeta_master_descuentos
+      - mtarjeta_master_descuentos
+      - mtarjeta_master_consumo
+
+    tarjeta_visa:
+      - ctarjeta_visa
+      - ctarjeta_visa_transacciones
+      - ctarjeta_visa_debitos_automaticos
+      - mtarjeta_visa_debitos_automaticos
+      - ctarjeta_visa_descuentos
+      - mtarjeta_visa_descuentos
+      - mtarjeta_visa_consumo
+
+    tarjeta_debito:
+      - ctarjeta_debito
+      - ctarjeta_debito_transacciones
+
+    caja_ahorro:
+      - ccaja_ahorro
+      - mcaja_ahorro
+      - mcaja_ahorro_adicional
+      - mcaja_ahorro_dolares
+
+    cuenta_corriente:
+      - ccuenta_corriente
+      - mcuenta_corriente
+      - mcuenta_corriente_adicional
+
+    debitos_automaticos:
+      - ccuenta_debitos_automaticos
+      - mcuenta_debitos_automaticos
+
+    cuentas_saldo:
+      - mcuentas_saldo
+      - tcuentas
+
+    prestamos:
+      - cprestamos_hipotecarios
+      - mprestamos_hipotecarios
+      - cprestamos_personales
+      - mprestamos_personales
+      - cprestamos_prendarios
+      - mprestamos_prendarios
+
+    inversiones:
+      - cinversion1
+      - minversion1_pesos
+      - minversion1_dolares
+      - cinversion2
+      - minversion2
+      - cplazo_fijo
+      - mplazo_fijo_pesos
+      - mplazo_fijo_dolares
+
+    pagos:
+      - cpagodeservicios
+      - mpagodeservicios
+      - cpagomiscuentas
+      - mpagomiscuentas
+
+    transferencias:
+      - ctransferencias_emitidas
+      - mtransferencias_emitidas
+      - ctransferencias_recibidas
+      - mtransferencias_recibidas
+
+    payroll:
+      - cpayroll_trx
+      - mpayroll
+      - cpayroll2_trx
+      - mpayroll2
+
+    atm_autoservicio:
+      - matm
+      - catm_trx
+      - matm_other
+      - catm_trx_other
+      - mautoservicio
+      - cextraccion_autoservicio
+      - mextraccion_autoservicio
+
+    cajas:
+      - ccajas_consultas
+      - ccajas_depositos
+      - ccajas_extracciones
+      - ccajas_otras
+      - ccajas_transacciones
+      - ccajeros_propios_descuentos
+      - mcajeros_propios_descuentos
+
+    canales_digitales:
+      - thomebanking
+      - chomebanking_transacciones
+      - tmobile_app
+      - cmobile_app_trx
+      - tcallcenter
+      - ccallcenter_transacciones
+      - internet
+
+    forex:
+      - cforex
+      - cforex_buy
+      - mforex_buy
+      - cforex_sell
+      - mforex_sell
+
+    seguros:
+      - cseguro_accidentes_personales
+      - cseguro_auto
+      - cseguro_vida
+      - cseguro_vivienda
+
+    comisiones_mantenimiento:
+      - ccomisiones_mantenimiento
+      - mcomisiones_mantenimiento
+
+    comisiones_otras:
+      - ccomisiones_otras
+      - mcomisiones_otras
+      - mcomisiones
+
+    indicadores_financieros:
+      - mactivos_margen
+      - mpasivos_margen
+      - mrentabilidad
+      - mrentabilidad_annual
+      - active_quarter
+      - ctrx_quarter
+
+    numero_de_cliente:
+      - numero_de_cliente
+
+    foto_mes:
+      - foto_mes
+
+    cliente_vip:
+      - cliente_vip

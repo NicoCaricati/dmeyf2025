@@ -1,0 +1,297 @@
+mes,grupo,modelo_id,ganancia_test,archivo
+202104,april,april_seed1,377600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202104.csv
+202104,april,april_seed2,380000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202104.csv
+202104,april,april_seed3,372800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202104.csv
+202104,april,april_seed4,376800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202104.csv
+202104,april,april_seed5,369600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202104.csv
+202104,GLOBAL,ensamble_global,377600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202104.csv
+202104,GRUPOS,ensamble_grupos,377600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202104.csv
+202106,june,june_seed1,345600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202106.csv
+202106,june,june_seed2,356000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202106.csv
+202106,june,june_seed3,346400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202106.csv
+202106,june,june_seed4,354400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202106.csv
+202106,june,june_seed5,348800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202106.csv
+202106,GLOBAL,ensamble_global,353600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202106.csv
+202106,GRUPOS,ensamble_grupos,353600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Pruebo Undersampling solo en Meses viejos V2_202106.csv
+202104,final_training_april,final_training_april_seed1,374400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202104.csv
+202104,final_training_april,final_training_april_seed2,379200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202104.csv
+202104,final_training_april,final_training_april_seed3,380000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202104.csv
+202104,final_training_april,final_training_april_seed4,376800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202104.csv
+202104,final_training_april,final_training_april_seed5,380000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202104.csv
+202104,GLOBAL,ensamble_global,380000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202104.csv
+202104,GRUPOS,ensamble_grupos,380000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202104.csv
+202106,final_training_june,final_training_june_seed1,367200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202106.csv
+202106,final_training_june,final_training_june_seed2,362400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202106.csv
+202106,final_training_june,final_training_june_seed3,360000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202106.csv
+202106,final_training_june,final_training_june_seed4,369600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202106.csv
+202106,final_training_june,final_training_june_seed5,362400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202106.csv
+202106,GLOBAL,ensamble_global,363200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202106.csv
+202106,GRUPOS,ensamble_grupos,363200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2 - Saco los CTRL Adicionales_202106.csv
+202104,final_training_april,final_training_april_seed1,386400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202104.csv
+202104,final_training_april,final_training_april_seed2,375200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202104.csv
+202104,final_training_april,final_training_april_seed3,382400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202104.csv
+202104,final_training_april,final_training_april_seed4,375200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202104.csv
+202104,final_training_april,final_training_april_seed5,376000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202104.csv
+202104,GLOBAL,ensamble_global,380800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202104.csv
+202104,GRUPOS,ensamble_grupos,380800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202104.csv
+202105,final_training_mayo,final_training_mayo_seed1,197600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202105.csv
+202105,final_training_mayo,final_training_mayo_seed2,204000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202105.csv
+202105,final_training_mayo,final_training_mayo_seed3,204000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202105.csv
+202105,final_training_mayo,final_training_mayo_seed4,203200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202105.csv
+202105,final_training_mayo,final_training_mayo_seed5,203200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202105.csv
+202105,GLOBAL,ensamble_global,204800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202105.csv
+202105,GRUPOS,ensamble_grupos,204800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202105.csv
+202106,final_training_june,final_training_june_seed1,372000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202106.csv
+202106,final_training_june,final_training_june_seed2,354400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202106.csv
+202106,final_training_june,final_training_june_seed3,357600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202106.csv
+202106,final_training_june,final_training_june_seed4,372000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202106.csv
+202106,final_training_june,final_training_june_seed5,364800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202106.csv
+202106,GLOBAL,ensamble_global,362400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202106.csv
+202106,GRUPOS,ensamble_grupos,362400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202106.csv
+202107,final_training_julio,final_training_julio_seed1,420000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202107.csv
+202107,final_training_julio,final_training_julio_seed2,406400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202107.csv
+202107,final_training_julio,final_training_julio_seed3,415200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202107.csv
+202107,final_training_julio,final_training_julio_seed4,411200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202107.csv
+202107,final_training_julio,final_training_julio_seed5,417600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202107.csv
+202107,GLOBAL,ensamble_global,421600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202107.csv
+202107,GRUPOS,ensamble_grupos,421600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V2_202107.csv
+202104,april,april_seed1,383200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202104.csv
+202104,april,april_seed2,378400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202104.csv
+202104,april,april_seed3,381600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202104.csv
+202104,april,april_seed4,380800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202104.csv
+202104,april,april_seed5,372800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202104.csv
+202104,GLOBAL,ensamble_global,382400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202104.csv
+202104,GRUPOS,ensamble_grupos,382400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202104.csv
+202106,june,june_seed1,342400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202106.csv
+202106,june,june_seed2,338400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202106.csv
+202106,june,june_seed3,344800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202106.csv
+202106,june,june_seed4,356800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202106.csv
+202106,june,june_seed5,352800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202106.csv
+202106,GLOBAL,ensamble_global,346400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202106.csv
+202106,GRUPOS,ensamble_grupos,346400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos V3 - Agrego a meses viejos seasonality_202106.csv
+202104,april,april_seed1,384800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202104.csv
+202104,april,april_seed2,352000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202104.csv
+202104,april,april_seed3,346400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202104.csv
+202104,april,april_seed4,361600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202104.csv
+202104,april,april_seed5,360000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202104.csv
+202104,GLOBAL,ensamble_global,359200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202104.csv
+202104,GRUPOS,ensamble_grupos,359200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202104.csv
+202106,june,june_seed1,384000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202106.csv
+202106,june,june_seed2,385600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202106.csv
+202106,june,june_seed3,365600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202106.csv
+202106,june,june_seed4,376800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202106.csv
+202106,june,june_seed5,383200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202106.csv
+202106,GLOBAL,ensamble_global,387200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202106.csv
+202106,GRUPOS,ensamble_grupos,387200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Agrego meses antes y despues_202106.csv
+202104,april,april_seed1,376000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202104.csv
+202104,april,april_seed2,375200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202104.csv
+202104,april,april_seed3,374400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202104.csv
+202104,april,april_seed4,374400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202104.csv
+202104,april,april_seed5,365600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202104.csv
+202104,GLOBAL,ensamble_global,373600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202104.csv
+202104,GRUPOS,ensamble_grupos,373600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202104.csv
+202106,june,june_seed1,354400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202106.csv
+202106,june,june_seed2,357600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202106.csv
+202106,june,june_seed3,348000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202106.csv
+202106,june,june_seed4,348000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202106.csv
+202106,june,june_seed5,349600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202106.csv
+202106,GLOBAL,ensamble_global,356800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202106.csv
+202106,GRUPOS,ensamble_grupos,356800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank (200 Percentiles) V2_202106.csv
+202104,april,april_seed1,372000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202104.csv
+202104,april,april_seed2,370400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202104.csv
+202104,april,april_seed3,366400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202104.csv
+202104,april,april_seed4,372000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202104.csv
+202104,april,april_seed5,365600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202104.csv
+202104,GLOBAL,ensamble_global,379200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202104.csv
+202104,GRUPOS,ensamble_grupos,379200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202104.csv
+202105,mayo,mayo_seed1,193600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202105.csv
+202105,mayo,mayo_seed2,188800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202105.csv
+202105,mayo,mayo_seed3,192000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202105.csv
+202105,mayo,mayo_seed4,190400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202105.csv
+202105,mayo,mayo_seed5,197600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202105.csv
+202105,GLOBAL,ensamble_global,193600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202105.csv
+202105,GRUPOS,ensamble_grupos,193600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202105.csv
+202106,june,june_seed1,374400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202106.csv
+202106,june,june_seed2,360000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202106.csv
+202106,june,june_seed3,374400000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202106.csv
+202106,june,june_seed4,371200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202106.csv
+202106,june,june_seed5,363200000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202106.csv
+202106,GLOBAL,ensamble_global,369600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202106.csv
+202106,GRUPOS,ensamble_grupos,369600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V2_202106.csv
+202107,julio,julio_seed1,416000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V3_202107.csv
+202107,julio,julio_seed2,409600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V3_202107.csv
+202107,julio,julio_seed3,416000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V3_202107.csv
+202107,julio,julio_seed4,416800000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V3_202107.csv
+202107,julio,julio_seed5,416000000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V3_202107.csv
+202107,GLOBAL,ensamble_global,413600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V3_202107.csv
+202107,GRUPOS,ensamble_grupos,413600000.0,ganancias_Modelo Final US 0.2 - Uso Meses Corridos y seasonality - Cambio IPC por Percentiles Rank V3_202107.csv
+202104,rolling_01,rolling_01_seed1,326400000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,rolling_02,rolling_02_seed1,338400000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,rolling_03,rolling_03_seed1,355200000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,rolling_04,rolling_04_seed1,352800000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,rolling_05,rolling_05_seed1,361600000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,rolling_06,rolling_06_seed1,352800000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,rolling_07,rolling_07_seed1,352000000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,seasonal_summer,seasonal_summer_seed1,362400000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,seasonal_autumn,seasonal_autumn_seed1,325600000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,seasonal_winter,seasonal_winter_seed1,348800000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,seasonal_spring,seasonal_spring_seed1,336800000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,seasonal_end_of_year,seasonal_end_of_year_seed1,327200000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,seasonal_q1,seasonal_q1_seed1,335200000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,seasonal_q2,seasonal_q2_seed1,343200000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,mixed_recent_01,mixed_recent_01_seed1,376000000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,mixed_recent_02,mixed_recent_02_seed1,348000000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,mixed_early_01,mixed_early_01_seed1,330400000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,mixed_early_02,mixed_early_02_seed1,336800000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,mixed_transition,mixed_transition_seed1,353600000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,mixed_full_year,mixed_full_year_seed1,354400000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,GLOBAL,ensamble_global,368800000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202104,GRUPOS,ensamble_grupos,368800000.0,ganancias_modelos_202104_20251118_132939 (Base).csv
+202105,rolling_01,rolling_01_seed1,146400000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,rolling_02,rolling_02_seed1,142400000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,rolling_03,rolling_03_seed1,162400000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,rolling_04,rolling_04_seed1,183200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,rolling_05,rolling_05_seed1,200800000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,rolling_06,rolling_06_seed1,158400000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,rolling_07,rolling_07_seed1,186400000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,seasonal_summer,seasonal_summer_seed1,191200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,seasonal_autumn,seasonal_autumn_seed1,189600000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,seasonal_winter,seasonal_winter_seed1,149600000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,seasonal_spring,seasonal_spring_seed1,168000000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,seasonal_end_of_year,seasonal_end_of_year_seed1,157600000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,seasonal_q1,seasonal_q1_seed1,156000000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,seasonal_q2,seasonal_q2_seed1,186400000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,mixed_recent_01,mixed_recent_01_seed1,207200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,mixed_recent_02,mixed_recent_02_seed1,183200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,mixed_early_01,mixed_early_01_seed1,133600000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,mixed_early_02,mixed_early_02_seed1,155200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,mixed_transition,mixed_transition_seed1,173600000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,mixed_full_year,mixed_full_year_seed1,185600000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,mixed_full_year_21,mixed_full_year_21_seed1,202400000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,GLOBAL,ensamble_global,195200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202105,GRUPOS,ensamble_grupos,195200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202105.csv
+202107,rolling_01,rolling_01_seed1,387200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,rolling_02,rolling_02_seed1,400000000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,rolling_03,rolling_03_seed1,391200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,rolling_04,rolling_04_seed1,383200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,rolling_05,rolling_05_seed1,369600000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,rolling_06,rolling_06_seed1,394400000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,rolling_07,rolling_07_seed1,407200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,seasonal_summer,seasonal_summer_seed1,391200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,seasonal_autumn,seasonal_autumn_seed1,413600000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,seasonal_winter,seasonal_winter_seed1,402400000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,seasonal_spring,seasonal_spring_seed1,411200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,seasonal_end_of_year,seasonal_end_of_year_seed1,394400000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,seasonal_q1,seasonal_q1_seed1,384000000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,seasonal_q2,seasonal_q2_seed1,415200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,mixed_recent_01,mixed_recent_01_seed1,388000000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,mixed_recent_02,mixed_recent_02_seed1,388000000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,mixed_early_01,mixed_early_01_seed1,395200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,mixed_early_02,mixed_early_02_seed1,396800000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,mixed_transition,mixed_transition_seed1,385600000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,mixed_full_year,mixed_full_year_seed1,399200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,mixed_full_year_21,mixed_full_year_21_seed1,379200000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,GLOBAL,ensamble_global,433600000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202107,GRUPOS,ensamble_grupos,433600000.0,ganancias_modelos_202104_20251118_132939 (Base)_202107.csv
+202106,rolling_01,rolling_01_seed1,376800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_01,rolling_01_seed2,370400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_01,rolling_01_seed3,381600000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_01,rolling_01_seed4,374400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_01,rolling_01_seed5,381600000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_02,rolling_02_seed1,386400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_02,rolling_02_seed2,368000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_02,rolling_02_seed3,369600000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_02,rolling_02_seed4,376800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_02,rolling_02_seed5,375200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_03,rolling_03_seed1,368800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_03,rolling_03_seed2,376800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_03,rolling_03_seed3,367200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_03,rolling_03_seed4,376000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_03,rolling_03_seed5,376800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_04,rolling_04_seed1,326400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_04,rolling_04_seed2,340800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_04,rolling_04_seed3,336000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_04,rolling_04_seed4,330400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_04,rolling_04_seed5,336800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_05,rolling_05_seed1,352000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_05,rolling_05_seed2,340000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_05,rolling_05_seed3,362400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_05,rolling_05_seed4,339200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_05,rolling_05_seed5,350400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_06,rolling_06_seed1,384000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_06,rolling_06_seed2,380000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_06,rolling_06_seed3,392800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_06,rolling_06_seed4,379200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_06,rolling_06_seed5,388800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_07,rolling_07_seed1,358400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_07,rolling_07_seed2,348000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_07,rolling_07_seed3,340000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_07,rolling_07_seed4,336800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,rolling_07,rolling_07_seed5,349600000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_summer,seasonal_summer_seed1,380000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_summer,seasonal_summer_seed2,370400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_summer,seasonal_summer_seed3,368800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_summer,seasonal_summer_seed4,380000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_summer,seasonal_summer_seed5,382400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_autumn,seasonal_autumn_seed1,351200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_autumn,seasonal_autumn_seed2,346400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_autumn,seasonal_autumn_seed3,344000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_autumn,seasonal_autumn_seed4,351200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_autumn,seasonal_autumn_seed5,357600000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_winter,seasonal_winter_seed1,372800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_winter,seasonal_winter_seed2,369600000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_winter,seasonal_winter_seed3,371200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_winter,seasonal_winter_seed4,372800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_winter,seasonal_winter_seed5,368000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_spring,seasonal_spring_seed1,338400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_spring,seasonal_spring_seed2,357600000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_spring,seasonal_spring_seed3,352000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_spring,seasonal_spring_seed4,358400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_spring,seasonal_spring_seed5,348000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_end_of_year,seasonal_end_of_year_seed1,368000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_end_of_year,seasonal_end_of_year_seed2,366400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_end_of_year,seasonal_end_of_year_seed3,380000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_end_of_year,seasonal_end_of_year_seed4,372000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_end_of_year,seasonal_end_of_year_seed5,371200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_q1,seasonal_q1_seed1,370400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_q1,seasonal_q1_seed2,358400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_q1,seasonal_q1_seed3,350400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_q1,seasonal_q1_seed4,364800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_q1,seasonal_q1_seed5,352000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_q2,seasonal_q2_seed1,376800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_q2,seasonal_q2_seed2,371200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_q2,seasonal_q2_seed3,383200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_q2,seasonal_q2_seed4,376000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,seasonal_q2,seasonal_q2_seed5,380800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_recent_01,mixed_recent_01_seed1,344800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_recent_01,mixed_recent_01_seed2,352800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_recent_01,mixed_recent_01_seed3,348800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_recent_01,mixed_recent_01_seed4,343200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_recent_01,mixed_recent_01_seed5,344800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_recent_02,mixed_recent_02_seed1,347200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_recent_02,mixed_recent_02_seed2,327200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_recent_02,mixed_recent_02_seed3,336000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_recent_02,mixed_recent_02_seed4,344800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_recent_02,mixed_recent_02_seed5,332000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_early_01,mixed_early_01_seed1,370400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_early_01,mixed_early_01_seed2,364800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_early_01,mixed_early_01_seed3,371200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_early_01,mixed_early_01_seed4,368000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_early_01,mixed_early_01_seed5,360000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_early_02,mixed_early_02_seed1,381600000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_early_02,mixed_early_02_seed2,376000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_early_02,mixed_early_02_seed3,383200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_early_02,mixed_early_02_seed4,376000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_early_02,mixed_early_02_seed5,383200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_transition,mixed_transition_seed1,366400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_transition,mixed_transition_seed2,352800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_transition,mixed_transition_seed3,359200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_transition,mixed_transition_seed4,356000000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_transition,mixed_transition_seed5,350400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_full_year,mixed_full_year_seed1,343200000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_full_year,mixed_full_year_seed2,361600000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_full_year,mixed_full_year_seed3,346400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_full_year,mixed_full_year_seed4,352800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,mixed_full_year,mixed_full_year_seed5,356800000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,GLOBAL,ensamble_global,402400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
+202106,GRUPOS,ensamble_grupos,402400000.0,ganancias_modelos_202106_20251118_171756 (Base).csv
